@@ -1,0 +1,146 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum InvestmentType {
+  SIX_MONTHS
+  ONE_YEAR
+}
+
+enum InvestmentStatus {
+  PENDING
+  ACTIVE
+  COMPLETED
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+}
+
+model User {
+  id                   String       @id @default(uuid()) @db.Uuid
+  name                 String       @default("N0_NAME")
+  email                String       @unique(map: "user_email_idx")
+  emailVerified        DateTime?    @db.Timestamp(6)
+  image                String?
+  password             String?
+  role                 Role         @default(USER)
+  address              Json?
+  paymentMethod        String?
+  createdAt            DateTime     @default(now()) @db.Timestamp(6)
+  updatedAt            DateTime     @updatedAt
+  accounts             Account[]
+  sessions             Session[]
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  Investment           Investment[]
+}
+
+model Crop {
+  id          String       @id @default(uuid())
+  name        String
+  description String
+  imageUrl    String
+  investments Investment[]
+  tasks       Task[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Livestock {
+  id          String       @id @default(uuid())
+  name        String
+  description String
+  imageUrl    String
+  investments Investment[]
+  tasks       Task[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Investment {
+  id             String           @id @default(uuid())
+  userId         String           @db.Uuid
+  cropId         String?
+  livestockId    String?
+  amount         Float
+  investmentType InvestmentType
+  status         InvestmentStatus @default(PENDING)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  user           User             @relation(fields: [userId], references: [id])
+  crop           Crop?            @relation(fields: [cropId], references: [id])
+  livestock      Livestock?       @relation(fields: [livestockId], references: [id])
+  tasks          Task[]
+}
+
+model Task {
+  id           String     @id @default(uuid())
+  investmentId String
+  cropId       String?
+  livestockId  String?
+  name         String
+  description  String
+  status       TaskStatus @default(PENDING)
+  imageUrl     String?
+  completedAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  investment   Investment @relation(fields: [investmentId], references: [id])
+  crop         Crop?      @relation(fields: [cropId], references: [id])
+  livestock    Livestock? @relation(fields: [livestockId], references: [id])
+}
+
+model Carousel {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  imageUrl    String
+  link        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Session {
+  sessionToken String   @id
+  userId       String   @db.Uuid
+  expires      DateTime @db.Timestamp(6)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  userId            String  @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
