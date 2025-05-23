@@ -29,5 +29,9 @@
     ".next/types/**/*.ts",
     "app/(root)/dashboard"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "ts-node": {
+    "esm": true,
+    "experimentalResolver": true
+  }
 }

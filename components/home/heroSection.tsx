@@ -10,7 +10,7 @@ export default function HeroSection() {
           investment opportunities.
         </p>
         <a
-          href="/dashboard"
+          href="/sign-in"
           className="bg-white text-green-500 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100"
         >
           Get Started

@@ -1,58 +1,24 @@
-"use client";
-import { signIn } from "next-auth/react";
-import { useState } from "react";
+// import AuthForm from "@/components/shared/authForm";
 
-const SignInPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+import AuthForm from "@/components/shared/authForm";
 
-  const handleCredentialsSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-    if (result?.error) {
-      setError(result.error);
-    } else {
-      window.location.href = "/";
-    }
-  };
+// export default function SignIn() {
+//   return <AuthForm type="signin" />;
+// }
 
+export default function SignInPage() {
   return (
-    <div>
-      <h1>Sign In</h1>
-      <form onSubmit={handleCredentialsSignIn}>
-        <div>
-          <label htmlFor="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="password">Password</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button type="submit">Sign In</button>
-      </form>
-      <hr />
-      <button onClick={() => signIn("google")}>Sign In with Google</button>
-    </div>
+    <main className="p-4">
+      <AuthForm />
+    </main>
   );
-};
+}
 
-export default SignInPage;
+// export default function SignInPage() {
+//   return (
+//     <main className="p-4">
+//       <h1 className="text-xl mb-4">Sign In</h1>
+//       <SignInForm />
+//     </main>
+//   );
+// }
