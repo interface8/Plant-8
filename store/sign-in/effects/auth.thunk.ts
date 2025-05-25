@@ -1,51 +1,84 @@
-import { AppThunk } from "@/store/store";
-import {
-  signInRequest,
-  signInSuccess,
-  signInFailure,
-  signUpRequest,
-  signUpSuccess,
-  signUpFailure,
-  signOut,
-} from "../actions/auth.actions";
-import { authService } from "../core/services/auth.services";
-import { SignInPayload, SignUpPayload } from "../core/models/auth.models";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import type { SignInPayload, SignUpPayload } from "../core/models/auth.models";
 
-export const signInThunk =
-  (payload: SignInPayload): AppThunk =>
-  async (dispatch) => {
+export const signInThunk = createAsyncThunk(
+  "auth/signIn",
+  async (payload: SignInPayload, { rejectWithValue }) => {
     try {
-      dispatch(signInRequest(payload));
-      const { token, user } = await authService.signIn(payload);
-      dispatch(signInSuccess({ user, token }));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const response = await fetch("/api/auth/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return rejectWithValue(data.error || "Failed to sign in");
+      }
+
+      return data;
     } catch (error: any) {
-      dispatch(signInFailure(error.message));
+      return rejectWithValue(error.message || "Failed to sign in");
     }
-  };
-
-export const signUpThunk =
-  (payload: SignUpPayload): AppThunk =>
-  async (dispatch) => {
-    try {
-      dispatch(signUpRequest(payload));
-      const user = await authService.signUp(payload);
-      dispatch(signUpSuccess(user));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      dispatch(signUpFailure(error.message));
-    }
-  };
-
-export const signOutThunk = (): AppThunk => async (dispatch) => {
-  try {
-    localStorage.removeItem("authToken");
-
-    dispatch(signOut());
-
-    window.location.href = "/";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    console.error("Logout error:", error);
   }
-};
+);
+
+export const signUpThunk = createAsyncThunk(
+  "auth/signUp",
+  async (payload: SignUpPayload, { rejectWithValue }) => {
+    try {
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return rejectWithValue(data.error || "Failed to sign up");
+      }
+
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to sign up");
+    }
+  }
+);
+
+export const signOutThunk = createAsyncThunk(
+  "auth/signOut",
+  async (_, { rejectWithValue }) => {
+    try {
+      await fetch("/api/auth/signout", {
+        method: "POST",
+      });
+      return {};
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to sign out");
+    }
+  }
+);
+
+export const checkAuthThunk = createAsyncThunk(
+  "auth/checkAuth",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch("/api/auth/me");
+
+      if (!response.ok) {
+        return rejectWithValue("Not authenticated");
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to check auth");
+    }
+  }
+);

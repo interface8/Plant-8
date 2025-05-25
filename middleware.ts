@@ -2,23 +2,19 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-// Define protected and public routes
-const protectedRoutes = ["/dashboard", "/profile", "/settings"];
-const publicRoutes = ["/", "/sign-in", "/sign-up", "/about", "/investments"];
+const protectedRoutes = ["/dashboard", "/profile", "/settings", "/investments"];
+const authRoutes = ["/sign-in", "/sign-up"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Check if the current route is protected
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   );
-  const isPublicRoute = publicRoutes.includes(pathname);
+  const isAuthRoute = authRoutes.includes(pathname);
 
-  // Get token from cookies
   const token = request.cookies.get("auth-token")?.value;
 
-  // If it's a protected route and no token, redirect to sign-in
   if (isProtectedRoute && !token) {
     console.log(
       `Protected route ${pathname} accessed without token, redirecting to sign-in`
@@ -26,25 +22,35 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
-  // If token exists, verify it
   if (token) {
     try {
       const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-      await jwtVerify(token, secret);
+      const { payload } = await jwtVerify(token, secret);
 
-      // If user is authenticated and tries to access sign-in/sign-up, redirect to dashboard
-      if (pathname === "/sign-in" || pathname === "/sign-up") {
+      if (isAuthRoute) {
         console.log(
           "Authenticated user accessing auth pages, redirecting to dashboard"
         );
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }
+
+      // Adding user info to headers for server components
+      const response = NextResponse.next();
+      response.headers.set("x-user-id", payload.userId as string);
+      response.headers.set("x-user-email", payload.email as string);
+      response.headers.set("x-user-roles", JSON.stringify(payload.roles || []));
+      return response;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
       console.log("Invalid token, clearing cookie");
-      // Invalid token, clear it and redirect to sign-in if accessing protected route
-      const response = NextResponse.redirect(new URL("/sign-in", request.url));
-      response.cookies.delete("auth-token");
-      return response;
+
+      if (isProtectedRoute) {
+        const response = NextResponse.redirect(
+          new URL("/sign-in", request.url)
+        );
+        response.cookies.delete("auth-token");
+        return response;
+      }
     }
   }
 
@@ -52,5 +58,14 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+  ],
 };

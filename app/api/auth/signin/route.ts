@@ -3,6 +3,7 @@ import { signinSchema } from "@/lib/validators";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { NextResponse } from "next/server";
+import { setAuthCookie } from "@/lib/cookies";
 import z from "zod";
 
 export async function POST(request: Request) {
@@ -54,11 +55,12 @@ export async function POST(request: Request) {
         roles: roleNames,
       },
       JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "7d" }
     );
 
+    await setAuthCookie(token);
+
     return NextResponse.json({
-      token,
       user: {
         id: user.id,
         email: user.email,

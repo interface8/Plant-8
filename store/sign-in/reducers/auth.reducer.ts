@@ -1,5 +1,5 @@
 import { createReducer } from "@reduxjs/toolkit";
-import { AuthState } from "../core/models/auth.models";
+import type { AuthState } from "../core/models/auth.models";
 import {
   signInRequest,
   signInSuccess,
@@ -8,6 +8,8 @@ import {
   signUpSuccess,
   signUpFailure,
   signOut,
+  checkAuthSuccess,
+  checkAuthFailure,
 } from "../actions/auth.actions";
 
 const initialState: AuthState = {
@@ -25,7 +27,7 @@ export const authReducer = createReducer(initialState, (builder) => {
     })
     .addCase(signInSuccess, (state, action) => {
       state.loading = false;
-      state.user = { ...action.payload.user, token: action.payload.token };
+      state.user = action.payload.user;
       state.isAuthenticated = true;
       state.error = null;
     })
@@ -54,5 +56,15 @@ export const authReducer = createReducer(initialState, (builder) => {
       state.error = null;
       state.loading = false;
       state.isAuthenticated = false;
+    })
+    .addCase(checkAuthSuccess, (state, action) => {
+      state.user = action.payload.user;
+      state.isAuthenticated = true;
+      state.loading = false;
+    })
+    .addCase(checkAuthFailure, (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.loading = false;
     });
 });
