@@ -2,21 +2,19 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useAppSelector } from "@/store/store";
-import {
-  selectUser,
-  selectIsAuthenticated,
-} from "@/store/sign-in/selectors/auth.selector";
+import { useSession } from "next-auth/react";
 import UserDropdown from "../user/user.dropdown";
 
 export default function Header() {
-  const user = useAppSelector(selectUser);
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const { data: session, status } = useSession();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  const isAuthenticated = status === "authenticated";
+  const user = session?.user;
 
   return (
     <header className="bg-white shadow-md border-b border-gray-200">
@@ -61,12 +59,7 @@ export default function Header() {
           <div className="flex items-center">
             {isClient ? (
               isAuthenticated && user ? (
-                <UserDropdown
-                  user={{
-                    ...user,
-                    roles: user.roles || [],
-                  }}
-                />
+                <UserDropdown />
               ) : (
                 <div className="flex space-x-4">
                   <Link
@@ -76,7 +69,7 @@ export default function Header() {
                     Sign in
                   </Link>
                   <Link
-                    href="/sig-in"
+                    href="/sign-up"
                     className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors"
                   >
                     Sign up

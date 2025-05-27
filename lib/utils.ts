@@ -1,5 +1,15 @@
-export function getUserInitials(name?: string): string {
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+export function getUserInitials(name?: string | null): string {
   if (!name) return "U";
-  const names = name.split(" ");
-  return (names[0].charAt(0) + (names[1]?.charAt(0) || "")).toUpperCase();
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
 }
