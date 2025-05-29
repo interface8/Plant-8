@@ -38,18 +38,13 @@ export default function FeaturedInvestments() {
               <Image
                 src={investment.image}
                 alt={investment.title}
-                width={500} // or set a fixed width
-                height={192} // height roughly matches h-48 (48 * 4 = 192px)
+                width={500}
+                height={192}
                 className="w-full h-48 object-cover"
                 style={{ objectFit: "cover" }}
-                priority // optional, depending on use
+                priority
               />
 
-              {/* <img
-                src={investment.image}
-                alt={investment.title}
-                className="w-full h-48 object-cover"
-              /> */}
               <div className="p-4">
                 <h3 className="text-xl font-semibold">{investment.title}</h3>
                 <p className="text-gray-600">{investment.roi}</p>

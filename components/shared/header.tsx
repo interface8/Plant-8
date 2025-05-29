@@ -1,20 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import UserDropdown from "../user/user.dropdown";
 
 export default function Header() {
   const { data: session, status } = useSession();
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  const isAuthenticated = status === "authenticated";
-  const user = session?.user;
 
   return (
     <header className="bg-white shadow-md border-b border-gray-200">
@@ -33,7 +24,7 @@ export default function Header() {
               >
                 Home
               </Link>
-              {isClient && isAuthenticated && (
+              {status === "authenticated" && (
                 <Link
                   href="/dashboard"
                   className="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
@@ -57,27 +48,25 @@ export default function Header() {
           </div>
 
           <div className="flex items-center">
-            {isClient ? (
-              isAuthenticated && user ? (
-                <UserDropdown />
-              ) : (
-                <div className="flex space-x-4">
-                  <Link
-                    href="/sign-in"
-                    className="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    Sign in
-                  </Link>
-                  <Link
-                    href="/sign-up"
-                    className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors"
-                  >
-                    Sign up
-                  </Link>
-                </div>
-              )
+            {status === "loading" ? (
+              <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse" />
+            ) : status === "authenticated" && session?.user ? (
+              <UserDropdown />
             ) : (
-              <div className="w-32 h-8" />
+              <div className="flex space-x-4">
+                <Link
+                  href="/sign-in"
+                  className="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/sign-up"
+                  className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors"
+                >
+                  Sign up
+                </Link>
+              </div>
             )}
           </div>
         </div>

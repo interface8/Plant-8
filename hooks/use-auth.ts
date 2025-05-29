@@ -4,18 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-
-interface SignInData {
-  email: string;
-  password: string;
-}
-
-interface SignUpData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+import { SignInData, SignUpFormData, signUpFormSchema } from "@/lib/validators";
 
 export function useAuth() {
   const [isLoading, setIsLoading] = useState(false);
@@ -99,35 +88,19 @@ export function useAuth() {
     }
   };
 
-  const signUp = async (data: SignUpData): Promise<boolean> => {
+  const signUp = async (data: SignUpFormData): Promise<boolean> => {
     setIsLoading(true);
     setError("");
 
-    if (!data.name.trim()) {
-      setError("Name is required");
+    try {
+      signUpFormSchema.parse(data);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (validationError: any) {
+      const errorMessage =
+        validationError.errors?.[0]?.message || "Validation failed";
+      setError(errorMessage);
       setIsLoading(false);
-      toast.error("Name is required");
-      return false;
-    }
-
-    if (!data.email.trim()) {
-      setError("Email is required");
-      setIsLoading(false);
-      toast.error("Email is required");
-      return false;
-    }
-
-    if (data.password.length < 6) {
-      setError("Password must be at least 6 characters");
-      setIsLoading(false);
-      toast.error("Password must be at least 6 characters");
-      return false;
-    }
-
-    if (data.password !== data.confirmPassword) {
-      setError("Passwords do not match");
-      setIsLoading(false);
-      toast.error("Passwords do not match");
+      toast.error(errorMessage);
       return false;
     }
 
@@ -138,9 +111,7 @@ export function useAuth() {
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: data.name,
           email: data.email,
@@ -150,26 +121,46 @@ export function useAuth() {
 
       const responseData = await response.json();
 
-      toast.dismiss(loadingToast);
-
       if (!response.ok) {
-        setError(responseData.error || "Something went wrong");
+        setError(responseData.error || "Failed to create account");
+        toast.dismiss(loadingToast);
         toast.error("Failed to create account", {
           description:
             responseData.error || "Something went wrong. Please try again.",
         });
         return false;
-      } else {
-        toast.success("Account created successfully!", {
-          description: "You can now sign in with your credentials",
-          duration: 5000,
-        });
+      }
 
+      // Automatic sign-in after signup
+      const signInResult = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      toast.dismiss(loadingToast);
+
+      if (signInResult?.error) {
+        setError(signInResult.error);
+        toast.error("Sign in failed", {
+          description:
+            "Account created, but sign-in failed. Please sign in manually.",
+        });
         setTimeout(() => {
           router.push(
             "/sign-in?message=Account created successfully! Please sign in."
           );
-        }, 1500);
+        }, 500);
+        return true;
+      } else if (signInResult?.ok) {
+        toast.success("Account created and signed in!", {
+          description: "Welcome to your new account!",
+          duration: 3000,
+        });
+        setTimeout(() => {
+          router.push("/dashboard");
+          router.refresh();
+        }, 500);
         return true;
       }
     } catch (error) {
@@ -183,6 +174,7 @@ export function useAuth() {
     } finally {
       setIsLoading(false);
     }
+    return false;
   };
 
   return {

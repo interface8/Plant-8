@@ -48,7 +48,10 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const roleNames = user.roles.map((userRole) => userRole.role.name);
+    const roleNames = user.roles.map(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (userRole: { role: { name: any } }) => userRole.role.name
+    );
 
     return NextResponse.json(
       {

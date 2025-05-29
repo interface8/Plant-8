@@ -7,16 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, Eye, EyeOff, CheckCircle } from "lucide-react";
-
-interface SignUpFormData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
+import { SignUpFormData } from "@/lib/validators";
 
 interface SignUpFormProps {
-  onSubmit: (data: SignUpFormData) => Promise<boolean>; // Changed from Promise<void> to Promise<boolean>
+  onSubmit: (data: SignUpFormData) => Promise<boolean>;
   isLoading?: boolean;
   error?: string;
 }
@@ -37,7 +31,6 @@ export function SignUpForm({
     e.preventDefault();
     const success = await onSubmit({ name, email, password, confirmPassword });
 
-    // Clear form on successful submission
     if (success) {
       setName("");
       setEmail("");
@@ -93,7 +86,7 @@ export function SignUpForm({
             required
             disabled={isLoading}
             placeholder="Enter your password"
-            minLength={6}
+            minLength={8}
             className="transition-all duration-200 focus:ring-2 focus:ring-blue-500 pr-10"
           />
           <Button
@@ -112,7 +105,7 @@ export function SignUpForm({
           </Button>
         </div>
         <p className="text-xs text-muted-foreground">
-          Password must be at least 6 characters long
+          Password must be at least 8 characters long
         </p>
       </div>
 
@@ -127,7 +120,7 @@ export function SignUpForm({
             required
             disabled={isLoading}
             placeholder="Confirm your password"
-            minLength={6}
+            minLength={8}
             className="transition-all duration-200 focus:ring-2 focus:ring-blue-500 pr-10"
           />
           <Button

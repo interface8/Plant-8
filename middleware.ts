@@ -1,34 +1,32 @@
 import { auth } from "@/auth";
+import { NextRequest, NextResponse } from "next/server";
 
-import { NextResponse } from "next/server";
+export const runtime = "nodejs";
 
-export default auth((req) => {
-  const isLoggedIn = !!req.auth;
+export async function middleware(request: NextRequest) {
+  const session = await auth();
+  const isLoggedIn = !!session;
   const isAuthPage =
-    req.nextUrl.pathname.startsWith("/sign-in") ||
-    req.nextUrl.pathname.startsWith("/sign-up");
+    request.nextUrl.pathname.startsWith("/sign-in") ||
+    request.nextUrl.pathname.startsWith("/sign-up");
   const isProtectedRoute =
-    req.nextUrl.pathname.startsWith("/dashboard") ||
-    req.nextUrl.pathname.startsWith("/profile");
+    request.nextUrl.pathname.startsWith("/dashboard") ||
+    request.nextUrl.pathname.startsWith("/profile");
 
-  // Redirect authenticated users away from auth pages
   if (isAuthPage && isLoggedIn) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
-
-  // Redirect unauthenticated users to sign in for protected routes
   if (!isLoggedIn && isProtectedRoute) {
-    let from = req.nextUrl.pathname;
-    if (req.nextUrl.search) {
-      from += req.nextUrl.search;
+    let from = request.nextUrl.pathname;
+    if (request.nextUrl.search) {
+      from += request.nextUrl.search;
     }
     return NextResponse.redirect(
-      new URL(`/sign-in?from=${encodeURIComponent(from)}`, req.url)
+      new URL(`/sign-in?from=${encodeURIComponent(from)}`, request.url)
     );
   }
-
   return NextResponse.next();
-});
+}
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
