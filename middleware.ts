@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import { NextRequest, NextResponse } from "next/server";
 
-export const runtime = "nodejs";
+// export const runtime = "nodejs";
 
 export async function middleware(request: NextRequest) {
   const session = await auth();
