@@ -32,36 +32,3 @@ if (process.env.NODE_ENV === "development") {
 }
 
 export default prisma;
-// // lib/prisma.ts
-// import { PrismaClient } from "@prisma/client";
-// import { PrismaNeon } from "@prisma/adapter-neon";
-// import { neonConfig } from "@neondatabase/serverless";
-// import ws from "ws";
-
-// // Configure WebSocket for Neon (required in server environments like Next.js)
-// neonConfig.webSocketConstructor = ws;
-
-// // Get the database connection string
-// const connectionString = process.env.DATABASE_URL;
-// if (!connectionString) {
-//   throw new Error("DATABASE_URL environment variable is not set");
-// }
-
-// // Create Neon adapter using connection string
-// const adapter = new PrismaNeon({ connectionString });
-
-// // Global caching to prevent multiple instances in dev
-// const globalForPrisma = globalThis as unknown as {
-//   prisma?: PrismaClient;
-// };
-
-// // Instantiate PrismaClient with Neon adapter
-// const prismaClient = globalForPrisma.prisma ?? new PrismaClient({ adapter });
-
-// // Cache in development
-// if (process.env.NODE_ENV !== "production") {
-//   globalForPrisma.prisma = prismaClient;
-// }
-
-// // Export the Prisma client
-// export const prisma = prismaClient;
