@@ -16,6 +16,8 @@ model User {
   image                String?
   password             String?
   paymentMethod        String?
+  createdTestimonies   Testimony[]  @relation("CreatedBy")
+  modifiedTestimonies  Testimony[]  @relation("ModifiedBy")
   createdAt            DateTime     @default(now()) @db.Timestamp(6)
   updatedAt            DateTime     @updatedAt
   resetPasswordToken   String?
@@ -141,6 +143,21 @@ model Carousel {
   link        String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model Testimony {
+  id           String   @id @default(uuid()) @db.Uuid
+  investorName String
+  comment      String
+  rating       Int
+  location     String
+  isApproved   Boolean  @default(false)
+  createdBy    User     @relation(name: "CreatedBy", fields: [createdById], references: [id])
+  createdById  String   @db.Uuid
+  createdOn    DateTime @default(now())
+  modifiedBy   User     @relation(name: "ModifiedBy", fields: [modifiedById], references: [id])
+  modifiedById String   @db.Uuid
+  modifiedOn   DateTime @updatedAt
 }
 
 model Session {

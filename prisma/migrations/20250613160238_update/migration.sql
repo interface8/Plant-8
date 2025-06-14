@@ -127,9 +127,11 @@ CREATE TABLE "TaskAudit" (
 CREATE TABLE "Investment" (
     "id" UUID NOT NULL,
     "userId" UUID NOT NULL,
-    "cropId" TEXT,
-    "livestockId" TEXT,
+    "title" TEXT NOT NULL,
+    "productId" UUID,
     "amount" DOUBLE PRECISION NOT NULL,
+    "expectedReturn" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "progress" INTEGER NOT NULL DEFAULT 0,
     "investmentType" "InvestmentType" NOT NULL,
     "status" "InvestmentStatus" NOT NULL DEFAULT 'PENDING',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -145,10 +147,31 @@ CREATE TABLE "Carousel" (
     "description" TEXT NOT NULL,
     "imageUrl" TEXT NOT NULL,
     "link" TEXT,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "type" TEXT NOT NULL DEFAULT 'homepage',
+    "sortOrder" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Carousel_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Testimony" (
+    "id" UUID NOT NULL,
+    "investorName" TEXT NOT NULL,
+    "comment" TEXT NOT NULL,
+    "rating" INTEGER NOT NULL,
+    "location" TEXT NOT NULL,
+    "isApproved" BOOLEAN NOT NULL DEFAULT false,
+    "createdById" UUID NOT NULL,
+    "createdOn" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "modifiedById" UUID NOT NULL,
+    "modifiedOn" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Testimony_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -207,16 +230,16 @@ CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provi
 CREATE INDEX "_InvestmentToProduct_B_index" ON "_InvestmentToProduct"("B");
 
 -- AddForeignKey
-ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_addressTypeId_fkey" FOREIGN KEY ("addressTypeId") REFERENCES "AddressType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Task" ADD CONSTRAINT "Task_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -232,6 +255,12 @@ ALTER TABLE "TaskAudit" ADD CONSTRAINT "TaskAudit_taskId_fkey" FOREIGN KEY ("tas
 
 -- AddForeignKey
 ALTER TABLE "Investment" ADD CONSTRAINT "Investment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Testimony" ADD CONSTRAINT "Testimony_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Testimony" ADD CONSTRAINT "Testimony_modifiedById_fkey" FOREIGN KEY ("modifiedById") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;

@@ -60,9 +60,42 @@ export const taskSchema = z.object({
   completedAt: z.date().optional(),
 });
 
-export const carouselSchema = z.object({
-  title: z.string().min(1),
-  description: z.string().min(1),
-  imageUrl: z.string().url("Image URL must be valid"),
-  link: z.string().url().optional(),
+export const carouselSchema = z
+  .object({
+    title: z.string().min(1, "Title is required"),
+    imageUrl: z.string().url("Must be a valid URL"),
+    link: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+    description: z.string().min(1, "Description is required"),
+    startDate: z
+      .string()
+      .refine((val) => !isNaN(Date.parse(val)), "Invalid start date")
+      .transform((val) => new Date(val).toISOString()),
+    endDate: z
+      .string()
+      .refine((val) => !isNaN(Date.parse(val)), "Invalid end date")
+      .transform((val) => new Date(val).toISOString()),
+    isActive: z.boolean(),
+    type: z.enum(["homepage", "otherpage"]),
+    sortOrder: z
+      .number()
+      .int("Must be an integer")
+      .min(0, "Sort order must be non-negative"),
+  })
+  .refine((data) => new Date(data.startDate) <= new Date(data.endDate), {
+    message: "End date must be after start date",
+    path: ["endDate"],
+  });
+
+export const testimonySchema = z.object({
+  investorName: z.string().min(1, "Name is required"),
+  comment: z.string().min(10, "Comment must be at least 10 characters"),
+  rating: z
+    .number()
+    .int()
+    .min(1, "Rating must be between 1 and 5")
+    .max(5, "Rating must be between 1 and 5"),
+  location: z.string().min(1, "Location is required"),
+  isApproved: z.boolean(),
+  createdById: z.string().uuid("Invalid user ID").optional(),
+  modifiedById: z.string().uuid("Invalid user ID").optional(),
 });
