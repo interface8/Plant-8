@@ -5,11 +5,12 @@ import { carouselSchema } from "@/lib/validators";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const carousel = await prisma.carousel.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
     if (!carousel) {
       return NextResponse.json(
@@ -29,14 +30,14 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json();
     const validatedData = carouselSchema.parse(body);
-
+    const { id } = await params;
     const carousel = await prisma.carousel.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         ...validatedData,
         startDate: new Date(validatedData.startDate),
@@ -57,11 +58,12 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await prisma.carousel.delete({
-      where: { id: params.id },
+      where: { id: id },
     });
     return NextResponse.json({ message: "Carousel deleted successfully" });
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
