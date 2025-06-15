@@ -35,14 +35,6 @@ export default function ContactForm() {
           from_email: data.email,
           message: data.message,
           to_name: "FAM 8 Team",
-          current_date: new Date().toLocaleString("en-NG", {
-            timeZone: "Africa/Lagos",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
         },
         process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
       );
@@ -71,7 +63,6 @@ export default function ContactForm() {
 
       <div className="max-w-2xl mx-auto">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Name Field */}
           <div>
             <label
               htmlFor="name"
@@ -101,7 +92,6 @@ export default function ContactForm() {
             )}
           </div>
 
-          {/* Email Field */}
           <div>
             <label
               htmlFor="email"
@@ -131,7 +121,6 @@ export default function ContactForm() {
             )}
           </div>
 
-          {/* Message Field */}
           <div>
             <label
               htmlFor="message"
@@ -161,7 +150,6 @@ export default function ContactForm() {
             )}
           </div>
 
-          {/* Submit Button */}
           <div>
             <button
               type="submit"
@@ -183,7 +171,6 @@ export default function ContactForm() {
             </button>
           </div>
 
-          {/* Status Messages */}
           {submitStatus !== "idle" && (
             <div
               id="submit-status"
@@ -214,7 +201,6 @@ export default function ContactForm() {
           )}
         </form>
 
-        {/* Alternative Contact Methods */}
         <div className="mt-12 text-center">
           <p className="text-gray-600 mb-4">Or reach out to us directly:</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -229,7 +215,7 @@ export default function ContactForm() {
               href="tel:+2348021234567"
               className="text-green-600 hover:text-green-700 font-medium transition-colors"
             >
-              +234 (0) 802 123 4567
+              (+234) 802 123 4567
             </a>
           </div>
         </div>

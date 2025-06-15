@@ -47,7 +47,7 @@ export default function Founder() {
             </div>
             <div className="flex items-center gap-3 text-gray-600">
               <Calendar className="w-5 h-5 text-green-600" />
-              <span>15+ years in Agricultural Technology</span>
+              <span>5+ years in Agricultural Technology</span>
             </div>
           </div>
 

@@ -14,7 +14,6 @@ export default function Location() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-12">
-        {/* Contact Information */}
         <div className="space-y-8">
           <div className="bg-white rounded-xl p-6 shadow-md">
             <h3 className="text-2xl font-bold text-gray-900 mb-6">
@@ -29,7 +28,7 @@ export default function Location() {
                 <div>
                   <h4 className="font-semibold text-gray-900">Address</h4>
                   <p className="text-gray-600">
-                    123 Victoria Island Way,
+                    123 Ikeja,
                     <br />
                     Lagos Island, Lagos State,
                     <br />
@@ -44,7 +43,7 @@ export default function Location() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-900">Phone</h4>
-                  <p className="text-gray-600">+234 (0) 802 123 4567</p>
+                  <p className="text-gray-600">(+234) 802 123 4567</p>
                 </div>
               </div>
 
@@ -90,12 +89,11 @@ export default function Location() {
           </div>
         </div>
 
-        {/* Map */}
         <div className="bg-white rounded-xl p-6 shadow-md">
           <h3 className="text-xl font-bold text-gray-900 mb-4">Find Us</h3>
           <div className="aspect-video rounded-lg overflow-hidden">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.7858012429287!2d3.4240567!3d6.4279947!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103bf4d91314b077%3A0x1b48a90f9a2b0c7d!2sVictoria%20Island%2C%20Lagos%2C%20Nigeria!5e0!3m2!1sen!2sng!4v1672743234567!5m2!1sen!2sng"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3943.1234567890123!2d3.345678!3d6.601234!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103bf123456789ab%3A0xcdef1234567890!2sIkeja%2C%20Lagos%20State%2C%20Nigeria!5e0!3m2!1sen!2sng!4v0000000000000!5m2!1sen!2sng"
               width="100%"
               height="100%"
               style={{ border: 0 }}
