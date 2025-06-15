@@ -54,7 +54,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom accent line */}
         <div className="mt-8 pt-6 border-t border-green-700/30">
           <div className="text-center">
             <p className="text-green-300 text-xs">

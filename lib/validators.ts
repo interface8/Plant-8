@@ -99,3 +99,23 @@ export const testimonySchema = z.object({
   createdById: z.string().uuid("Invalid user ID").optional(),
   modifiedById: z.string().uuid("Invalid user ID").optional(),
 });
+
+export const contactFormSchema = z.object({
+  name: z
+    .string()
+    .min(2, "Name must be at least 2 characters")
+    .max(50, "Name must not exceed 50 characters")
+    .regex(/^[a-zA-Z\s]+$/, "Name can only contain letters and spaces"),
+
+  email: z
+    .string()
+    .email("Please enter a valid email address")
+    .min(1, "Email is required"),
+
+  message: z
+    .string()
+    .min(10, "Message must be at least 10 characters")
+    .max(500, "Message must not exceed 500 characters"),
+});
+
+export type ContactFormData = z.infer<typeof contactFormSchema>;
