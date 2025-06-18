@@ -21,7 +21,6 @@ export function AuthLayout({
   subtitle,
   linkText,
   linkHref,
-  linkLabel,
 }: AuthLayoutProps) {
   return (
     <div className="min-h-screen flex">
