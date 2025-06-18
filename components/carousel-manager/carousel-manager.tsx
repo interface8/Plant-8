@@ -30,7 +30,7 @@ export default function CarouselManager() {
       imageUrl: "",
       link: "",
       description: "",
-      startDate: new Date().toISOString().slice(0, 16), // e.g., 2025-06-13T15:02
+      startDate: new Date().toISOString().slice(0, 16),
       endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         .toISOString()
         .slice(0, 16),
