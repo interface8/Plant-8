@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-// Email validation with comprehensive rules
 const emailSchema = z
   .string()
   .min(1, "Email is required")
@@ -12,7 +11,6 @@ const emailSchema = z
     return emailRegex.test(email);
   }, "Please enter a valid email address");
 
-// Name validation with comprehensive rules
 const nameSchema = z
   .string()
   .min(1, "Full name is required")
@@ -29,7 +27,6 @@ const nameSchema = z
   }, "Name must contain at least one letter")
   .transform((name) => name.trim());
 
-// Password validation with comprehensive rules
 const passwordSchema = z
   .string()
   .min(1, "Password is required")
@@ -169,5 +166,31 @@ export const contactFormSchema = z.object({
     .min(10, "Message must be at least 10 characters")
     .max(1500, "Message must not exceed 1500 characters"),
 });
-
 export type ContactFormData = z.infer<typeof contactFormSchema>;
+
+export const userUpdateSchema = z
+  .object({
+    name: z.string().min(1, "Name is required").max(100, "Name is too long"),
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .optional()
+      .or(z.literal("")),
+  })
+  .strict();
+export type UserFormData = z.infer<typeof userUpdateSchema>;
+
+export const addressSchema = z
+  .object({
+    no: z.string().min(1, "House number is required"),
+    line1: z.string().min(1, "Address line 1 is required"),
+    line2: z.string().optional().or(z.literal("")),
+    state: z.string().min(1, "State is required"),
+    city: z.string().min(1, "City is required"),
+    code: z.string().min(1, "Postal code is required"),
+    gps: z.string().min(1, "GPS coordinates are required"),
+    useAsDelivery: z.boolean(),
+    addressTypeId: z.string().uuid("Invalid address type ID"),
+  })
+  .strict();
+export type AddressFormData = z.infer<typeof addressSchema>;

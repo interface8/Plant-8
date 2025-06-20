@@ -22,11 +22,16 @@ model User {
   updatedAt            DateTime     @updatedAt
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
-  accounts             Account[]
-  address              Address[]
+  modifiedAddresses    Address[]    @relation("ModifiedByAddress")
+  addresses            Address[]    @relation("UserAddresses")
   Investment           Investment[]
+  accounts             Account[]
   sessions             Session[]
   roles                UserRole[]
+  modifiedUsers        User[]       @relation("ModifiedByUser")
+  modifiedBy           User?        @relation("ModifiedByUser", fields: [modifiedById], references: [id])
+  modifiedById         String?      @db.Uuid
+  modifiedOn           DateTime?    @db.Timestamp(6)
 }
 
 model Role {
@@ -60,7 +65,10 @@ model Address {
   userId        String      @db.Uuid
   addressTypeId String      @db.Uuid
   addressType   AddressType @relation(fields: [addressTypeId], references: [id])
-  user          User        @relation(fields: [userId], references: [id])
+  user          User        @relation("UserAddresses", fields: [userId], references: [id])
+  modifiedBy    User?       @relation("ModifiedByAddress", fields: [modifiedById], references: [id])
+  modifiedById  String?     @db.Uuid
+  modifiedOn    DateTime?   @db.Timestamp(6)
 }
 
 model AddressType {
