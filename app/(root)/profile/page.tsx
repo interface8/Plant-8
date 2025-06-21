@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -58,6 +59,7 @@ export default function ProfilePage() {
         password: "",
       });
     } catch (error) {
+      console.log(error);
       toast.error("Failed to load profile");
     }
   }, [userForm]);
@@ -69,6 +71,7 @@ export default function ProfilePage() {
       );
       setAddressTypes(data);
     } catch (error) {
+      console.log(error);
       toast.error("Failed to load address types");
     }
   }, []);
