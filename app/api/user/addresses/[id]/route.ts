@@ -6,9 +6,10 @@ import z from "zod";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -18,7 +19,7 @@ export async function PUT(
     const validatedData = addressSchema.parse(body);
 
     const existingAddress = await prisma.address.findUnique({
-      where: { id: params.id, userId: session.user.id },
+      where: { id: id, userId: session.user.id },
     });
 
     if (!existingAddress) {
@@ -33,7 +34,7 @@ export async function PUT(
     }
 
     const address = await prisma.address.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         ...validatedData,
         modifiedById: session.user.id,
@@ -61,16 +62,17 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const existingAddress = await prisma.address.findUnique({
-      where: { id: params.id, userId: session.user.id },
+      where: { id: id, userId: session.user.id },
     });
 
     if (!existingAddress) {
@@ -78,7 +80,7 @@ export async function DELETE(
     }
 
     await prisma.address.delete({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     return NextResponse.json({ message: "Address deleted successfully" });
