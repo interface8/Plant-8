@@ -15,7 +15,11 @@ async function main() {
 
   try {
     const addresstype = await prisma.addressType.createMany({
-      data: [{ name: "Home" }, { name: "Work" }, { name: "Other" }],
+      data: [
+        { id: crypto.randomUUID(), name: "Home" },
+        { id: crypto.randomUUID(), name: "Work" },
+        { id: crypto.randomUUID(), name: "Other" },
+      ],
       skipDuplicates: true,
     });
     console.log(`Seeded ${addresstype.count} addresstype (Home, Work, Others)`);

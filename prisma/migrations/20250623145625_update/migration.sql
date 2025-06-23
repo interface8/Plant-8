@@ -12,6 +12,7 @@ CREATE TABLE "User" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL DEFAULT 'N0_NAME',
     "email" TEXT NOT NULL,
+    "phoneNo" VARCHAR(20),
     "emailVerified" TIMESTAMP(6),
     "image" TEXT,
     "password" TEXT,
@@ -20,6 +21,8 @@ CREATE TABLE "User" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "resetPasswordToken" TEXT,
     "resetPasswordExpires" TIMESTAMP(3),
+    "modifiedById" UUID,
+    "modifiedOn" TIMESTAMP(6),
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -46,16 +49,18 @@ CREATE TABLE "Address" (
     "id" UUID NOT NULL,
     "no" TEXT NOT NULL,
     "line1" TEXT NOT NULL,
-    "line2" TEXT,
+    "phoneNo" VARCHAR(20) NOT NULL,
     "state" TEXT NOT NULL,
     "city" TEXT NOT NULL,
-    "code" TEXT NOT NULL,
-    "gps" TEXT NOT NULL,
+    "code" TEXT,
+    "gps" TEXT,
     "useAsDelivery" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "userId" UUID NOT NULL,
     "addressTypeId" UUID NOT NULL,
+    "modifiedById" UUID,
+    "modifiedOn" TIMESTAMP(6),
 
     CONSTRAINT "Address_pkey" PRIMARY KEY ("id")
 );
@@ -230,6 +235,9 @@ CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provi
 CREATE INDEX "_InvestmentToProduct_B_index" ON "_InvestmentToProduct"("B");
 
 -- AddForeignKey
+ALTER TABLE "User" ADD CONSTRAINT "User_modifiedById_fkey" FOREIGN KEY ("modifiedById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "UserRole" ADD CONSTRAINT "UserRole_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "Role"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -240,6 +248,9 @@ ALTER TABLE "Address" ADD CONSTRAINT "Address_addressTypeId_fkey" FOREIGN KEY ("
 
 -- AddForeignKey
 ALTER TABLE "Address" ADD CONSTRAINT "Address_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Address" ADD CONSTRAINT "Address_modifiedById_fkey" FOREIGN KEY ("modifiedById") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Task" ADD CONSTRAINT "Task_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE SET NULL ON UPDATE CASCADE;

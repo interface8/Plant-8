@@ -17,7 +17,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No image provided" }, { status: 400 });
     }
 
-    // Upload to Vercel Blob
     const blob = await put(
       `user-profiles/${session.user.id}/${file.name}`,
       file,
@@ -45,6 +44,7 @@ export async function POST(request: Request) {
       id: user.id,
       name: user.name,
       email: user.email,
+      phoneNo: user.phoneNo,
       image: user.image,
       roles: user.roles.map((r) => r.role.name),
       createdAt: user.createdAt.toISOString(),
@@ -54,6 +54,10 @@ export async function POST(request: Request) {
       addresses: user.addresses.map((addr) => ({
         ...addr,
         modifiedOn: addr.modifiedOn?.toISOString(),
+        addressType: {
+          id: addr.addressType.id,
+          name: addr.addressType.name,
+        },
       })),
     });
   } catch (error) {

@@ -171,6 +171,12 @@ export type ContactFormData = z.infer<typeof contactFormSchema>;
 export const userUpdateSchema = z
   .object({
     name: z.string().min(1, "Name is required").max(100, "Name is too long"),
+    phoneNo: z
+      .string()
+      .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number")
+      .max(20, "Phone number is too long")
+      .optional()
+      .or(z.literal("")),
     password: z
       .string()
       .min(8, "Password must be at least 8 characters")
@@ -184,11 +190,14 @@ export const addressSchema = z
   .object({
     no: z.string().min(1, "House number is required"),
     line1: z.string().min(1, "Address line 1 is required"),
-    line2: z.string().optional().or(z.literal("")),
+    phoneNo: z
+      .string()
+      .regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number")
+      .min(1, "Phone number is required"),
     state: z.string().min(1, "State is required"),
     city: z.string().min(1, "City is required"),
-    code: z.string().min(1, "Postal code is required"),
-    gps: z.string().min(1, "GPS coordinates are required"),
+    code: z.string().optional().or(z.literal("")),
+    gps: z.string().optional().or(z.literal("")),
     useAsDelivery: z.boolean(),
     addressTypeId: z.string().uuid("Invalid address type ID"),
   })

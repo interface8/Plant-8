@@ -46,6 +46,10 @@ export async function PUT(
     return NextResponse.json({
       ...address,
       modifiedOn: address.modifiedOn?.toISOString(),
+      addressType: {
+        id: address.addressType.id,
+        name: address.addressType.name,
+      },
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

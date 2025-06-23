@@ -12,6 +12,7 @@ model User {
   id                   String       @id @default(uuid()) @db.Uuid
   name                 String       @default("N0_NAME")
   email                String       @unique(map: "user_email_idx")
+  phoneNo              String?      @db.VarChar(20)
   emailVerified        DateTime?    @db.Timestamp(6)
   image                String?
   password             String?
@@ -54,11 +55,11 @@ model Address {
   id            String      @id @default(uuid()) @db.Uuid
   no            String
   line1         String
-  line2         String?
+  phoneNo       String      @db.VarChar(20)
   state         String
   city          String
-  code          String
-  gps           String
+  code          String?
+  gps           String?
   useAsDelivery Boolean     @default(false)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt

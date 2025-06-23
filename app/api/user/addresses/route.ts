@@ -20,6 +20,10 @@ export async function GET() {
       addresses.map((addr) => ({
         ...addr,
         modifiedOn: addr.modifiedOn?.toISOString(),
+        addressType: {
+          id: addr.addressType.id,
+          name: addr.addressType.name,
+        },
       }))
     );
   } catch (error) {
@@ -62,6 +66,10 @@ export async function POST(request: Request) {
       {
         ...address,
         modifiedOn: address.modifiedOn?.toISOString(),
+        addressType: {
+          id: address.addressType.id,
+          name: address.addressType.name,
+        },
       },
       { status: 201 }
     );

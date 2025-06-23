@@ -29,6 +29,7 @@ export async function GET() {
       id: user.id,
       name: user.name,
       email: user.email,
+      phoneNo: user.phoneNo,
       image: user.image,
       roles: user.roles.map((r) => r.role.name),
       createdAt: user.createdAt.toISOString(),
@@ -38,6 +39,10 @@ export async function GET() {
       addresses: user.addresses.map((addr) => ({
         ...addr,
         modifiedOn: addr.modifiedOn?.toISOString(),
+        addressType: {
+          id: addr.addressType.id,
+          name: addr.addressType.name,
+        },
       })),
     });
   } catch (error) {
@@ -98,6 +103,10 @@ export async function PUT(request: Request) {
       addresses: user.addresses.map((addr) => ({
         ...addr,
         modifiedOn: addr.modifiedOn?.toISOString(),
+        addressType: {
+          id: addr.addressType.id,
+          name: addr.addressType.name,
+        },
       })),
     });
   } catch (error) {

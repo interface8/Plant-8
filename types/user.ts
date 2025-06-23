@@ -17,6 +17,7 @@ export interface UserProfile {
   id: string;
   name: string;
   email: string;
+  phoneNo?: string;
   image?: string | null;
   roles: string[];
   createdAt: string;
@@ -30,13 +31,13 @@ export interface Address {
   id: string;
   no: string;
   line1: string;
-  line2?: string | null;
+  phoneNo: string;
   state: string;
   city: string;
-  code: string;
-  gps: string;
+  code?: string;
+  gps?: string;
   useAsDelivery: boolean;
-  addressType: { name: string };
+  addressType: { id: string; name: string };
   modifiedById?: string | null;
   modifiedOn?: string | null;
 }
