@@ -1,6 +1,4 @@
 import { UserProfile } from "@/types/user";
-import { getUserInitials } from "@/lib/utils";
-import Image from "next/image";
 
 interface ProfileHeaderProps {
   user: UserProfile;
@@ -8,62 +6,46 @@ interface ProfileHeaderProps {
 
 export function ProfileHeader({ user }: ProfileHeaderProps) {
   return (
-    <div className="relative mb-12">
-      <div className="absolute inset-0 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-3xl opacity-10"></div>
-
-      <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-green-100 p-8">
-        <div className="flex items-center space-x-6">
-          <div className="relative">
-            {user.image ? (
-              <Image
-                src={user.image}
-                alt="Profile picture"
-                width={80}
-                height={80}
-                className="rounded-2xl object-cover ring-4 ring-green-200"
-              />
-            ) : (
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-600 text-white flex items-center justify-center text-2xl font-bold ring-4 ring-green-200">
-                {getUserInitials(user.name)}
-              </div>
-            )}
-            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-3 border-white flex items-center justify-center">
-              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold text-gray-900 mb-1">
-              Welcome back, {user.name}! 🌱
+    <div className="mb-8">
+      <div className="bg-white rounded-xl border border-gray-100 p-6 md:p-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div className="mb-4 md:mb-0">
+            <h1 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-2">
+              {user.name}
             </h1>
-            <p className="text-gray-600 mb-2">{user.email}</p>
-            <div className="flex items-center space-x-4 text-sm text-gray-500">
-              <span className="flex items-center space-x-1">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+            <p className="text-gray-600 text-sm md:text-base">{user.email}</p>
+
+            <div className="flex items-center mt-3">
+              <div className="flex items-center space-x-2 text-sm text-gray-500">
+                <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
                 <span>Active</span>
-              </span>
+              </div>
               {user.modifiedOn && (
-                <span>
-                  Last updated{" "}
+                <div className="ml-4 text-sm text-gray-400">
+                  Updated{" "}
                   {new Date(user.modifiedOn).toLocaleDateString("en-NG")}
-                </span>
+                </div>
               )}
             </div>
           </div>
 
-          <div className="hidden md:flex space-x-8">
+          <div className="flex space-x-6 md:space-x-8">
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-xl md:text-2xl font-semibold text-gray-900">
                 {user.addresses?.length || 0}
               </div>
-              <div className="text-sm text-gray-500">Addresses</div>
+              <div className="text-xs md:text-sm text-gray-500 mt-1">
+                Addresses
+              </div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-emerald-600">
+              <div className="text-xl md:text-2xl font-semibold text-emerald-600">
                 {user.addresses?.filter((addr) => addr.useAsDelivery).length ||
                   0}
               </div>
-              <div className="text-sm text-gray-500">Delivery</div>
+              <div className="text-xs md:text-sm text-gray-500 mt-1">
+                Primary
+              </div>
             </div>
           </div>
         </div>

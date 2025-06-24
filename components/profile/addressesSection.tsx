@@ -63,7 +63,7 @@ export function AddressesSection({
         <h2 className="text-xl font-semibold text-gray-800 flex items-center">
           <MapPin className="h-5 w-5 mr-2 text-green-600" />
           Delivery Addresses
-          <span className="ml-2 text-sm font-normal text-gray-500">
+          <span className="ml-3 text-sm font-normal text-gray-500">
             ({addresses.length})
           </span>
         </h2>

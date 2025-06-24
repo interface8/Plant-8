@@ -56,7 +56,7 @@ export function AddressCard({ address, onEdit, onDelete }: AddressCardProps) {
         )}
       </div>
 
-      <div className="absolute bottom-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <div className="absolute bottom-4 right-4 flex space-x-2 opacity-100 md:opacity-0  md:group-hover:opacity-100 transition-opacity duration-200">
         <button
           onClick={onEdit}
           className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors duration-200"
