@@ -59,7 +59,6 @@ export function AddressesSection({
 
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-green-100 p-6">
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-gray-800 flex items-center">
           <MapPin className="h-5 w-5 mr-2 text-green-600" />
@@ -80,7 +79,6 @@ export function AddressesSection({
         )}
       </div>
 
-      {/* Address Form */}
       {showForm && (
         <div className="mb-8 p-6 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-200">
           <div className="flex items-center justify-between mb-4">
@@ -105,7 +103,6 @@ export function AddressesSection({
         </div>
       )}
 
-      {/* Addresses List */}
       {addresses.length === 0 ? (
         <div className="text-center py-12">
           <MapPin className="h-16 w-16 text-gray-300 mx-auto mb-4" />

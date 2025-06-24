@@ -9,12 +9,10 @@ interface ProfileHeaderProps {
 export function ProfileHeader({ user }: ProfileHeaderProps) {
   return (
     <div className="relative mb-12">
-      {/* Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 rounded-3xl opacity-10"></div>
 
       <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-green-100 p-8">
         <div className="flex items-center space-x-6">
-          {/* Avatar */}
           <div className="relative">
             {user.image ? (
               <Image
@@ -34,7 +32,6 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
             </div>
           </div>
 
-          {/* User Info */}
           <div className="flex-1">
             <h1 className="text-3xl font-bold text-gray-900 mb-1">
               Welcome back, {user.name}! 🌱
@@ -54,7 +51,6 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
             </div>
           </div>
 
-          {/* Stats */}
           <div className="hidden md:flex space-x-8">
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">

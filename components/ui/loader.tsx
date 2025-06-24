@@ -23,7 +23,7 @@ export function LoadingSpinner() {
         <h2 className="text-2xl font-semibold text-gray-800 mb-2">
           Loading Your Profile
         </h2>
-        <p className="text-gray-600">Preparing your farming dashboard...</p>
+        <p className="text-gray-600">Preparing your farming profile...</p>
 
         {/* Loading Dots */}
         <div className="flex justify-center mt-4 space-x-1">

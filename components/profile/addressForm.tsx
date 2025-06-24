@@ -46,7 +46,6 @@ export function AddressForm({
   return (
     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* House Number */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             House Number / Unit
@@ -63,7 +62,6 @@ export function AddressForm({
           )}
         </div>
 
-        {/* Street Address */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Street Address
@@ -80,7 +78,6 @@ export function AddressForm({
           )}
         </div>
 
-        {/* Phone Number */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Contact Phone
@@ -97,7 +94,6 @@ export function AddressForm({
           )}
         </div>
 
-        {/* State */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             State
@@ -114,7 +110,6 @@ export function AddressForm({
           )}
         </div>
 
-        {/* City */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             City
@@ -131,7 +126,6 @@ export function AddressForm({
           )}
         </div>
 
-        {/* Postal Code */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Postal Code
@@ -150,7 +144,6 @@ export function AddressForm({
         </div>
       </div>
 
-      {/* GPS Coordinates */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           GPS Coordinates
@@ -168,7 +161,6 @@ export function AddressForm({
         )}
       </div>
 
-      {/* Address Type */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Address Type
@@ -191,7 +183,6 @@ export function AddressForm({
         )}
       </div>
 
-      {/* Use as Delivery Checkbox */}
       <div className="flex items-center space-x-3 p-4 bg-white rounded-xl border border-gray-200">
         <input
           type="checkbox"
@@ -208,7 +199,6 @@ export function AddressForm({
         </div>
       </div>
 
-      {/* Form Actions */}
       <div className="flex space-x-4 pt-4">
         <button
           type="submit"
@@ -235,274 +225,3 @@ export function AddressForm({
     </form>
   );
 }
-
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// "use client";
-
-// import { useForm } from "react-hook-form";
-// import { zodResolver } from "@hookform/resolvers/zod";
-// import axios from "axios";
-// import { toast } from "sonner";
-// import { Address } from "@/types/user";
-// import { AddressFormData, addressSchema } from "@/lib/validators";
-// import { Save, X, MapPin, Phone } from "lucide-react";
-// import { useEffect } from "react";
-
-// /**
-//  * Props for AddressForm component.
-//  */
-// interface AddressFormProps {
-//   userPhoneNo: string | null | undefined;
-//   addressTypes: { id: string; name: string }[];
-//   editingAddressId: string | null;
-//   addresses: Address[];
-//   onSubmit: (address: Address) => void;
-//   onCancel: () => void;
-// }
-
-// /**
-//  * Component for adding or editing an address.
-//  * Note: Address.phoneNo defaults to userPhoneNo for new addresses but can be set independently.
-//  */
-// export default function AddressForm({
-//   addressTypes,
-//   editingAddressId,
-//   addresses,
-//   onSubmit,
-//   onCancel,
-// }: AddressFormProps) {
-//   const {
-//     register,
-//     handleSubmit,
-//     formState: { errors },
-//     reset,
-//   } = useForm<AddressFormData>({
-//     resolver: zodResolver(addressSchema),
-//     defaultValues: {
-//       no: "",
-//       line1: "",
-//       phoneNo: "",
-//       state: "",
-//       city: "",
-//       code: "",
-//       gps: "",
-//       useAsDelivery: false,
-//       addressTypeId: "",
-//     },
-//   });
-
-//   // Populate form when editing an address
-//   useEffect(() => {
-//     if (editingAddressId) {
-//       const address = addresses.find((addr) => addr.id === editingAddressId);
-//       if (address) {
-//         console.log("Editing address:", address);
-//         reset({
-//           no: address.no,
-//           line1: address.line1,
-//           phoneNo: address.phoneNo,
-//           state: address.state,
-//           city: address.city,
-//           code: address.code ?? "",
-//           gps: address.gps ?? "",
-//           useAsDelivery: address.useAsDelivery,
-//           addressTypeId: address.addressType?.id ?? "",
-//         });
-//       }
-//     } else {
-//       reset({
-//         no: "",
-//         line1: "",
-//         phoneNo: "",
-//         state: "",
-//         city: "",
-//         code: "",
-//         gps: "",
-//         useAsDelivery: false,
-//         addressTypeId: "",
-//       });
-//     }
-//   }, [editingAddressId, addresses, reset]);
-
-//   const onFormSubmit = async (data: AddressFormData) => {
-//     try {
-//       const response = editingAddressId
-//         ? await axios.put<Address>(
-//             `/api/user/addresses/${editingAddressId}`,
-//             data
-//           )
-//         : await axios.post<Address>("/api/user/addresses", data);
-//       onSubmit(response.data);
-//       toast.success(editingAddressId ? "Address updated" : "Address added");
-//     } catch (error: any) {
-//       toast.error(error.response?.data?.error || "Failed to save address");
-//     }
-//   };
-
-//   return (
-//     <div className="bg-gray-50 rounded-lg shadow-md p-6 mb-4">
-//       <div className="flex justify-between items-center mb-4">
-//         <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-//           <MapPin className="h-4 w-4 text-green-600" />
-//           {editingAddressId ? "Edit Address" : "Add Address"}
-//         </h3>
-//         <button
-//           onClick={() => {
-//             onCancel();
-//             reset();
-//           }}
-//           className="text-gray-600 hover:text-gray-800"
-//           aria-label="Close address form"
-//         >
-//           <X className="h-4 w-4" />
-//         </button>
-//       </div>
-//       <form
-//         onSubmit={handleSubmit(onFormSubmit)}
-//         className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-//       >
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">
-//             House Number
-//           </label>
-//           <input
-//             {...register("no")}
-//             className="mt-1 block w-full rounded-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-//           />
-//           {errors.no && (
-//             <p className="text-red-500 text-sm mt-1">{errors.no.message}</p>
-//           )}
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">
-//             Address Line 1
-//           </label>
-//           <input
-//             {...register("line1")}
-//             className="mt-1 block w-full rounded-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-//           />
-//           {errors.line1 && (
-//             <p className="text-red-500 text-sm mt-1">{errors.line1.message}</p>
-//           )}
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">
-//             Phone Number
-//           </label>
-//           <div className="relative">
-//             <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-//             <input
-//               {...register("phoneNo")}
-//               className="pl-              pl-10 mt-1 block w-full rounded-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-//             />
-//           </div>
-//           {errors.phoneNo && (
-//             <p className="text-red-500 text-sm mt-1">
-//               {errors.phoneNo.message}
-//             </p>
-//           )}
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">
-//             State
-//           </label>
-//           <input
-//             {...register("state")}
-//             className="mt-1 block w-full rounded-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-//           />
-//           {errors.state && (
-//             <p className="text-red-500 text-sm mt-1">{errors.state.message}</p>
-//           )}
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">
-//             City
-//           </label>
-//           <input
-//             {...register("city")}
-//             className="mt-1 block w-full rounded-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-//           />
-//           {errors.city && (
-//             <p className="text-red-500 text-sm mt-1">{errors.city.message}</p>
-//           )}
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">
-//             Postal Code (optional)
-//           </label>
-//           <input
-//             {...register("code")}
-//             className="mt-1 block w-full rounded-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-//           />
-//           {errors.code && (
-//             <p className="text-red-500 text-sm mt-1">{errors.code.message}</p>
-//           )}
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">
-//             GPS Coordinates (optional)
-//           </label>
-//           <input
-//             {...register("gps")}
-//             className="mt-1 block w-full rounded-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-//           />
-//           {errors.gps && (
-//             <p className="text-red-500 text-sm mt-1">{errors.gps.message}</p>
-//           )}
-//         </div>
-//         <div>
-//           <label className="block text-sm font-medium text-gray-700">
-//             Address Type
-//           </label>
-//           <select
-//             {...register("addressTypeId")}
-//             className="mt-1 block w-full rounded-full border-gray-300 focus:border-green-500 focus:ring-green-500"
-//           >
-//             <option value="">Select type</option>
-//             {addressTypes.map((type) => (
-//               <option key={type.id} value={type.id}>
-//                 {type.name}
-//               </option>
-//             ))}
-//           </select>
-//           {errors.addressTypeId && (
-//             <p className="text-red-500 text-sm mt-1">
-//               {errors.addressTypeId.message}
-//             </p>
-//           )}
-//         </div>
-//         <div className="flex items-center">
-//           <input
-//             type="checkbox"
-//             {...register("useAsDelivery")}
-//             className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-//           />
-//           <label className="ml-2 text-sm font-medium text-gray-700">
-//             Set as Delivery Address
-//           </label>
-//         </div>
-//         <div className="sm:col-span-2 flex gap-4">
-//           <button
-//             type="submit"
-//             className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-full hover:bg-green-700"
-//             aria-label={editingAddressId ? "Update address" : "Add address"}
-//           >
-//             <Save className="h-4 w-4" />
-//             {editingAddressId ? "Update" : "Add"}
-//           </button>
-//           <button
-//             type="button"
-//             onClick={() => {
-//               onCancel();
-//               reset();
-//             }}
-//             className="inline-flex items-center gap-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-full hover:bg-gray-400"
-//             aria-label="Cancel address form"
-//           >
-//             Cancel
-//           </button>
-//         </div>
-//       </form>
-//     </div>
-//   );
-// }
