@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Plus, Edit, Trash, Check, X } from "lucide-react";
+import { MapPin, Plus, X } from "lucide-react";
 import { Address } from "@/types/user";
 import { AddressFormData } from "@/lib/validators";
 import { AddressForm } from "./addressForm";
