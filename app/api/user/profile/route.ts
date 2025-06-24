@@ -73,6 +73,7 @@ export async function PUT(request: Request) {
 
     const data: any = {
       name: validatedData.name,
+      phoneNo: validatedData.phoneNo,
       modifiedById: session.user.id,
       modifiedOn: new Date(),
     };
@@ -94,6 +95,7 @@ export async function PUT(request: Request) {
       id: user.id,
       name: user.name,
       email: user.email,
+      phoneNo: user.phoneNo,
       image: user.image,
       roles: user.roles.map((r) => r.role.name),
       createdAt: user.createdAt.toISOString(),
