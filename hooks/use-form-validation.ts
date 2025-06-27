@@ -1,28 +1,3 @@
-// import { useState } from "react";
-
-// export function useFormValidation(
-//   validators: Record<string, (value: string) => string>
-// ) {
-//   const [errors, setErrors] = useState<Record<string, string>>({});
-
-//   const validateField = (field: string, value: string) => {
-//     const error = validators[field] ? validators[field](value) : "";
-//     setErrors((prev) => ({ ...prev, [field]: error }));
-//   };
-
-//   const validateForm = (data: Record<string, string>) => {
-//     const newErrors = Object.keys(validators).reduce((acc, field) => {
-//       const error = validators[field](data[field] || "");
-//       if (error) acc[field] = error;
-//       return acc;
-//     }, {} as Record<string, string>);
-//     setErrors(newErrors);
-//     return Object.keys(newErrors).length === 0;
-//   };
-
-//   return { errors, validateField, validateForm };
-// }
-
 "use client";
 
 import { useState, useCallback } from "react";
