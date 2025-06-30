@@ -37,7 +37,9 @@ export function AuthLayout({
         <div className="relative z-10 flex flex-col justify-between p-12 text-white">
           <div className="flex items-center gap-2">
             <Sprout className="h-8 w-8" />
-            <span className="text-2xl font-bold">FAM 8</span>
+            <Link href="/">
+              <span className="text-2xl font-bold cursor-pointer">FAM 8</span>
+            </Link>
           </div>
 
           <div className="space-y-6">
@@ -73,7 +75,10 @@ export function AuthLayout({
         <div className="w-full max-w-md space-y-8">
           <div className="lg:hidden flex items-center justify-center gap-2 text-emerald-600">
             <Sprout className="h-8 w-8" />
-            <span className="text-2xl font-bold">FAM 8</span>
+            <Link href="/">
+              {" "}
+              <span className="text-2xl font-bold cursor-pointer">FAM 8</span>
+            </Link>
           </div>
 
           <div className="text-center">
