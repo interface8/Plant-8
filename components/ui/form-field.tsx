@@ -45,9 +45,12 @@ export const FormField = forwardRef<HTMLInputElement, FormFieldProps>(
 
     return (
       <div className="space-y-2">
-        <Label htmlFor={props.id} className="text-sm font-medium text-gray-700">
+        <Label
+          htmlFor={props.id}
+          className="text-sm font-medium text-gray-700 gap-1"
+        >
           {label}
-          {props.required && <span className="text-red-500 ml-1">*</span>}
+          {props.required && <span className="text-red-500">*</span>}
         </Label>
 
         <div className="relative">

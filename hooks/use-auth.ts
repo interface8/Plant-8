@@ -40,7 +40,7 @@ export function useAuth() {
       toast.dismiss(loadingToast);
 
       if (result?.error) {
-        setError(result.error);
+        setError("Invalid email or password. Please try again.");
         toast.error("Sign in failed", {
           description: "Invalid email or password. Please try again.",
         });
