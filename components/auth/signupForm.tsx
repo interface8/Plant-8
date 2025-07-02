@@ -7,7 +7,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, UserPlus, CheckCircle } from "lucide-react";
 import { FormField } from "@/components/ui/form-field";
 import { useFormValidation } from "@/hooks/use-form-validation";
-import { signUpSchema, type SignUpFormData } from "@/lib/validators";
+import {
+  signUpSchema,
+  type SignUpFormData,
+} from "@/lib/validators/auth-schema-validators";
 
 interface SignUpFormProps {
   onSubmit: (data: SignUpFormData) => Promise<boolean>;

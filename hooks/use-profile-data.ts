@@ -5,7 +5,8 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 import { toast } from "sonner";
 import { UserProfile, Address } from "@/types/user";
-import { UserFormData, AddressFormData } from "@/lib/validators";
+import { AddressFormData } from "@/lib/validators/address-schema-validators";
+import { UserFormData } from "@/lib/validators/user-schema-validators";
 
 export function useProfileData() {
   const { data: session, status } = useSession();

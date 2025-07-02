@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import { z } from "zod";
-import { carouselSchema } from "@/lib/validators";
+import { carouselSchema } from "@/lib/validators/carousel-schema-validators";
 
 export async function GET() {
   try {

@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/db/prisma";
-import { userUpdateSchema } from "@/lib/validators";
+import { userUpdateSchema } from "@/lib/validators/user-schema-validators";
 import bcrypt from "bcryptjs";
 import z from "zod";
 

@@ -2,7 +2,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, User, Mail, Phone, Lock } from "lucide-react";
 import { UserProfile } from "@/types/user";
-import { userUpdateSchema, UserFormData } from "@/lib/validators";
+import {
+  userUpdateSchema,
+  UserFormData,
+} from "@/lib/validators/user-schema-validators";
 
 interface UserInfoProps {
   user: UserProfile;

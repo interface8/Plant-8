@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useCallback } from "react";
@@ -10,15 +11,10 @@ export function useFormValidation<T extends z.ZodSchema>(schema: T) {
   const validateField = useCallback(
     (name: string, value: any, allValues?: Record<string, any>) => {
       try {
-        // Get the current form data
         const currentData = allValues || {};
-        const dataToValidate = { ...currentData, [name]: value };
-
-        // For individual field validation, we need to handle it differently
-        // based on the field type and dependencies
+        // const dataToValidate = { ...currentData, [name]: value };
 
         if (name === "confirmPassword") {
-          // Special handling for confirm password
           if (!value) {
             setErrors((prev) => ({
               ...prev,

@@ -9,30 +9,34 @@ datasource db {
 }
 
 model User {
-  id                   String       @id @default(uuid()) @db.Uuid
-  name                 String       @default("N0_NAME")
-  email                String       @unique(map: "user_email_idx")
-  phoneNo              String?      @db.VarChar(20)
-  emailVerified        DateTime?    @db.Timestamp(6)
+  id                   String        @id @default(uuid()) @db.Uuid
+  name                 String        @default("N0_NAME")
+  email                String        @unique(map: "user_email_idx")
+  phoneNo              String?       @db.VarChar(20)
+  emailVerified        DateTime?     @db.Timestamp(6)
   image                String?
   password             String?
   paymentMethod        String?
-  createdTestimonies   Testimony[]  @relation("CreatedBy")
-  modifiedTestimonies  Testimony[]  @relation("ModifiedBy")
-  createdAt            DateTime     @default(now()) @db.Timestamp(6)
-  updatedAt            DateTime     @updatedAt
+  createdTestimonies   Testimony[]   @relation("CreatedBy")
+  modifiedTestimonies  Testimony[]   @relation("ModifiedBy")
+  createdAt            DateTime      @default(now()) @db.Timestamp(6)
+  updatedAt            DateTime      @updatedAt
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
-  modifiedAddresses    Address[]    @relation("ModifiedByAddress")
-  addresses            Address[]    @relation("UserAddresses")
-  Investment           Investment[]
+  modifiedAddresses    Address[]     @relation("ModifiedByAddress")
+  addresses            Address[]     @relation("UserAddresses")
+  investments          Investment[]  @relation("UserInvestments")
+  inspectorInvestments Investment[]  @relation("InspectorInvestments")
   accounts             Account[]
   sessions             Session[]
   roles                UserRole[]
-  modifiedUsers        User[]       @relation("ModifiedByUser")
-  modifiedBy           User?        @relation("ModifiedByUser", fields: [modifiedById], references: [id])
-  modifiedById         String?      @db.Uuid
-  modifiedOn           DateTime?    @db.Timestamp(6)
+  modifiedUsers        User[]        @relation("ModifiedByUser")
+  modifiedBy           User?         @relation("ModifiedByUser", fields: [modifiedById], references: [id])
+  modifiedById         String?       @db.Uuid
+  modifiedOn           DateTime?     @db.Timestamp(6)
+  modifiedTasks        Task[]        @relation("ModifiedByTask")
+  modifiedProductTasks ProductTask[] @relation("ModifiedByProductTask")
+  modifiedInvestments  Investment[]  @relation("ModifiedByInvestment")
 }
 
 model Role {
@@ -79,20 +83,52 @@ model AddressType {
 }
 
 model Product {
-  id           String        @id @default(uuid()) @db.Uuid
-  name         String
-  description  String
-  imageUrl     String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  productTasks ProductTask[]
-  tasks        Task[]
-  investments  Investment[]  @relation("InvestmentToProduct")
+  id             String        @id @default(uuid()) @db.Uuid
+  name           String
+  description    String
+  imageUrl       String
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  productTasks   ProductTask[]
+  investments    Investment[]  @relation("InvestmentToProduct")
+  type           ProductType?  @relation(fields: [productTypeId], references: [id])
+  productTypeId  String?       @db.Uuid
+  class          ProductClass? @relation(fields: [productClassId], references: [id])
+  productClassId String?       @db.Uuid
+  preTask        PreTask[]
+  Task           Task[]
+}
+
+model ProductType {
+  id       String    @id @default(uuid()) @db.Uuid
+  name     String    @unique
+  products Product[]
+}
+
+model ProductClass {
+  id       String    @id @default(uuid()) @db.Uuid
+  name     String    @unique
+  products Product[]
+}
+
+model PreTask {
+  id           String     @id @default(uuid()) @db.Uuid
+  investmentId String     @db.Uuid
+  title        String // e.g., "Soil Preparation"
+  description  String?
+  status       TaskStatus @default(PENDING)
+  completedAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  investment   Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+  product      Product?   @relation(fields: [productId], references: [id])
+  productId    String?    @db.Uuid
 }
 
 model Task {
   id            String       @id @default(uuid()) @db.Uuid
   investmentId  String       @db.Uuid
+  inspectorId   String?      @db.Uuid
   name          String
   description   String
   status        TaskStatus   @default(PENDING)
@@ -105,6 +141,10 @@ model Task {
   product       Product?     @relation(fields: [productId], references: [id])
   productTask   ProductTask? @relation(fields: [productTaskId], references: [id])
   audits        TaskAudit[]
+  investment    Investment   @relation(fields: [investmentId], references: [id])
+  modifiedBy    User?        @relation("ModifiedByTask", fields: [modifiedById], references: [id])
+  modifiedById  String?      @db.Uuid
+  modifiedOn    DateTime?    @db.Timestamp(6)
 }
 
 model ProductTask {
@@ -118,7 +158,11 @@ model ProductTask {
   updatedAt    DateTime   @updatedAt
   productId    String     @db.Uuid
   product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
-  task         Task[]
+  tasks        Task[]
+  modifiedBy   User?      @relation("ModifiedByProductTask", fields: [modifiedById], references: [id])
+  modifiedById String?    @db.Uuid
+  modifiedOn   DateTime?  @db.Timestamp(6)
+  investment   Investment @relation(fields: [investmentId], references: [id])
 }
 
 model TaskAudit {
@@ -133,6 +177,7 @@ model TaskAudit {
 model Investment {
   id             String           @id @default(uuid()) @db.Uuid
   userId         String           @db.Uuid
+  inspectorId    String?          @db.Uuid
   title          String
   productId      String?          @db.Uuid
   amount         Float
@@ -142,8 +187,15 @@ model Investment {
   status         InvestmentStatus @default(PENDING)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
-  user           User             @relation(fields: [userId], references: [id])
+  user           User             @relation("UserInvestments", fields: [userId], references: [id])
+  inspector      User?            @relation("InspectorInvestments", fields: [inspectorId], references: [id])
   products       Product[]        @relation("InvestmentToProduct")
+  preTasks       PreTask[]
+  tasks          Task[]
+  productTasks   ProductTask[]
+  modifiedBy     User?            @relation("ModifiedByInvestment", fields: [modifiedById], references: [id])
+  modifiedById   String?          @db.Uuid
+  modifiedOn     DateTime?        @db.Timestamp(6)
 }
 
 model Carousel {
@@ -207,18 +259,21 @@ model Account {
 }
 
 enum InvestmentType {
-  SIX_MONTHS
-  ONE_YEAR
+  SHORT_TERM //  3-6 months
+  MID_TERM //6-12 months
+  LONG_TERM // 1+ years
 }
 
 enum InvestmentStatus {
   PENDING
   ACTIVE
   COMPLETED
+  FAILED
 }
 
 enum TaskStatus {
   PENDING
   IN_PROGRESS
   COMPLETED
+  OVERDUE
 }

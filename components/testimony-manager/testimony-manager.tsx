@@ -7,7 +7,7 @@ import axios from "axios";
 import TestimonyForm from "./testimony-form";
 import TestimonyTable from "./testimony-table";
 import { Testimony } from "@/types/testimony";
-import { testimonySchema } from "@/lib/validators";
+import { testimonySchema } from "@/lib/validators/testimony-schema-validators";
 
 type FormData = {
   investorName: string;

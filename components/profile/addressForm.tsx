@@ -2,7 +2,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Save, X } from "lucide-react";
 import { Address } from "@/types/user";
-import { addressSchema, AddressFormData } from "@/lib/validators";
+import {
+  addressSchema,
+  AddressFormData,
+} from "@/lib/validators/address-schema-validators";
 
 interface AddressFormProps {
   addressTypes: { id: string; name: string }[];

@@ -7,7 +7,10 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, LogIn } from "lucide-react";
 import { FormField } from "../ui/form-field";
 import { useFormValidation } from "@/hooks/use-form-validation";
-import { signinSchema, type SignInData } from "@/lib/validators";
+import {
+  signinSchema,
+  type SignInData,
+} from "@/lib/validators/auth-schema-validators";
 
 interface SignInFormProps {
   onSubmit: (data: SignInData) => Promise<void>;

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import { auth } from "@/auth";
-import { testimonySchema } from "@/lib/validators";
+import { testimonySchema } from "@/lib/validators/testimony-schema-validators";
 import { z } from "zod";
 
 export async function GET() {

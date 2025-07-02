@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
-import { addressSchema } from "@/lib/validators";
+import { addressSchema } from "@/lib/validators/address-schema-validators";
 import { auth } from "@/auth";
 import z from "zod";
 

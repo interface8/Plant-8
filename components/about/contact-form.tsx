@@ -5,7 +5,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import emailjs from "@emailjs/browser";
 import { Send, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
-import { contactFormSchema, type ContactFormData } from "@/lib/validators";
+import {
+  contactFormSchema,
+  type ContactFormData,
+} from "@/lib/validators/contact-schema-validators";
 
 export default function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);

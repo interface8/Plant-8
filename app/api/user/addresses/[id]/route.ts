@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/db/prisma";
-import { addressSchema } from "@/lib/validators";
+import { addressSchema } from "@/lib/validators/address-schema-validators";
 import z from "zod";
 
 export async function PUT(
