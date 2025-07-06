@@ -1,16 +1,16 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@/db/prisma";
+import { NextResponse } from "next/server";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET() {
   try {
     const productTypes = await prisma.productType.findMany({
       include: {
         children: true,
       },
     });
-    res.status(200).json(productTypes);
+
+    return NextResponse.json(productTypes);
   } catch (error) {
-    console.error("Error fetching product types:", error);
-    res.status(500).json({ error: "Failed to fetch product types" });
+    return NextResponse.json({ error: error }, { status: 500 });
   }
 }
