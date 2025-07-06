@@ -31,8 +31,8 @@ export async function POST(request: Request) {
       where: { id: session.user.id },
       data: {
         image: blob.url,
-        modifiedById: session.user.id,
-        modifiedOn: new Date(),
+        modifiedBy: session.user.id,
+        modifiedAt: new Date(),
       },
       include: {
         roles: { include: { role: true } },
@@ -48,12 +48,11 @@ export async function POST(request: Request) {
       image: user.image,
       roles: user.roles.map((r) => r.role.name),
       createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-      modifiedById: user.modifiedById,
-      modifiedOn: user.modifiedOn?.toISOString(),
+      modifiedAt: user.modifiedAt?.toISOString(),
+      modifiedBy: user.modifiedBy,
       addresses: user.addresses.map((addr) => ({
         ...addr,
-        modifiedOn: addr.modifiedOn?.toISOString(),
+        modifiedOn: addr.modifiedAt?.toISOString(),
         addressType: {
           id: addr.addressType.id,
           name: addr.addressType.name,

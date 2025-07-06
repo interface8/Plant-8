@@ -33,12 +33,11 @@ export async function GET() {
       image: user.image,
       roles: user.roles.map((r) => r.role.name),
       createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-      modifiedById: user.modifiedById,
-      modifiedOn: user.modifiedOn?.toISOString(),
+      modifiedAt: user.modifiedAt?.toISOString(),
+      modifiedBy: user.modifiedBy,
       addresses: user.addresses.map((addr) => ({
         ...addr,
-        modifiedOn: addr.modifiedOn?.toISOString(),
+        modifiedOn: addr.modifiedAt?.toISOString(),
         addressType: {
           id: addr.addressType.id,
           name: addr.addressType.name,
@@ -99,12 +98,11 @@ export async function PUT(request: Request) {
       image: user.image,
       roles: user.roles.map((r) => r.role.name),
       createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-      modifiedById: user.modifiedById,
-      modifiedOn: user.modifiedOn?.toISOString(),
+      modifiedAt: user.modifiedAt?.toISOString(),
+      modifiedBy: user.modifiedBy,
       addresses: user.addresses.map((addr) => ({
         ...addr,
-        modifiedOn: addr.modifiedOn?.toISOString(),
+        modifiedOn: addr.modifiedAt?.toISOString(),
         addressType: {
           id: addr.addressType.id,
           name: addr.addressType.name,

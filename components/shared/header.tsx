@@ -6,6 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import UserDropdown from "../user/user.dropdown";
+import InvestmentsDropdown from "../investment/investmentsDropdown";
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -60,15 +61,19 @@ export default function Header() {
 
             {isHomePage && (
               <nav className="hidden md:flex ml-8 space-x-8 items-center">
-                {navigationLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {navigationLinks.map((link) =>
+                  link.label === "Investments" ? (
+                    <InvestmentsDropdown key={link.href} />
+                  ) : (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  )
+                )}
               </nav>
             )}
 
@@ -114,7 +119,6 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Sidebar Menu */}
       <div
         className={`fixed inset-0 z-50 transition-opacity duration-300 ${
           isMenuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -145,22 +149,26 @@ export default function Header() {
           </div>
 
           <nav className="px-4 py-6 space-y-1">
-            {navigationLinks.map((link, index) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={handleLinkClick}
-                className={`block px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all duration-200 transform hover:translate-x-1`}
-                style={{
-                  animationDelay: isMenuOpen ? `${index * 50}ms` : "0ms",
-                  animation: isMenuOpen
-                    ? "slideInFromRight 0.3s ease-out forwards"
-                    : "none",
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navigationLinks.map((link, index) =>
+              link.label === "Investments" ? (
+                <InvestmentsDropdown key={link.href} />
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={handleLinkClick}
+                  className={`block px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all duration-200 transform hover:translate-x-1`}
+                  style={{
+                    animationDelay: isMenuOpen ? `${index * 50}ms` : "0ms",
+                    animation: isMenuOpen
+                      ? "slideInFromRight 0.3s ease-out forwards"
+                      : "none",
+                  }}
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
           </nav>
 
           {status !== "authenticated" && (

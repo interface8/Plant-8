@@ -15,7 +15,7 @@ export const carouselSchema = z
       .refine((val) => !isNaN(Date.parse(val)), "Invalid end date")
       .transform((val) => new Date(val).toISOString()),
     isActive: z.boolean(),
-    type: z.enum(["homepage", "otherpage"]),
+    type: z.enum(["homepage", "category", "testimony", "marketplace"]),
     sortOrder: z
       .number()
       .int("Must be an integer")

@@ -7,7 +7,7 @@ export interface CarouselItem {
   startDate: string;
   endDate: string;
   isActive: boolean;
-  type: "homepage" | "otherpage";
+  type: "homepage" | "category" | "testimony" | "marketplace";
   sortOrder: number;
 }
 
@@ -35,6 +35,6 @@ export interface FormData {
   startDate: string;
   endDate: string;
   isActive: boolean;
-  type: "homepage" | "otherpage";
+  type: "homepage" | "category" | "testimony" | "marketplace";
   sortOrder: number;
 }

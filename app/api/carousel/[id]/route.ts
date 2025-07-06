@@ -42,6 +42,7 @@ export async function PUT(
         ...validatedData,
         startDate: new Date(validatedData.startDate),
         endDate: new Date(validatedData.endDate),
+        updatedAt: new Date(),
       },
     });
     return NextResponse.json(carousel);

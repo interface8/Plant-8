@@ -9,39 +9,86 @@ datasource db {
 }
 
 model User {
-  id                   String        @id @default(uuid()) @db.Uuid
-  name                 String        @default("N0_NAME")
-  email                String        @unique(map: "user_email_idx")
-  phoneNo              String?       @db.VarChar(20)
-  emailVerified        DateTime?     @db.Timestamp(6)
-  image                String?
-  password             String?
-  paymentMethod        String?
-  createdTestimonies   Testimony[]   @relation("CreatedBy")
-  modifiedTestimonies  Testimony[]   @relation("ModifiedBy")
-  createdAt            DateTime      @default(now()) @db.Timestamp(6)
-  updatedAt            DateTime      @updatedAt
+  // Core Properties
+  id            String    @id @default(uuid()) @db.Uuid
+  name          String    @default("N0_NAME")
+  email         String    @unique(map: "user_email_idx")
+  phoneNo       String?   @db.VarChar(20)
+  emailVerified DateTime? @db.Timestamp(6)
+  image         String?
+  password      String?
+
+  // User Token
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
-  modifiedAddresses    Address[]     @relation("ModifiedByAddress")
-  addresses            Address[]     @relation("UserAddresses")
-  investments          Investment[]  @relation("UserInvestments")
-  inspectorInvestments Investment[]  @relation("InspectorInvestments")
-  accounts             Account[]
-  sessions             Session[]
-  roles                UserRole[]
-  modifiedUsers        User[]        @relation("ModifiedByUser")
-  modifiedBy           User?         @relation("ModifiedByUser", fields: [modifiedById], references: [id])
-  modifiedById         String?       @db.Uuid
-  modifiedOn           DateTime?     @db.Timestamp(6)
-  modifiedTasks        Task[]        @relation("ModifiedByTask")
-  modifiedProductTasks ProductTask[] @relation("ModifiedByProductTask")
-  modifiedInvestments  Investment[]  @relation("ModifiedByInvestment")
+
+  // Audit
+  createdAt  DateTime  @default(now()) @db.Timestamp(6)
+  createdBy  String?   @db.Uuid
+  modifiedBy String?   @db.Uuid
+  modifiedAt DateTime? @db.Timestamp(6)
+
+  // Relations
+  accounts Account[]
+  sessions Session[]
+  roles    UserRole[]
+
+  // Payment Method Domains
+  paymentDomains PaymentMethodDomain[]
+
+  // Navigation Relations
+  modifiedUser  User?  @relation("ModifiedByUser", fields: [modifiedBy], references: [id])
+  modifiedUsers User[] @relation("ModifiedByUser")
+
+  investments Investment[] @relation("UserInvestments")
+
+  createdTestimonies  Testimony[] @relation("CreatedBy")
+  modifiedTestimonies Testimony[] @relation("ModifiedBy")
+
+  addresses               Address[] @relation("UserAddresses")
+  addressesModifiedByUser Address[] @relation("ModifiedByAddress")
+  addressesCreatedByUser  Address[] @relation("CreatedByUser")
+
+  modifiedTasks Task[] @relation("ModifiedByTask")
+  tasks         Task[] @relation("InspectorTasks")
+
+  modifiedInvestments Investment[] @relation("ModifiedByInvestment")
+
+  RolesModifiedByUser   Role[]     @relation("RolesModifiedByUser")
+  RolesCreatedByUser    Role[]     @relation("RolesCreatedByUser")
+  userRoleCreatedByUser UserRole[] @relation("UserRoleCreatedByUser")
+
+  AccountModifiedByUser Account[] @relation("AccountModifiedByUser")
+  accountCreatedByUser  Account[] @relation("AccountCreatedByUser")
+  Task                  Task[]
+}
+
+model PaymentMethodDomain {
+  id          String @id @default(uuid()) @db.Uuid
+  userId      String @db.Uuid
+  accountName String
+  bankname    String
+  cardType    Int    @default(0)
+  cardNo      String @db.VarChar(16)
+  cvv         String @db.VarChar(3)
+  pin         String @db.VarChar(4)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Role {
-  id    String     @id @default(uuid()) @db.Uuid
-  name  String     @unique
+  id   String @id @default(uuid()) @db.Uuid
+  name String @unique
+
+  // Audit
+  createdAt  DateTime  @default(now()) @db.Timestamp(6)
+  createdBy  String?   @db.Uuid
+  modifiedBy String?   @db.Uuid
+  modifiedAt DateTime? @db.Timestamp(6)
+
+  modifiedByUser User? @relation("RolesModifiedByUser", fields: [modifiedBy], references: [id])
+  createdByUser  User? @relation("RolesCreatedByUser", fields: [createdBy], references: [id])
+
   users UserRole[]
 }
 
@@ -49,197 +96,18 @@ model UserRole {
   userId     String   @db.Uuid
   roleId     String   @db.Uuid
   assignedAt DateTime @default(now())
-  role       Role     @relation(fields: [roleId], references: [id])
-  user       User     @relation(fields: [userId], references: [id])
+  assignedBy String   @db.Uuid
+
+  user User @relation(fields: [userId], references: [id])
+  role Role @relation(fields: [roleId], references: [id])
+
+  assignedByUser User @relation("UserRoleCreatedByUser", fields: [assignedBy], references: [id])
 
   @@id([userId, roleId])
 }
 
-model Address {
-  id            String      @id @default(uuid()) @db.Uuid
-  no            String
-  line1         String
-  phoneNo       String      @db.VarChar(20)
-  state         String
-  city          String
-  code          String?
-  gps           String?
-  useAsDelivery Boolean     @default(false)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  userId        String      @db.Uuid
-  addressTypeId String      @db.Uuid
-  addressType   AddressType @relation(fields: [addressTypeId], references: [id])
-  user          User        @relation("UserAddresses", fields: [userId], references: [id])
-  modifiedBy    User?       @relation("ModifiedByAddress", fields: [modifiedById], references: [id])
-  modifiedById  String?     @db.Uuid
-  modifiedOn    DateTime?   @db.Timestamp(6)
-}
-
-model AddressType {
-  id        String    @id @default(uuid()) @db.Uuid
-  name      String    @unique
-  addresses Address[]
-}
-
-model Product {
-  id             String        @id @default(uuid()) @db.Uuid
-  name           String
-  description    String
-  imageUrl       String
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
-  productTasks   ProductTask[]
-  investments    Investment[]  @relation("InvestmentToProduct")
-  type           ProductType?  @relation(fields: [productTypeId], references: [id])
-  productTypeId  String?       @db.Uuid
-  class          ProductClass? @relation(fields: [productClassId], references: [id])
-  productClassId String?       @db.Uuid
-  preTask        PreTask[]
-  Task           Task[]
-}
-
-model ProductType {
-  id       String    @id @default(uuid()) @db.Uuid
-  name     String    @unique
-  products Product[]
-}
-
-model ProductClass {
-  id       String    @id @default(uuid()) @db.Uuid
-  name     String    @unique
-  products Product[]
-}
-
-model PreTask {
-  id           String     @id @default(uuid()) @db.Uuid
-  investmentId String     @db.Uuid
-  title        String // e.g., "Soil Preparation"
-  description  String?
-  status       TaskStatus @default(PENDING)
-  completedAt  DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  investment   Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
-  product      Product?   @relation(fields: [productId], references: [id])
-  productId    String?    @db.Uuid
-}
-
-model Task {
-  id            String       @id @default(uuid()) @db.Uuid
-  investmentId  String       @db.Uuid
-  inspectorId   String?      @db.Uuid
-  name          String
-  description   String
-  status        TaskStatus   @default(PENDING)
-  imageUrl      String?
-  completedAt   DateTime?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  productId     String?      @db.Uuid
-  productTaskId String?      @db.Uuid
-  product       Product?     @relation(fields: [productId], references: [id])
-  productTask   ProductTask? @relation(fields: [productTaskId], references: [id])
-  audits        TaskAudit[]
-  investment    Investment   @relation(fields: [investmentId], references: [id])
-  modifiedBy    User?        @relation("ModifiedByTask", fields: [modifiedById], references: [id])
-  modifiedById  String?      @db.Uuid
-  modifiedOn    DateTime?    @db.Timestamp(6)
-}
-
-model ProductTask {
-  id           String     @id @default(uuid()) @db.Uuid
-  investmentId String     @db.Uuid
-  name         String
-  description  String
-  status       TaskStatus @default(PENDING)
-  completedAt  DateTime?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  productId    String     @db.Uuid
-  product      Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
-  tasks        Task[]
-  modifiedBy   User?      @relation("ModifiedByProductTask", fields: [modifiedById], references: [id])
-  modifiedById String?    @db.Uuid
-  modifiedOn   DateTime?  @db.Timestamp(6)
-  investment   Investment @relation(fields: [investmentId], references: [id])
-}
-
-model TaskAudit {
-  id        String   @id @default(uuid()) @db.Uuid
-  message   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  taskId    String   @db.Uuid
-  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
-}
-
-model Investment {
-  id             String           @id @default(uuid()) @db.Uuid
-  userId         String           @db.Uuid
-  inspectorId    String?          @db.Uuid
-  title          String
-  productId      String?          @db.Uuid
-  amount         Float
-  expectedReturn Float            @default(0)
-  progress       Int              @default(0)
-  investmentType InvestmentType
-  status         InvestmentStatus @default(PENDING)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  user           User             @relation("UserInvestments", fields: [userId], references: [id])
-  inspector      User?            @relation("InspectorInvestments", fields: [inspectorId], references: [id])
-  products       Product[]        @relation("InvestmentToProduct")
-  preTasks       PreTask[]
-  tasks          Task[]
-  productTasks   ProductTask[]
-  modifiedBy     User?            @relation("ModifiedByInvestment", fields: [modifiedById], references: [id])
-  modifiedById   String?          @db.Uuid
-  modifiedOn     DateTime?        @db.Timestamp(6)
-}
-
-model Carousel {
-  id          String   @id @default(uuid()) @db.Uuid
-  title       String
-  description String
-  imageUrl    String
-  link        String?
-  startDate   DateTime
-  endDate     DateTime
-  isActive    Boolean  @default(true)
-  type        String   @default("homepage")
-  sortOrder   Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Testimony {
-  id           String   @id @default(uuid()) @db.Uuid
-  investorName String
-  comment      String
-  rating       Int
-  location     String
-  isApproved   Boolean  @default(false)
-  createdBy    User     @relation(name: "CreatedBy", fields: [createdById], references: [id])
-  createdById  String   @db.Uuid
-  createdOn    DateTime @default(now())
-  modifiedBy   User     @relation(name: "ModifiedBy", fields: [modifiedById], references: [id])
-  modifiedById String   @db.Uuid
-  modifiedOn   DateTime @updatedAt
-}
-
-model Session {
-  id           String   @id @default(uuid()) @db.Uuid
-  sessionToken String
-  expires      DateTime @db.Timestamp(6)
-  createdAt    DateTime @default(now()) @db.Timestamp(6)
-  updatedAt    DateTime @updatedAt
-  userId       String   @db.Uuid
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
 model Account {
-  id                String   @id @default(uuid()) @db.Uuid
+  id                String  @id @default(uuid()) @db.Uuid
   type              String
   provider          String
   providerAccountId String
@@ -250,18 +118,195 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-  createdAt         DateTime @default(now()) @db.Timestamp(6)
-  updatedAt         DateTime @updatedAt
-  userId            String   @db.Uuid
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String  @db.Uuid
+
+  // Audit
+  createdAt  DateTime  @default(now()) @db.Timestamp(6)
+  createdBy  String    @db.Uuid
+  modifiedBy String?   @db.Uuid
+  modifiedAt DateTime? @db.Timestamp(6)
+
+  modifiedByUser User? @relation("AccountModifiedByUser", fields: [modifiedBy], references: [id])
+  createdByUser  User  @relation("AccountCreatedByUser", fields: [createdBy], references: [id])
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
 
-enum InvestmentType {
-  SHORT_TERM //  3-6 months
-  MID_TERM //6-12 months
-  LONG_TERM // 1+ years
+model Session {
+  id           String   @id @default(uuid()) @db.Uuid
+  sessionToken String
+  expires      DateTime @db.Timestamp(6)
+  createdAt    DateTime @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime @updatedAt
+  userId       String   @db.Uuid
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Address {
+  id            String  @id @default(uuid()) @db.Uuid
+  no            String
+  line1         String
+  phoneNo       String  @db.VarChar(20)
+  state         String
+  city          String
+  code          String?
+  gps           String?
+  useAsDelivery Boolean @default(false)
+  userId        String  @db.Uuid
+  addressTypeId String  @db.Uuid
+
+  createdAt  DateTime @default(now())
+  createdBy  String   @db.Uuid
+  modifiedAt DateTime @updatedAt
+  modifiedBy String?  @db.Uuid
+
+  user        User        @relation("UserAddresses", fields: [userId], references: [id])
+  addressType AddressType @relation(fields: [addressTypeId], references: [id])
+
+  modifiedByUser User? @relation("ModifiedByAddress", fields: [modifiedBy], references: [id])
+  createdByUser  User  @relation("CreatedByUser", fields: [createdBy], references: [id])
+}
+
+model AddressType {
+  id        String    @id @default(uuid()) @db.Uuid
+  name      String    @unique
+  addresses Address[]
+}
+
+model Product {
+  id             String   @id @default(uuid()) @db.Uuid
+  name           String
+  description    String
+  imageUrl       String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  productTypeId  String?  @db.Uuid
+  productClassId String?  @db.Uuid
+
+  currentMarketPricePerKg Float @default(0)
+
+  type        ProductType? @relation("ProductToType", fields: [productTypeId], references: [id])
+  class       ProductType? @relation("ProductToClass", fields: [productClassId], references: [id])
+  investments Investment[] @relation("InvestmentToProduct")
+  preTask     PreTask[]
+}
+
+model ProductType {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  description String
+  category    String
+  createdAt   DateTime @default(now())
+  prevId      String?  @db.Uuid
+
+  parent   ProductType?  @relation("ProductTypeToSub", fields: [prevId], references: [id])
+  children ProductType[] @relation("ProductTypeToSub")
+
+  productsByType         Product[]    @relation("ProductToType")
+  productsByClass        Product[]    @relation("ProductToClass")
+  productTypeInvestments Investment[] @relation("ProductTypeToInvestments")
+}
+
+model Investment {
+  id             String           @id @default(uuid()) @db.Uuid
+  userId         String           @db.Uuid
+  inspectorId    String?          @db.Uuid
+  productId      String           @db.Uuid
+  productTypeId  String           @db.Uuid
+  amount         Float
+  expectedReturn Float            @default(0)
+  progress       Int              @default(0)
+  status         InvestmentStatus @default(PENDING)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  modifiedBy String?  @db.Uuid
+
+  user           User        @relation("UserInvestments", fields: [userId], references: [id])
+  product        Product     @relation("InvestmentToProduct", fields: [productId], references: [id])
+  productType    ProductType @relation("ProductTypeToInvestments", fields: [productTypeId], references: [id])
+  modifiedByUser User?       @relation("ModifiedByInvestment", fields: [modifiedBy], references: [id])
+
+  tasks Task[]
+}
+
+model PreTask {
+  id                      String    @id @default(uuid()) @db.Uuid
+  title                   String
+  description             String?
+  estimatedCompletionDate DateTime?
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+  productId               String?   @db.Uuid
+
+  product Product? @relation(fields: [productId], references: [id])
+}
+
+model Task {
+  id           String     @id @default(uuid()) @db.Uuid
+  investmentId String     @db.Uuid
+  inspectorId  String?    @db.Uuid
+  name         String
+  description  String
+  status       TaskStatus @default(PENDING)
+  imageUrl     String?
+  completedAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  modifiedById String?    @db.Uuid
+  modifiedOn   DateTime?  @db.Timestamp(6)
+
+  investment Investment  @relation(fields: [investmentId], references: [id])
+  audits     TaskAudit[]
+  modifiedBy User?       @relation("ModifiedByTask", fields: [modifiedById], references: [id])
+  User       User?       @relation(fields: [userId], references: [id])
+  inspector  User?       @relation("InspectorTasks", fields: [inspectorId], references: [id])
+
+  userId String? @db.Uuid
+}
+
+model TaskAudit {
+  id        String   @id @default(uuid()) @db.Uuid
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  taskId    String   @db.Uuid
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model Carousel {
+  id          String           @id @default(uuid()) @db.Uuid
+  title       String
+  description String
+  imageUrl    String
+  link        String?
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean          @default(true)
+  type        CarouselTypeEnum @default(homepage)
+  sortOrder   Int
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Testimony {
+  id           String   @id @default(uuid()) @db.Uuid
+  investorName String
+  comment      String
+  rating       Int
+  location     String
+  isApproved   Boolean  @default(false)
+  createdBy    String   @db.Uuid
+  modifiedBy   String   @db.Uuid
+  createdAt    DateTime @default(now())
+  modifiedOn   DateTime @updatedAt
+
+  createdByUser  User @relation(name: "CreatedBy", fields: [createdBy], references: [id])
+  modifiedByUser User @relation(name: "ModifiedBy", fields: [modifiedBy], references: [id])
 }
 
 enum InvestmentStatus {
@@ -276,4 +321,11 @@ enum TaskStatus {
   IN_PROGRESS
   COMPLETED
   OVERDUE
+}
+
+enum CarouselTypeEnum {
+  homepage
+  category
+  testimony
+  marketplace
 }

@@ -8,10 +8,10 @@ export async function GET() {
   try {
     const testimonies = await prisma.testimony.findMany({
       where: { isApproved: true },
-      orderBy: { createdOn: "desc" },
+      orderBy: { createdAt: "desc" },
       include: {
-        createdBy: { select: { name: true } },
-        modifiedBy: { select: { name: true } },
+        createdByUser: { select: { name: true } },
+        modifiedByUser: { select: { name: true } },
       },
     });
     return NextResponse.json(testimonies);
@@ -37,8 +37,8 @@ export async function POST(request: Request) {
     const testimony = await prisma.testimony.create({
       data: {
         ...validatedData,
-        createdById: session.user.id,
-        modifiedById: session.user.id,
+        createdBy: session.user.id,
+        modifiedBy: session.user.id,
       },
     });
     return NextResponse.json(testimony, { status: 201 });

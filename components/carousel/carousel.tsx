@@ -14,12 +14,12 @@ interface CarouselItem {
   startDate: string;
   endDate: string;
   isActive: boolean;
-  type: "homepage" | "otherpage";
+  type: "homepage"| "category" |"testimony"| "marketplace";
   sortOrder: number;
 }
 
 interface CarouselProps {
-  type: "homepage" | "otherpage";
+  type: "homepage"| "category" |"testimony"| "marketplace";
 }
 
 export default function Carousel({ type }: CarouselProps) {

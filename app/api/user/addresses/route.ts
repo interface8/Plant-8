@@ -19,7 +19,7 @@ export async function GET() {
     return NextResponse.json(
       addresses.map((addr) => ({
         ...addr,
-        modifiedOn: addr.modifiedOn?.toISOString(),
+        modifiedOn: addr.modifiedAt?.toISOString(),
         addressType: {
           id: addr.addressType.id,
           name: addr.addressType.name,
@@ -56,8 +56,9 @@ export async function POST(request: Request) {
       data: {
         ...validatedData,
         userId: session.user.id,
-        modifiedById: session.user.id,
-        modifiedOn: new Date(),
+        createdBy: session.user.id,
+        modifiedBy: session.user.id,
+        modifiedAt: new Date(),
       },
       include: { addressType: true },
     });
@@ -65,7 +66,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         ...address,
-        modifiedOn: address.modifiedOn?.toISOString(),
+        modifiedOn: address.modifiedAt?.toISOString(),
         addressType: {
           id: address.addressType.id,
           name: address.addressType.name,

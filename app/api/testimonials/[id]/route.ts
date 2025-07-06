@@ -13,8 +13,8 @@ export async function GET(
     const testimony = await prisma.testimony.findUnique({
       where: { id: id },
       include: {
-        createdBy: { select: { name: true } },
-        modifiedBy: { select: { name: true } },
+        createdByUser: { select: { name: true } },
+        modifiedByUser: { select: { name: true } },
       },
     });
     if (!testimony) {
@@ -50,7 +50,7 @@ export async function PUT(
       where: { id: id },
       data: {
         ...validatedData,
-        modifiedById: session.user.id,
+        modifiedBy: session.user.id,
       },
     });
     return NextResponse.json(testimony);

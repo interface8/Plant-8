@@ -148,7 +148,6 @@ export const authOptions = {
             });
 
             if (!existingGoogleAccount) {
-              // Linking the Google account to the existing user
               await prisma.account.create({
                 data: {
                   userId: existingUser.id,
@@ -161,6 +160,7 @@ export const authOptions = {
                   token_type: account.token_type,
                   scope: account.scope,
                   id_token: account.id_token,
+                  createdBy: "system",
                 },
               });
             }
@@ -191,6 +191,7 @@ export const authOptions = {
                 token_type: account.token_type,
                 scope: account.scope,
                 id_token: account.id_token,
+                createdBy: "system",
               },
             });
 
@@ -198,6 +199,8 @@ export const authOptions = {
               data: {
                 userId: newUser.id,
                 roleId: userRole.id,
+                assignedBy: "system",
+                assignedAt: new Date(),
               },
             });
           }

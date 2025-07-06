@@ -37,15 +37,15 @@ export async function PUT(
       where: { id: id },
       data: {
         ...validatedData,
-        modifiedById: session.user.id,
-        modifiedOn: new Date(),
+        modifiedBy: session.user.id,
+        modifiedAt: new Date(),
       },
       include: { addressType: true },
     });
 
     return NextResponse.json({
       ...address,
-      modifiedOn: address.modifiedOn?.toISOString(),
+      modifiedOn: address.modifiedAt?.toISOString(),
       addressType: {
         id: address.addressType.id,
         name: address.addressType.name,
