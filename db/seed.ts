@@ -1,5 +1,6 @@
 import "dotenv/config";
 import prisma from "./prisma";
+import bcrypt from "bcryptjs";
 
 async function main() {
   try {
@@ -99,6 +100,54 @@ async function main() {
     );
   } catch (error) {
     console.error("Failed to seed product types:", error);
+    throw error;
+  }
+
+  try {
+    const userRole = await prisma.role.findUnique({
+      where: { name: "USER" },
+    });
+
+    if (!userRole) {
+      throw new Error("USER role not found. Cannot assign to seeded user.");
+    }
+
+    const users = [
+      {
+        name: "Mojisola",
+        email: "mojisola@mailinator.com",
+        password: "Mojisola@25",
+      },
+      {
+        name: "Uthman",
+        email: "giwauthman8@gmail.com",
+        password: "Interface8$",
+      },
+    ];
+    for (const userData of users) {
+      const hashedPassword = await bcrypt.hash(userData.password, 12);
+
+      await prisma.user.upsert({
+        where: { email: userData.email },
+        update: {},
+        create: {
+          name: userData.name,
+          email: userData.email,
+          password: hashedPassword,
+          createdBy: "581b8e3d-8958-4133-8ce9-d0db66a37af4",
+          roles: {
+            create: {
+              roleId: userRole.id,
+              assignedBy: "581b8e3d-8958-4133-8ce9-d0db66a37af4",
+            },
+          },
+        },
+      });
+    }
+
+    console.log(`✅ Seeded users: ${users.map((u) => u.email).join(", ")}`);
+  } catch (error) {
+    console.error("❌ Failed to seed user:", error);
     throw error;
   }
 }

@@ -4,15 +4,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronRight, Clock, TrendingUp } from "lucide-react";
-
-interface ProductType {
-  id: string;
-  name: string;
-  category: string;
-  prevId?: string | null;
-  children: ProductType[];
-  href?: string;
-}
+import { ProductType } from "@/types/product";
 
 interface InvestmentsDropdownProps {
   isMobile?: boolean;
@@ -71,7 +63,6 @@ export default function InvestmentsDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobile]);
 
-  // Handle hover open/close with delay (desktop only)
   const handleMouseEnter = () => {
     if (isMobile) return;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
