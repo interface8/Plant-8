@@ -200,10 +200,17 @@ model ProductType {
   description String
   category    String
   createdAt   DateTime @default(now())
-  prevId      String?  @db.Uuid
 
+  growthDuration     String?
+  expectedReturnRate Float?
+
+  prevId   String?       @db.Uuid
   parent   ProductType?  @relation("ProductTypeToSub", fields: [prevId], references: [id])
   children ProductType[] @relation("ProductTypeToSub")
+
+  durationId String?       @db.Uuid
+  duration   ProductType?  @relation("ProductTypeToDuration", fields: [durationId], references: [id])
+  classes    ProductType[] @relation("ProductTypeToDuration")
 
   productsByType         Product[]    @relation("ProductToType")
   productsByClass        Product[]    @relation("ProductToClass")
