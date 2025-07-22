@@ -1,24 +1,23 @@
-import prisma from "@/db/prisma";
 import { NextResponse } from "next/server";
-import { z } from "zod";
+import prisma from "@/db/prisma";
+import { auth } from "@/auth";
 import { productTypeSchema } from "@/lib/validators/product-type-schema-validators";
-
-const updateProductTypeSchema = productTypeSchema.partial();
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
     const productType = await prisma.productType.findUnique({
-      where: { id },
+      where: { id: params.id },
       include: {
-        parent: true,
-        children: true,
-        productsByType: true,
-        productsByClass: true,
-        productTypeInvestments: true,
+        children: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+          },
+        },
       },
     });
 
@@ -29,9 +28,9 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(productType);
+    return NextResponse.json(productType, { status: 200 });
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching product type:", error);
     return NextResponse.json(
       { error: "Failed to fetch product type" },
       { status: 500 }
@@ -41,64 +40,50 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  try {
-    const { id } = await params;
-    const body = await request.json();
-    const validatedData = updateProductTypeSchema.parse(body);
+  const session = await auth();
+  if (!session?.user?.roles?.includes("ADMIN")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-    const existingProductType = await prisma.productType.findUnique({
-      where: { id },
-    });
-    if (!existingProductType) {
+  try {
+    const body = await request.json();
+    const parsed = productTypeSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Product type not found" },
-        { status: 404 }
+        { error: parsed.error.format() },
+        { status: 400 }
       );
     }
 
-    if (validatedData.name && validatedData.name !== existingProductType.name) {
-      const nameExists = await prisma.productType.findUnique({
-        where: { name: validatedData.name },
-      });
-      if (nameExists) {
-        return NextResponse.json(
-          { error: "Product type name must be unique" },
-          { status: 400 }
-        );
-      }
-    }
+    const { name, description, prevId } = parsed.data;
 
-    if (validatedData.prevId) {
-      const parentExists = await prisma.productType.findUnique({
-        where: { id: validatedData.prevId },
+    if (prevId) {
+      const parent = await prisma.productType.findUnique({
+        where: { id: prevId },
       });
-      if (!parentExists) {
+      if (!parent) {
         return NextResponse.json(
           { error: "Parent product type not found" },
-          { status: 400 }
+          { status: 404 }
         );
       }
     }
 
     const productType = await prisma.productType.update({
-      where: { id },
-      data: validatedData,
-      include: {
-        parent: true,
-        children: true,
-        productsByType: true,
-        productsByClass: true,
-        productTypeInvestments: true,
+      where: { id: params.id },
+      data: {
+        name,
+        description,
+        prevId,
+        modifiedBy: session.user.id,
       },
     });
 
-    return NextResponse.json(productType);
+    return NextResponse.json(productType, { status: 200 });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors }, { status: 400 });
-    }
+    console.error("Error updating product type:", error);
     return NextResponse.json(
       { error: "Failed to update product type" },
       { status: 500 }
@@ -106,58 +91,48 @@ export async function PUT(
   }
 }
 
-// DELETE ProductType
 export async function DELETE(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  try {
-    const { id } = await params;
-    if (
-      !id.match(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
-      )
-    ) {
-      return NextResponse.json(
-        { error: "Invalid UUID format" },
-        { status: 400 }
-      );
-    }
+  const session = await auth();
+  if (!session?.user?.roles?.includes("ADMIN")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-    const existingProductType = await prisma.productType.findUnique({
-      where: { id },
+  try {
+    const productType = await prisma.productType.findUnique({
+      where: { id: params.id },
+      include: {
+        children: { select: { id: true } },
+        products: { select: { id: true } },
+      },
     });
-    if (!existingProductType) {
+
+    if (!productType) {
       return NextResponse.json(
         { error: "Product type not found" },
         { status: 404 }
       );
     }
 
-    const hasChildren = await prisma.productType.count({
-      where: { prevId: id },
-    });
-    const hasInvestments = await prisma.investment.count({
-      where: { productTypeId: id },
-    });
-
-    if (hasChildren > 0 || hasInvestments > 0) {
+    if (productType.children.length > 0 || productType.products.length > 0) {
       return NextResponse.json(
-        {
-          error:
-            "Cannot delete product type with associated children or investments",
-        },
+        { error: "Cannot delete product type with children or products" },
         { status: 400 }
       );
     }
 
     await prisma.productType.delete({
-      where: { id },
+      where: { id: params.id },
     });
 
-    return new NextResponse(null, { status: 204 });
+    return NextResponse.json(
+      { message: "Product type deleted" },
+      { status: 200 }
+    );
   } catch (error) {
-    console.log(error);
+    console.error("Error deleting product type:", error);
     return NextResponse.json(
       { error: "Failed to delete product type" },
       { status: 500 }

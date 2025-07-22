@@ -1,131 +1,25 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
-import { z } from "zod";
+import { auth } from "@/auth";
+import { productTypeSchema } from "@/lib/validators/product-type-schema-validators";
+import crypto from "crypto";
 
-const productTypeSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100),
-  description: z.string().min(1, "Description is required"),
-  category: z.string().min(1, "Category is required"),
-  prevId: z.string().uuid().optional().nullable(),
-  growthDuration: z.string().optional(),
-  expectedReturnRate: z.number().optional(),
-  durationId: z.string().uuid().optional().nullable(),
-});
-
-// const updateProductTypeSchema = productTypeSchema.partial();
-
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const url = new URL(request.url);
-    const name = url.searchParams.get("name");
-    const category = url.searchParams.get("category");
-    const durationId = url.searchParams.get("durationId");
-    const parentId = url.searchParams.get("parentId");
-
-    // Handle duration-based filtering
-    if (durationId) {
-      const productTypes = await prisma.productType.findMany({
-        where: {
-          durationId,
-          category: { in: ["Crop", "Livestock"] },
-        },
-        include: {
-          parent: true,
-          children: {
-            include: {
-              children: true,
-            },
-          },
-          productsByType: true,
-          productsByClass: true,
-          productTypeInvestments: {
-            include: { product: { select: { name: true, imageUrl: true } } },
-          },
-          duration: true,
-        },
-      });
-      return NextResponse.json(productTypes);
-    }
-
-    if (parentId) {
-      const productTypes = await prisma.productType.findMany({
-        where: {
-          prevId: parentId,
-        },
-        include: {
-          parent: true,
-          children: {
-            include: {
-              children: true,
-            },
-          },
-          productsByType: {
-            include: {
-              type: true,
-            },
-          },
-          productsByClass: true,
-          productTypeInvestments: {
-            include: { product: { select: { name: true, imageUrl: true } } },
-          },
-          duration: true,
-        },
-      });
-      return NextResponse.json(productTypes);
-    }
-
-    if (name && category) {
-      const productTypes = await prisma.productType.findMany({
-        where: {
-          name: {
-            equals: name,
-            mode: "insensitive",
-          },
-          category: category,
-        },
-        include: {
-          parent: true,
-          children: {
-            include: {
-              children: true,
-            },
-          },
-          productsByType: true,
-          productsByClass: true,
-          productTypeInvestments: {
-            include: { product: { select: { name: true, imageUrl: true } } },
-          },
-          duration: true,
-        },
-      });
-      return NextResponse.json(productTypes);
-    }
-
     const productTypes = await prisma.productType.findMany({
       include: {
-        parent: true,
         children: {
-          include: {
-            children: {
-              include: {
-                children: true,
-              },
-            },
+          select: {
+            id: true,
+            name: true,
+            description: true,
           },
         },
-        productsByType: true,
-        productsByClass: true,
-        productTypeInvestments: {
-          include: { product: { select: { name: true, imageUrl: true } } },
-        },
-        duration: true,
       },
-      orderBy: { createdAt: "asc" },
     });
-
-    return NextResponse.json(productTypes);
+    return NextResponse.json(productTypes, { status: 200 });
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching product types:", error);
     return NextResponse.json(
       { error: "Failed to fetch product types" },
       { status: 500 }
@@ -133,155 +27,49 @@ export async function GET(request: Request) {
   }
 }
 
-// export async function GET(request: Request) {
-//   try {
-//     const url = new URL(request.url);
-//     const name = url.searchParams.get("name");
-//     const category = url.searchParams.get("category");
-//     const durationId = url.searchParams.get("durationId");
-//     const parentId = url.searchParams.get("parentId");
-
-//     if (durationId) {
-//       const productTypes = await prisma.productType.findMany({
-//         where: {
-//           durationId,
-//           category: { in: ["Crop", "Livestock"] },
-//         },
-//         include: {
-//           parent: true,
-//           children: true,
-//           productsByType: true,
-//           productsByClass: true,
-//           productTypeInvestments: {
-//             include: { product: { select: { name: true, imageUrl: true } } },
-//           },
-//           duration: true,
-//         },
-//       });
-//       return NextResponse.json(productTypes);
-//     }
-
-//     if (parentId) {
-//       const productTypes = await prisma.productType.findMany({
-//         where: {
-//           prevId: parentId,
-//           category: { in: ["Crop", "Livestock"] },
-//         },
-//         include: {
-//           parent: true,
-//           children: true,
-//           productsByType: true,
-//           productsByClass: true,
-//           productTypeInvestments: {
-//             include: { product: { select: { name: true, imageUrl: true } } },
-//           },
-//           duration: true,
-//         },
-//       });
-//       return NextResponse.json(productTypes);
-//     }
-
-//     if (name && category) {
-//       const productTypes = await prisma.productType.findMany({
-//         where: {
-//           name,
-//           category:
-//             category.charAt(0).toUpperCase() + category.slice(1).toLowerCase(),
-//         },
-//         include: {
-//           parent: true,
-//           children: true,
-//           productsByType: true,
-//           productsByClass: true,
-//           productTypeInvestments: {
-//             include: { product: { select: { name: true, imageUrl: true } } },
-//           },
-//           duration: true,
-//         },
-//       });
-//       return NextResponse.json(productTypes);
-//     }
-
-//     const productTypes = await prisma.productType.findMany({
-//       include: {
-//         parent: true,
-//         children: true,
-//         productsByType: true,
-//         productsByClass: true,
-//         productTypeInvestments: {
-//           include: { product: { select: { name: true, imageUrl: true } } },
-//         },
-//         duration: true,
-//       },
-//       orderBy: { createdAt: "asc" },
-//     });
-//     return NextResponse.json(productTypes);
-//   } catch (error) {
-//     console.log(error);
-//     return NextResponse.json(
-//       { error: "Failed to fetch product types" },
-//       { status: 500 }
-//     );
-//   }
-// }
-
 export async function POST(request: Request) {
+  const session = await auth();
+  if (!session?.user?.roles?.includes("ADMIN")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
-    const validatedData = productTypeSchema.parse(body);
-
-    const existingProductType = await prisma.productType.findUnique({
-      where: { name: validatedData.name },
-    });
-    if (existingProductType) {
+    const parsed = productTypeSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Product type name must be unique" },
+        { error: parsed.error.format() },
         { status: 400 }
       );
     }
 
-    if (validatedData.prevId) {
-      const parentExists = await prisma.productType.findUnique({
-        where: { id: validatedData.prevId },
+    const { name, description, prevId } = parsed.data;
+
+    if (prevId) {
+      const parent = await prisma.productType.findUnique({
+        where: { id: prevId },
       });
-      if (!parentExists) {
+      if (!parent) {
         return NextResponse.json(
           { error: "Parent product type not found" },
-          { status: 400 }
-        );
-      }
-    }
-
-    if (validatedData.durationId) {
-      const durationExists = await prisma.productType.findUnique({
-        where: { id: validatedData.durationId },
-      });
-      if (!durationExists) {
-        return NextResponse.json(
-          { error: "Duration not found" },
-          { status: 400 }
+          { status: 404 }
         );
       }
     }
 
     const productType = await prisma.productType.create({
-      data: { ...validatedData, createdAt: new Date() },
-      include: {
-        parent: true,
-        children: true,
-        productsByType: true,
-        productsByClass: true,
-        productTypeInvestments: {
-          include: { product: { select: { name: true, imageUrl: true } } },
-        },
-        duration: true,
+      data: {
+        id: crypto.randomUUID(),
+        name,
+        description,
+        prevId,
+        createdBy: session.user.id,
       },
     });
+
     return NextResponse.json(productType, { status: 201 });
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: error.errors }, { status: 400 });
-    }
+    console.error("Error creating product type:", error);
     return NextResponse.json(
       { error: "Failed to create product type" },
       { status: 500 }

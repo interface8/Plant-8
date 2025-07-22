@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronRight, Clock, TrendingUp } from "lucide-react";
 import type { ProductType } from "@/types/product";
+import type { Duration } from "@/types/duration";
 
 interface InvestmentsDropdownProps {
   isMobile?: boolean;
@@ -17,29 +18,42 @@ export default function InvestmentsDropdown({
   const [isOpen, setIsOpen] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [productTypes, setProductTypes] = useState<ProductType[]>([]);
+  const [durations, setDurations] = useState<Duration[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const fetchProductTypes = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/product-types");
-        if (!response.ok) throw new Error("Failed to fetch product types");
+        const [productTypesResponse, durationsResponse] = await Promise.all([
+          fetch("/api/product-types"),
+          fetch("/api/durations"),
+        ]);
 
-        const data = await response.json();
-        setProductTypes(data);
+        if (!productTypesResponse.ok) {
+          throw new Error("Failed to fetch product types");
+        }
+        if (!durationsResponse.ok) {
+          throw new Error("Failed to fetch durations");
+        }
+
+        const productTypesData = await productTypesResponse.json();
+        const durationsData = await durationsResponse.json();
+
+        setProductTypes(productTypesData);
+        setDurations(durationsData);
       } catch (error) {
-        console.error("Error fetching product types:", error);
+        console.error("Error fetching data:", error);
         setError("Failed to load investment options");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProductTypes();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -82,9 +96,8 @@ export default function InvestmentsDropdown({
     if (onClose) onClose();
   };
 
-  // Filter data based on categories
-  const durations = productTypes.filter((type) => type.category === "Duration");
-  const classes = productTypes.filter((type) => type.category === "Class");
+  // Filter product types to get only parent categories (Crop, Livestock)
+  const parentProductTypes = productTypes.filter((type) => !type.prevId);
 
   if (loading) {
     return (
@@ -141,42 +154,41 @@ export default function InvestmentsDropdown({
               </div>
             )}
 
-            {/* Classes Section */}
-            {classes.length > 0 && (
+            {/* Product Types Section */}
+            {parentProductTypes.length > 0 && (
               <div className="space-y-1 pt-2">
                 <div className="flex items-center px-3 py-2 text-sm font-semibold text-gray-500 uppercase tracking-wide">
                   <TrendingUp className="h-4 w-4 mr-2" />
                   By Type
                 </div>
-                {classes.map((classItem) => (
-                  <div key={classItem.id} className="ml-2">
+                {parentProductTypes.map((parent) => (
+                  <div key={parent.id} className="ml-2">
                     <button
                       className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors flex items-center justify-between"
-                      onClick={() => toggleSubmenu(classItem.id)}
+                      onClick={() => toggleSubmenu(parent.id)}
                     >
-                      {classItem.name}
-                      {classItem.children?.length > 0 && (
+                      {parent.name}
+                      {parent.children?.length > 0 && (
                         <ChevronRight
                           className={`h-4 w-4 transition-transform duration-200 ${
-                            activeSubmenu === classItem.id ? "rotate-90" : ""
+                            activeSubmenu === parent.id ? "rotate-90" : ""
                           }`}
                         />
                       )}
                     </button>
-                    {/* Categories under Class */}
-                    {classItem.children?.length > 0 &&
-                      activeSubmenu === classItem.id && (
+                    {parent.children?.length > 0 &&
+                      activeSubmenu === parent.id && (
                         <div className="ml-4 mt-1 space-y-1 border-l-2 border-green-100 pl-3">
-                          {classItem.children.map((category) => (
+                          {parent.children.map((child) => (
                             <Link
-                              key={category.id}
-                              href={`/investments/category/${category.name
+                              key={child.id}
+                              href={`/investments/category/${child.name
                                 .toLowerCase()
                                 .replace(" ", "-")}`}
                               className="block px-3 py-2 text-sm text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
                               onClick={handleLinkClick}
                             >
-                              {category.name}
+                              {child.name}
                             </Link>
                           ))}
                         </div>
@@ -250,55 +262,54 @@ export default function InvestmentsDropdown({
             </div>
           )}
 
-          {/* Classes Section with Categories Submenu */}
-          {classes.length > 0 && (
+          {/* Product Types Section */}
+          {parentProductTypes.length > 0 && (
             <div className="border-t border-gray-200 pt-6">
               <div className="flex items-center mb-3">
                 <TrendingUp className="h-5 w-5 mr-2 text-green-600" />
                 <h3 className="text-sm font-semibold text-gray-900">By Type</h3>
               </div>
               <div className="space-y-1">
-                {classes.map((classItem) => (
-                  <div key={classItem.id} className="relative group">
+                {parentProductTypes.map((parent) => (
+                  <div key={parent.id} className="relative group">
                     <div
                       className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors flex items-center justify-between cursor-pointer"
-                      onMouseEnter={() => setActiveSubmenu(classItem.id)}
+                      onMouseEnter={() => setActiveSubmenu(parent.id)}
                       role="menuitem"
                     >
                       <span className="group-hover:translate-x-1 transition-transform duration-200">
-                        {classItem.name}
+                        {parent.name}
                       </span>
-                      {classItem.children?.length > 0 && (
+                      {parent.children?.length > 0 && (
                         <ChevronRight
                           className={`h-4 w-4 transition-transform duration-200 ${
-                            activeSubmenu === classItem.id ? "rotate-90" : ""
+                            activeSubmenu === parent.id ? "rotate-90" : ""
                           }`}
                         />
                       )}
                     </div>
 
-                    {/* Categories Submenu */}
-                    {classItem.children?.length > 0 && (
+                    {parent.children?.length > 0 && (
                       <div
                         className={`absolute left-full top-0 ml-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-200 transition-all duration-300 ease-in-out ${
-                          activeSubmenu === classItem.id
+                          activeSubmenu === parent.id
                             ? "opacity-100 scale-100 translate-x-0"
                             : "opacity-0 scale-95 -translate-x-2 pointer-events-none"
                         }`}
                         onMouseEnter={() => {
                           if (timeoutRef.current)
                             clearTimeout(timeoutRef.current);
-                          setActiveSubmenu(classItem.id);
+                          setActiveSubmenu(parent.id);
                         }}
                         onMouseLeave={handleMouseLeave}
                         role="menu"
                       >
                         <div className="p-4">
                           <div className="space-y-1">
-                            {classItem.children.map((category) => (
+                            {parent.children.map((child) => (
                               <Link
-                                key={category.id}
-                                href={`/investments/category/${category.name
+                                key={child.id}
+                                href={`/investments/category/${child.name
                                   .toLowerCase()
                                   .replace(" ", "-")}`}
                                 className="block px-4 py-2 text-sm text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors group"
@@ -306,7 +317,7 @@ export default function InvestmentsDropdown({
                                 role="menuitem"
                               >
                                 <span className="group-hover:translate-x-1 transition-transform duration-200 inline-block">
-                                  {category.name}
+                                  {child.name}
                                 </span>
                               </Link>
                             ))}
