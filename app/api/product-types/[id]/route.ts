@@ -58,7 +58,6 @@ export async function PUT(
       );
     }
 
-    // Check if name is unique if provided
     if (validatedData.name && validatedData.name !== existingProductType.name) {
       const nameExists = await prisma.productType.findUnique({
         where: { name: validatedData.name },
@@ -71,7 +70,6 @@ export async function PUT(
       }
     }
 
-    // Check if prevId exists if provided
     if (validatedData.prevId) {
       const parentExists = await prisma.productType.findUnique({
         where: { id: validatedData.prevId },
@@ -126,7 +124,6 @@ export async function DELETE(
       );
     }
 
-    // Check if product type exists
     const existingProductType = await prisma.productType.findUnique({
       where: { id },
     });
@@ -137,7 +134,6 @@ export async function DELETE(
       );
     }
 
-    // Check if product type has children or investments
     const hasChildren = await prisma.productType.count({
       where: { prevId: id },
     });

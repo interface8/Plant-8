@@ -47,7 +47,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Product Details */}
         <div className="space-y-6">
           <div className="aspect-video relative rounded-lg overflow-hidden bg-gray-100">
             <Image
@@ -78,7 +77,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
             )}
           </div>
 
-          {/* Product Stats */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card>
               <CardHeader className="pb-3">
@@ -132,7 +130,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
 
-        {/* Investment Form */}
         <div className="lg:sticky lg:top-8">
           <Suspense fallback={<div>Loading investment form...</div>}>
             <InvestmentForm product={product} />

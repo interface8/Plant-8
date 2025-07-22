@@ -47,12 +47,10 @@ export async function GET(request: Request) {
       return NextResponse.json(productTypes);
     }
 
-    // Handle parent-based filtering (for categories)
     if (parentId) {
       const productTypes = await prisma.productType.findMany({
         where: {
           prevId: parentId,
-          // Remove the category filter to get all crops under the category
         },
         include: {
           parent: true,
@@ -76,7 +74,6 @@ export async function GET(request: Request) {
       return NextResponse.json(productTypes);
     }
 
-    // Handle name and category filtering
     if (name && category) {
       const productTypes = await prisma.productType.findMany({
         where: {
@@ -104,7 +101,6 @@ export async function GET(request: Request) {
       return NextResponse.json(productTypes);
     }
 
-    // Default: get all product types with full hierarchy
     const productTypes = await prisma.productType.findMany({
       include: {
         parent: true,
@@ -112,7 +108,7 @@ export async function GET(request: Request) {
           include: {
             children: {
               include: {
-                children: true, // For deeper nesting if needed
+                children: true,
               },
             },
           },

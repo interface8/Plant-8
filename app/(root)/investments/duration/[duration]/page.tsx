@@ -15,7 +15,6 @@ export default function DurationPage() {
   useEffect(() => {
     const fetchCropsByDuration = async () => {
       try {
-        // First get the duration ProductType
         const durationName = duration.replace("-", " ");
         const durationResponse = await fetch(
           `/api/product-types?name=${encodeURIComponent(
@@ -27,7 +26,6 @@ export default function DurationPage() {
         if (durationData.length > 0) {
           const durationId = durationData[0].id;
 
-          // Then get all crops with this duration
           const cropsResponse = await fetch(
             `/api/product-types?durationId=${durationId}`
           );

@@ -36,7 +36,6 @@ export default function CropDetailsPage() {
         const availableProducts = cropData.productsByType || [];
         setProducts(availableProducts);
 
-        // Auto-select first product if available
         if (availableProducts.length > 0) {
           setSelectedProduct(availableProducts[0]);
         }
@@ -108,7 +107,6 @@ export default function CropDetailsPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Crop Details */}
         <div>
           <div className="mb-6">
             <div className="flex items-center space-x-3 mb-4">
@@ -118,7 +116,6 @@ export default function CropDetailsPage() {
             <p className="text-gray-600 text-lg">{crop.description}</p>
           </div>
 
-          {/* Main Product Image */}
           {selectedProduct && (
             <div className="mb-6">
               <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
@@ -163,7 +160,6 @@ export default function CropDetailsPage() {
             )}
           </div>
 
-          {/* Available Products */}
           {products.length > 0 && (
             <div>
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
@@ -218,7 +214,6 @@ export default function CropDetailsPage() {
           )}
         </div>
 
-        {/* Investment Form */}
         <div className="lg:sticky lg:top-8">
           <div className="bg-white p-6 rounded-lg shadow-lg border">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">

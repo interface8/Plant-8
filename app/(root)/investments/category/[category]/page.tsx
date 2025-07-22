@@ -17,7 +17,6 @@ export default function CategoryPage() {
   useEffect(() => {
     const fetchCropsByCategory = async () => {
       try {
-        // First get the category ProductType (like "Cereals")
         const categoryName = category.replace("-", " ");
         console.log("Fetching category:", categoryName);
 
@@ -33,7 +32,6 @@ export default function CategoryPage() {
           setCategoryInfo(categoryData[0]);
           const categoryId = categoryData[0].id;
 
-          // Get all crops that have this category as parent (prevId = categoryId)
           const cropsResponse = await fetch(
             `/api/product-types?parentId=${categoryId}`
           );
@@ -81,7 +79,6 @@ export default function CategoryPage() {
             key={crop.id}
             className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
           >
-            {/* Product Image */}
             <div className="h-48 bg-gray-200 relative">
               {crop.productsByType &&
               crop.productsByType.length > 0 &&
