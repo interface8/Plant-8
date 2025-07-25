@@ -61,7 +61,7 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json();
-    const validatedData = userUpdateSchema.parse(body);
+    const { name, phoneNo, password } = userUpdateSchema.parse(body);
 
     if (body.email) {
       return NextResponse.json(
@@ -71,14 +71,14 @@ export async function PUT(request: Request) {
     }
 
     const data: any = {
-      name: validatedData.name,
-      phoneNo: validatedData.phoneNo,
-      modifiedById: session.user.id,
-      modifiedOn: new Date(),
+      name: name,
+      phoneNo: phoneNo === "+234" ? null : phoneNo,
+      modifiedBy: session.user.id,
+      modifiedAt: new Date(),
     };
 
-    if (validatedData.password) {
-      data.password = await bcrypt.hash(validatedData.password, 10);
+    if (password) {
+      data.password = await bcrypt.hash(password, 10);
     }
 
     const user = await prisma.user.update({

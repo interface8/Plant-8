@@ -18,9 +18,10 @@ interface UserType {
 }
 
 export default function UserDropdown() {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -36,6 +37,21 @@ export default function UserDropdown() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    const handleProfileUpdate = async () => {
+      try {
+        await update(); // Force session refresh
+        setRefreshKey((prev) => prev + 1); // Trigger re-render
+      } catch (error) {
+        console.error("Session refresh error:", error);
+      }
+    };
+
+    window.addEventListener("profileUpdated", handleProfileUpdate);
+    return () =>
+      window.removeEventListener("profileUpdated", handleProfileUpdate);
+  }, [update]);
 
   const handleSignOut = async () => {
     if (isSigningOut) return;
@@ -93,7 +109,7 @@ export default function UserDropdown() {
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef} key={refreshKey}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center space-x-3 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 rounded-full p-1"

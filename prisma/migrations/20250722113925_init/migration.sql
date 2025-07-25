@@ -131,10 +131,12 @@ CREATE TABLE "Product" (
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "imageUrl" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-    "productTypeId" UUID,
-    "productClassId" UUID,
+    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdBy" UUID,
+    "modifiedAt" TIMESTAMP(6),
+    "modifiedBy" UUID,
+    "productTypeId" UUID NOT NULL,
+    "durationId" UUID NOT NULL,
     "currentMarketPricePerKg" DOUBLE PRECISION NOT NULL DEFAULT 0,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
@@ -145,11 +147,26 @@ CREATE TABLE "ProductType" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "category" TEXT NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdBy" UUID,
+    "modifiedAt" TIMESTAMP(6),
+    "modifiedBy" UUID,
     "prevId" UUID,
 
     CONSTRAINT "ProductType_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Duration" (
+    "id" UUID NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdBy" UUID,
+    "modifiedAt" TIMESTAMP(6),
+    "modifiedBy" UUID,
+
+    CONSTRAINT "Duration_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -163,8 +180,9 @@ CREATE TABLE "Investment" (
     "expectedReturn" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "progress" INTEGER NOT NULL DEFAULT 0,
     "status" "InvestmentStatus" NOT NULL DEFAULT 'PENDING',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdBy" UUID,
+    "modifiedAt" TIMESTAMP(6),
     "modifiedBy" UUID,
 
     CONSTRAINT "Investment_pkey" PRIMARY KEY ("id")
@@ -262,6 +280,18 @@ CREATE UNIQUE INDEX "AddressType_name_key" ON "AddressType"("name");
 -- CreateIndex
 CREATE UNIQUE INDEX "ProductType_name_key" ON "ProductType"("name");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Duration_name_key" ON "Duration"("name");
+
+-- CreateIndex
+CREATE INDEX "Duration_name_idx" ON "Duration"("name");
+
+-- CreateIndex
+CREATE INDEX "Duration_createdBy_idx" ON "Duration"("createdBy");
+
+-- CreateIndex
+CREATE INDEX "Duration_modifiedBy_idx" ON "Duration"("modifiedBy");
+
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_modifiedBy_fkey" FOREIGN KEY ("modifiedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
@@ -308,13 +338,31 @@ ALTER TABLE "Address" ADD CONSTRAINT "Address_modifiedBy_fkey" FOREIGN KEY ("mod
 ALTER TABLE "Address" ADD CONSTRAINT "Address_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_productTypeId_fkey" FOREIGN KEY ("productTypeId") REFERENCES "ProductType"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Product" ADD CONSTRAINT "Product_productTypeId_fkey" FOREIGN KEY ("productTypeId") REFERENCES "ProductType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Product" ADD CONSTRAINT "Product_productClassId_fkey" FOREIGN KEY ("productClassId") REFERENCES "ProductType"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Product" ADD CONSTRAINT "Product_durationId_fkey" FOREIGN KEY ("durationId") REFERENCES "Duration"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Product" ADD CONSTRAINT "Product_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Product" ADD CONSTRAINT "Product_modifiedBy_fkey" FOREIGN KEY ("modifiedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ProductType" ADD CONSTRAINT "ProductType_prevId_fkey" FOREIGN KEY ("prevId") REFERENCES "ProductType"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProductType" ADD CONSTRAINT "ProductType_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "ProductType" ADD CONSTRAINT "ProductType_modifiedBy_fkey" FOREIGN KEY ("modifiedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Duration" ADD CONSTRAINT "Duration_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Duration" ADD CONSTRAINT "Duration_modifiedBy_fkey" FOREIGN KEY ("modifiedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Investment" ADD CONSTRAINT "Investment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -324,6 +372,9 @@ ALTER TABLE "Investment" ADD CONSTRAINT "Investment_productId_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "Investment" ADD CONSTRAINT "Investment_productTypeId_fkey" FOREIGN KEY ("productTypeId") REFERENCES "ProductType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Investment" ADD CONSTRAINT "Investment_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Investment" ADD CONSTRAINT "Investment_modifiedBy_fkey" FOREIGN KEY ("modifiedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

@@ -10,6 +10,8 @@ import prisma from "@/db/prisma";
 declare module "next-auth" {
   interface User {
     roles?: string[];
+    phoneNo?: string | null;
+    image?: string | null;
   }
 
   interface Session {
@@ -18,6 +20,7 @@ declare module "next-auth" {
       name?: string | null;
       email?: string | null;
       image?: string | null;
+      phoneNo?: string | null;
       roles?: string[];
     };
   }
@@ -25,6 +28,8 @@ declare module "next-auth" {
   interface JWT {
     id?: string;
     roles?: string[];
+    phoneNo?: string | null;
+    image?: string | null;
   }
 }
 
@@ -89,6 +94,8 @@ export const authOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
+          phoneNo: user.phoneNo,
+          image: user.image,
           roles: user.roles.map(
             (userRole: { role: { name: string } }) => userRole.role.name
           ),
@@ -101,6 +108,8 @@ export const authOptions = {
       if (user) {
         token.id = user.id;
         token.roles = user.roles;
+        token.phoneNo = user.phoneNo;
+        token.image = user.image;
       } else if (token.id != null) {
         try {
           const dbUser = await prisma.user.findUnique({
@@ -117,6 +126,8 @@ export const authOptions = {
             token.roles = dbUser.roles.map(
               (userRole: { role: { name: string } }) => userRole.role.name
             );
+            token.phoneNo = dbUser.phoneNo;
+            token.image = dbUser.image;
           }
         } catch (error) {
           console.error("Error refreshing user roles:", error);
@@ -128,6 +139,8 @@ export const authOptions = {
       if (session.user && token.id) {
         session.user.id = token.id;
         session.user.roles = token.roles;
+        session.user.phoneNo = token.phoneNo;
+        session.user.image = token.image;
       }
       return session;
     },
@@ -139,7 +152,6 @@ export const authOptions = {
           });
 
           if (existingUser) {
-            // Checking if user already has a Google account linked
             const existingGoogleAccount = await prisma.account.findFirst({
               where: {
                 userId: existingUser.id,
@@ -164,6 +176,9 @@ export const authOptions = {
                 },
               });
             }
+            user.id = existingUser.id;
+            user.phoneNo = existingUser.phoneNo;
+            user.image = existingUser.image;
             return true;
           } else {
             const userRole = await prisma.role.upsert({
@@ -176,6 +191,8 @@ export const authOptions = {
               data: {
                 email: user.email,
                 name: user.name || "Google User",
+                phoneNo: null,
+                image: user.image,
               },
             });
 
@@ -203,6 +220,9 @@ export const authOptions = {
                 assignedAt: new Date(),
               },
             });
+            user.id = newUser.id;
+            user.phoneNo = newUser.phoneNo;
+            user.image = newUser.image;
           }
         } catch (error) {
           console.error("Error handling sign-in:", error);

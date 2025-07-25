@@ -1,4 +1,4 @@
-import TestimonyManager from "@/components/testimony-manager/testimony-manager";
+import TestimonyManager from "@/components/admin/testimony-manager/testimony-manager";
 
 export default function ManageTestimonialsPage() {
   return (

@@ -40,19 +40,27 @@ model User {
   modifiedUser  User?  @relation("ModifiedByUser", fields: [modifiedBy], references: [id])
   modifiedUsers User[] @relation("ModifiedByUser")
 
-  investments Investment[] @relation("UserInvestments")
+  investments         Investment[] @relation("UserInvestments")
+  createdInvestments  Investment[] @relation("CreatedByInvestment")
+  modifiedInvestments Investment[] @relation("ModifiedByInvestment")
 
-  createdTestimonies  Testimony[] @relation("CreatedBy")
-  modifiedTestimonies Testimony[] @relation("ModifiedBy")
+  createdProducts  Product[] @relation("CreatedByProduct")
+  modifiedProducts Product[] @relation("ModifiedByProduct")
 
-  addresses               Address[] @relation("UserAddresses")
-  addressesModifiedByUser Address[] @relation("ModifiedByAddress")
-  addressesCreatedByUser  Address[] @relation("CreatedByUser")
+  createdProductTypes  ProductType[] @relation("CreatedByProductType")
+  modifiedProductTypes ProductType[] @relation("ModifiedByProductType")
+
+  createdDurations  Duration[] @relation("CreatedByDuration")
+  modifiedDurations Duration[] @relation("ModifiedByDuration")
+
+  createdTestimonies      Testimony[] @relation("CreatedBy")
+  modifiedTestimonies     Testimony[] @relation("ModifiedBy")
+  addresses               Address[]   @relation("UserAddresses")
+  addressesModifiedByUser Address[]   @relation("ModifiedByAddress")
+  addressesCreatedByUser  Address[]   @relation("CreatedByUser")
 
   modifiedTasks Task[] @relation("ModifiedByTask")
   tasks         Task[] @relation("InspectorTasks")
-
-  modifiedInvestments Investment[] @relation("ModifiedByInvestment")
 
   RolesModifiedByUser   Role[]     @relation("RolesModifiedByUser")
   RolesCreatedByUser    Role[]     @relation("RolesCreatedByUser")
@@ -177,44 +185,60 @@ model AddressType {
 }
 
 model Product {
-  id             String   @id @default(uuid()) @db.Uuid
-  name           String
-  description    String
-  imageUrl       String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  productTypeId  String?  @db.Uuid
-  productClassId String?  @db.Uuid
+  id                      String    @id @default(uuid()) @db.Uuid
+  name                    String
+  description             String
+  imageUrl                String
+  createdAt               DateTime  @default(now()) @db.Timestamp(6)
+  createdBy               String?   @db.Uuid
+  modifiedAt              DateTime? @db.Timestamp(6)
+  modifiedBy              String?   @db.Uuid
+  productTypeId           String    @db.Uuid
+  durationId              String    @db.Uuid
+  currentMarketPricePerKg Float     @default(0)
 
-  currentMarketPricePerKg Float @default(0)
-
-  type        ProductType? @relation("ProductToType", fields: [productTypeId], references: [id])
-  class       ProductType? @relation("ProductToClass", fields: [productClassId], references: [id])
-  investments Investment[] @relation("InvestmentToProduct")
-  preTask     PreTask[]
+  ProductType    ProductType  @relation("ProductToType", fields: [productTypeId], references: [id])
+  duration       Duration     @relation("ProductToDuration", fields: [durationId], references: [id])
+  investments    Investment[] @relation("InvestmentToProduct")
+  createdByUser  User?        @relation("CreatedByProduct", fields: [createdBy], references: [id])
+  modifiedByUser User?        @relation("ModifiedByProduct", fields: [modifiedBy], references: [id])
+  preTask        PreTask[]
 }
 
 model ProductType {
-  id          String   @id @default(uuid()) @db.Uuid
-  name        String   @unique
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @unique
   description String
-  category    String
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  createdBy   String?   @db.Uuid
+  modifiedAt  DateTime? @db.Timestamp(6)
+  modifiedBy  String?   @db.Uuid
 
-  growthDuration     String?
-  expectedReturnRate Float?
+  prevId                 String?       @db.Uuid
+  parent                 ProductType?  @relation("ProductTypeToSub", fields: [prevId], references: [id])
+  children               ProductType[] @relation("ProductTypeToSub")
+  products               Product[]     @relation("ProductToType")
+  productTypeInvestments Investment[]  @relation("ProductTypeToInvestments")
+  createdByUser          User?         @relation("CreatedByProductType", fields: [createdBy], references: [id])
+  modifiedByUser         User?         @relation("ModifiedByProductType", fields: [modifiedBy], references: [id])
+}
 
-  prevId   String?       @db.Uuid
-  parent   ProductType?  @relation("ProductTypeToSub", fields: [prevId], references: [id])
-  children ProductType[] @relation("ProductTypeToSub")
+model Duration {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @unique
+  description String
+  createdAt   DateTime  @default(now()) @db.Timestamp(6)
+  createdBy   String?   @db.Uuid
+  modifiedAt  DateTime? @db.Timestamp(6)
+  modifiedBy  String?   @db.Uuid
 
-  durationId String?       @db.Uuid
-  duration   ProductType?  @relation("ProductTypeToDuration", fields: [durationId], references: [id])
-  classes    ProductType[] @relation("ProductTypeToDuration")
+  products       Product[] @relation("ProductToDuration")
+  createdByUser  User?     @relation("CreatedByDuration", fields: [createdBy], references: [id])
+  modifiedByUser User?     @relation("ModifiedByDuration", fields: [modifiedBy], references: [id])
 
-  productsByType         Product[]    @relation("ProductToType")
-  productsByClass        Product[]    @relation("ProductToClass")
-  productTypeInvestments Investment[] @relation("ProductTypeToInvestments")
+  @@index([name])
+  @@index([createdBy])
+  @@index([modifiedBy])
 }
 
 model Investment {
@@ -228,13 +252,15 @@ model Investment {
   progress       Int              @default(0)
   status         InvestmentStatus @default(PENDING)
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  modifiedBy String?  @db.Uuid
+  createdAt  DateTime  @default(now()) @db.Timestamp(6)
+  createdBy  String?   @db.Uuid
+  modifiedAt DateTime? @db.Timestamp(6)
+  modifiedBy String?   @db.Uuid
 
   user           User        @relation("UserInvestments", fields: [userId], references: [id])
   product        Product     @relation("InvestmentToProduct", fields: [productId], references: [id])
   productType    ProductType @relation("ProductTypeToInvestments", fields: [productTypeId], references: [id])
+  createdByUser  User?       @relation("CreatedByInvestment", fields: [createdBy], references: [id])
   modifiedByUser User?       @relation("ModifiedByInvestment", fields: [modifiedBy], references: [id])
 
   tasks Task[]
