@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { ProductType } from "@/types/product";
-import { auth } from "@/auth";
 import { productTypeSchema } from "@/lib/validators/product-type-schema-validators";
 import { z } from "zod";
 
 export default function AdminProductTypes() {
+  const { data: session, status } = useSession();
+
   const [productTypes, setProductTypes] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,32 +22,30 @@ export default function AdminProductTypes() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const checkAuthAndFetch = async () => {
-      try {
-        setLoading(true);
-        const session = await auth();
-        if (session?.user?.roles?.includes("ADMIN")) {
-          setIsAdmin(true);
-        } else {
-          setError("Unauthorized: Admin access required");
-          setLoading(false);
-          return;
-        }
+    if (status === "loading") return;
 
-        const response = await fetch("/api/product-types");
-        if (!response.ok) throw new Error("Failed to fetch product types");
-        const data = await response.json();
-        setProductTypes(data);
-      } catch (err) {
-        setError("Failed to load product types");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (session?.user?.roles?.includes("ADMIN")) {
+      setIsAdmin(true);
+      fetchProductTypes();
+    } else {
+      setError("Unauthorized: Admin access required");
+      setLoading(false);
+    }
+  }, [session, status]);
 
-    checkAuthAndFetch();
-  }, []);
+  const fetchProductTypes = async () => {
+    try {
+      const response = await fetch("/api/product-types");
+      if (!response.ok) throw new Error("Failed to fetch product types");
+      const data = await response.json();
+      setProductTypes(data);
+    } catch (err) {
+      setError("Failed to load product types");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
