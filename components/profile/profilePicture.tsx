@@ -1,5 +1,9 @@
+"use client";
+
 import { useState } from "react";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 import { Camera, Upload, X } from "lucide-react";
 import { UserProfile } from "@/types/user";
 import { getUserInitials } from "@/lib/utils";
@@ -13,6 +17,7 @@ interface ProfilePictureProps {
 }
 
 export function ProfilePicture({ user, onImageUpload }: ProfilePictureProps) {
+  const { update } = useSession();
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
@@ -22,12 +27,12 @@ export function ProfilePicture({ user, onImageUpload }: ProfilePictureProps) {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        alert("File size must be less than 5MB");
+        toast.error("File size must be less than 5MB");
         return;
       }
 
       if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
-        alert("Only JPEG, PNG, and WebP images are allowed");
+        toast.error("Only JPEG, PNG, and WebP images are allowed");
         return;
       }
 
@@ -41,12 +46,16 @@ export function ProfilePicture({ user, onImageUpload }: ProfilePictureProps) {
 
     setIsUploading(true);
     try {
-      await onImageUpload(imageFile, setUploadProgress);
+      const updatedUser = await onImageUpload(imageFile, setUploadProgress);
+      await update({ image: updatedUser.image });
+      window.dispatchEvent(new Event("profileUpdated")); // Notify UserDropdown
+      toast.success("Profile picture updated");
       setImageFile(null);
       setImagePreview(null);
       setUploadProgress(0);
-    } catch (error) {
-      console.log(error);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      toast.error(error.response?.data?.error || "Failed to upload image");
     } finally {
       setIsUploading(false);
     }
@@ -100,6 +109,7 @@ export function ProfilePicture({ user, onImageUpload }: ProfilePictureProps) {
         className="hidden"
         id="profile-image"
         disabled={isUploading}
+        aria-label="Choose profile picture"
       />
       <label
         htmlFor="profile-image"
@@ -108,6 +118,7 @@ export function ProfilePicture({ user, onImageUpload }: ProfilePictureProps) {
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
             : "bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 cursor-pointer"
         }`}
+        aria-label="Choose new photo"
       >
         <Camera className="w-5 h-5" />
         Choose New Photo
@@ -120,6 +131,7 @@ export function ProfilePicture({ user, onImageUpload }: ProfilePictureProps) {
               onClick={handleUpload}
               disabled={isUploading}
               className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-br from-green-600 via-emerald-600 to-green-700 text-white rounded-2xl font-semibold backdrop-blur-sm shadow-xl hover:shadow-2xl hover:scale-[1.015] transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label={isUploading ? "Uploading photo" : "Upload photo"}
             >
               <Upload className="w-5 h-5" />
               {isUploading ? "Uploading..." : "Upload Photo"}
@@ -129,6 +141,7 @@ export function ProfilePicture({ user, onImageUpload }: ProfilePictureProps) {
               onClick={handleCancel}
               disabled={isUploading}
               className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-white text-gray-800 border border-gray-300 rounded-2xl font-semibold backdrop-blur-sm shadow-md hover:bg-gray-100 hover:shadow-lg hover:scale-[1.01] transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Cancel upload"
             >
               <X className="w-5 h-5" />
               Cancel

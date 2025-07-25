@@ -5,19 +5,19 @@ import Image from "next/image";
 import { Product } from "@/types/product";
 import prisma from "@/db/prisma";
 
-async function getDurationAndProducts(name: string): Promise<{
-  duration: { id: string; name: string; description: string } | null;
+async function getCategoryAndProducts(name: string): Promise<{
+  category: { id: string; name: string; description: string } | null;
   products: Product[];
 }> {
   try {
-    const duration = await prisma.duration.findFirst({
+    const category = await prisma.productType.findFirst({
       where: { name: { equals: name.replace("-", " "), mode: "insensitive" } },
       select: { id: true, name: true, description: true },
     });
-    if (!duration) return { duration: null, products: [] };
+    if (!category) return { category: null, products: [] };
 
     const products = await prisma.product.findMany({
-      where: { durationId: duration.id },
+      where: { productTypeId: category.id },
       select: {
         id: true,
         name: true,
@@ -31,43 +31,45 @@ async function getDurationAndProducts(name: string): Promise<{
       },
     });
 
-    return { duration, products };
+    return { category, products };
   } catch (error) {
-    console.error("Error fetching duration and products:", error);
-    return { duration: null, products: [] };
+    console.error("Error fetching category and products:", error);
+    return { category: null, products: [] };
   }
 }
 
 export async function generateStaticParams() {
-  const durations = await prisma.duration.findMany({ select: { name: true } });
-  return durations.map((duration) => ({
-    name: duration.name.toLowerCase().replace(/\s+/g, "-"),
+  const categories = await prisma.productType.findMany({
+    select: { name: true },
+  });
+  return categories.map((category) => ({
+    name: category.name.toLowerCase().replace(/\s+/g, "-"),
   }));
 }
 
-export default async function DurationPage({
+export default async function CategoryPage({
   params,
 }: {
   params: { name: string };
 }) {
-  const { duration, products } = await getDurationAndProducts(params.name);
-  if (!duration) return notFound();
+  const { category, products } = await getCategoryAndProducts(params.name);
+  if (!category) return notFound();
 
   return (
     <>
       <Head>
-        <title>{`${duration.name} Investment Options - FAM 8`}</title>
-        <meta name="description" content={duration.description} />
+        <title>{`${category.name} Investment Options - FAM 8`}</title>
+        <meta name="description" content={category.description} />
         <meta
           name="keywords"
-          content={`${duration.name}, agricultural investments, FAM 8`}
+          content={`${category.name}, agricultural investments, FAM 8`}
         />
       </Head>
       <div className="p-6 max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4">{duration.name} Investments</h1>
-        <p className="text-gray-600 mb-6">{duration.description}</p>
+        <h1 className="text-3xl font-bold mb-4">{category.name} Investments</h1>
+        <p className="text-gray-600 mb-6">{category.description}</p>
         {products.length === 0 ? (
-          <p className="text-gray-500">No products found for this duration.</p>
+          <p className="text-gray-500">No products found for this category.</p>
         ) : (
           <ul className="grid gap-4 md:grid-cols-2">
             {products.map((product) => (
