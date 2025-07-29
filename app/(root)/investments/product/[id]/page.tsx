@@ -5,6 +5,7 @@ import {
   getProduct,
   getProductStaticParams,
 } from "@/lib/services/product-service";
+import InvestmentForm from "@/components/investment/investment-form";
 
 export const generateStaticParams = getProductStaticParams;
 
@@ -79,13 +80,10 @@ export default async function ProductDetailPage({
                 </dd>
               </div>
             </dl>
-            <button
-              disabled
-              className="mt-6 bg-green-600 text-white px-4 py-2 rounded-md opacity-50 cursor-not-allowed"
-              aria-label="Invest in this product (currently disabled)"
-            >
-              Invest (Coming Soon)
-            </button>
+            <InvestmentForm
+              productId={product.id}
+              productTypeId={product.productTypeId}
+            />
           </div>
         </div>
       </div>
