@@ -2,49 +2,12 @@ import { notFound } from "next/navigation";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
-import { Product } from "@/types/product";
-import prisma from "@/db/prisma";
+import {
+  getDurationAndProducts,
+  getDurationStaticParams,
+} from "@/lib/services/duration-service";
 
-async function getDurationAndProducts(name: string): Promise<{
-  duration: { id: string; name: string; description: string } | null;
-  products: Product[];
-}> {
-  try {
-    const duration = await prisma.duration.findFirst({
-      where: { name: { equals: name.replace("-", " "), mode: "insensitive" } },
-      select: { id: true, name: true, description: true },
-    });
-    if (!duration) return { duration: null, products: [] };
-
-    const products = await prisma.product.findMany({
-      where: { durationId: duration.id },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        productTypeId: true,
-        durationId: true,
-        imageUrl: true,
-        currentMarketPricePerKg: true,
-        ProductType: { select: { id: true, name: true } },
-        duration: { select: { id: true, name: true } },
-      },
-    });
-
-    return { duration, products };
-  } catch (error) {
-    console.error("Error fetching duration and products:", error);
-    return { duration: null, products: [] };
-  }
-}
-
-export async function generateStaticParams() {
-  const durations = await prisma.duration.findMany({ select: { name: true } });
-  return durations.map((duration) => ({
-    name: duration.name.toLowerCase().replace(/\s+/g, "-"),
-  }));
-}
-
+export const generateStaticParams = getDurationStaticParams;
 export default async function DurationPage({
   params,
 }: {

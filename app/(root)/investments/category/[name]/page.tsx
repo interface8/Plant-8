@@ -2,50 +2,12 @@ import { notFound } from "next/navigation";
 import Head from "next/head";
 import Link from "next/link";
 import Image from "next/image";
-import { Product } from "@/types/product";
-import prisma from "@/db/prisma";
+import {
+  getCategoryAndProducts,
+  getCategoryStaticParams,
+} from "@/lib/services/category-service";
 
-async function getCategoryAndProducts(name: string): Promise<{
-  category: { id: string; name: string; description: string } | null;
-  products: Product[];
-}> {
-  try {
-    const category = await prisma.productType.findFirst({
-      where: { name: { equals: name.replace("-", " "), mode: "insensitive" } },
-      select: { id: true, name: true, description: true },
-    });
-    if (!category) return { category: null, products: [] };
-
-    const products = await prisma.product.findMany({
-      where: { productTypeId: category.id },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        productTypeId: true,
-        durationId: true,
-        imageUrl: true,
-        currentMarketPricePerKg: true,
-        ProductType: { select: { id: true, name: true } },
-        duration: { select: { id: true, name: true } },
-      },
-    });
-
-    return { category, products };
-  } catch (error) {
-    console.error("Error fetching category and products:", error);
-    return { category: null, products: [] };
-  }
-}
-
-export async function generateStaticParams() {
-  const categories = await prisma.productType.findMany({
-    select: { name: true },
-  });
-  return categories.map((category) => ({
-    name: category.name.toLowerCase().replace(/\s+/g, "-"),
-  }));
-}
+export const generateStaticParams = getCategoryStaticParams;
 
 export default async function CategoryPage({
   params,
