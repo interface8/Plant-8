@@ -48,9 +48,13 @@ export async function generateStaticParams() {
 export default async function DurationPage({
   params,
 }: {
-  params: { name: string };
+  params: Promise<{ name: string }>;
 }) {
-  const { duration, products } = await getDurationAndProducts(params.name);
+  const { duration, products } = await getDurationAndProducts(
+    (
+      await params
+    ).name
+  );
   if (!duration) return notFound();
 
   return (

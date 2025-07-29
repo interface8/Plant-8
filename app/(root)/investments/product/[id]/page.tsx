@@ -54,11 +54,11 @@ export async function generateStaticParams() {
 export default async function ProductDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   // Extract UUID from the end of the slug (last 36 characters for a standard UUID)
   const uuidLength = 36; // Length of a UUID (including hyphens)
-  const productId = params.id.slice(-uuidLength);
+  const productId = (await params).id.slice(-uuidLength);
 
   if (!productId) {
     console.error("No product ID found in URL");

@@ -50,9 +50,13 @@ export async function generateStaticParams() {
 export default async function CategoryPage({
   params,
 }: {
-  params: { name: string };
+  params: Promise<{ name: string }>;
 }) {
-  const { category, products } = await getCategoryAndProducts(params.name);
+  const { category, products } = await getCategoryAndProducts(
+    (
+      await params
+    ).name
+  );
   if (!category) return notFound();
 
   return (

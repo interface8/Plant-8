@@ -5,11 +5,11 @@ import { productTypeSchema } from "@/lib/validators/product-type-schema-validato
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const productType = await prisma.productType.findUnique({
-      where: { id: params.id },
+      where: { id: (await params).id },
       include: {
         children: {
           select: {
@@ -40,7 +40,7 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
   if (!session?.user?.roles?.includes("ADMIN")) {
@@ -72,7 +72,7 @@ export async function PUT(
     }
 
     const productType = await prisma.productType.update({
-      where: { id: params.id },
+      where: { id: (await params).id },
       data: {
         name,
         description,
@@ -93,7 +93,7 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
   if (!session?.user?.roles?.includes("ADMIN")) {
@@ -102,7 +102,7 @@ export async function DELETE(
 
   try {
     const productType = await prisma.productType.findUnique({
-      where: { id: params.id },
+      where: { id: (await params).id },
       include: {
         children: { select: { id: true } },
         products: { select: { id: true } },
@@ -124,7 +124,7 @@ export async function DELETE(
     }
 
     await prisma.productType.delete({
-      where: { id: params.id },
+      where: { id: (await params).id },
     });
 
     return NextResponse.json(
