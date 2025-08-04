@@ -53,6 +53,15 @@ model User {
   createdDurations  Duration[] @relation("CreatedByDuration")
   modifiedDurations Duration[] @relation("ModifiedByDuration")
 
+  createdStates  State[] @relation("CreatedByState")
+  modifiedStates State[] @relation("ModifiedByState")
+
+  createdLocations  Location[] @relation("CreatedByLocation")
+  modifiedLocations Location[] @relation("ModifiedByLocation")
+
+  createdLands  Land[] @relation("CreatedByLand")
+  modifiedLands Land[] @relation("ModifiedByLand")
+
   createdTestimonies      Testimony[] @relation("CreatedBy")
   modifiedTestimonies     Testimony[] @relation("ModifiedBy")
   addresses               Address[]   @relation("UserAddresses")
@@ -247,6 +256,10 @@ model Investment {
   inspectorId    String?          @db.Uuid
   productId      String           @db.Uuid
   productTypeId  String           @db.Uuid
+  landId         String?          @db.Uuid
+  plotSize       String?
+  numberOfPlots  Int              @default(1)
+  numberOfTerms  Int              @default(1)
   amount         Float
   expectedReturn Float            @default(0)
   progress       Int              @default(0)
@@ -260,6 +273,7 @@ model Investment {
   user           User        @relation("UserInvestments", fields: [userId], references: [id])
   product        Product     @relation("InvestmentToProduct", fields: [productId], references: [id])
   productType    ProductType @relation("ProductTypeToInvestments", fields: [productTypeId], references: [id])
+  land           Land?       @relation(fields: [landId], references: [id])
   createdByUser  User?       @relation("CreatedByInvestment", fields: [createdBy], references: [id])
   modifiedByUser User?       @relation("ModifiedByInvestment", fields: [modifiedBy], references: [id])
 
@@ -309,6 +323,52 @@ model TaskAudit {
   taskId    String   @db.Uuid
 
   task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+}
+
+model State {
+  id             String     @id @default(uuid()) @db.Uuid
+  name           String     @unique
+  createdAt      DateTime   @default(now()) @db.Timestamp(6)
+  createdBy      String?    @db.Uuid
+  modifiedAt     DateTime?  @db.Timestamp(6)
+  modifiedBy     String?    @db.Uuid
+  locations      Location[]
+  createdByUser  User?      @relation("CreatedByState", fields: [createdBy], references: [id])
+  modifiedByUser User?      @relation("ModifiedByState", fields: [modifiedBy], references: [id])
+}
+
+model Location {
+  id             String    @id @default(uuid()) @db.Uuid
+  name           String
+  stateId        String    @db.Uuid
+  createdAt      DateTime  @default(now()) @db.Timestamp(6)
+  createdBy      String?   @db.Uuid
+  modifiedAt     DateTime? @db.Timestamp(6)
+  modifiedBy     String?   @db.Uuid
+  state          State     @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  lands          Land[]
+  createdByUser  User?     @relation("CreatedByLocation", fields: [createdBy], references: [id])
+  modifiedByUser User?     @relation("ModifiedByLocation", fields: [modifiedBy], references: [id])
+
+  @@unique([name, stateId])
+}
+
+model Land {
+  id             String       @id @default(uuid()) @db.Uuid
+  locationId     String       @db.Uuid
+  name           String
+  gpsCoordinates String? // e.g., "6.5244,3.3792" for map integration
+  halfPlotPrice  Float        @default(0)
+  fullPlotPrice  Float        @default(0)
+  imageUrl       String?
+  createdAt      DateTime     @default(now()) @db.Timestamp(6)
+  createdBy      String?      @db.Uuid
+  modifiedAt     DateTime?    @db.Timestamp(6)
+  modifiedBy     String?      @db.Uuid
+  location       Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  investments    Investment[]
+  createdByUser  User?        @relation("CreatedByLand", fields: [createdBy], references: [id])
+  modifiedByUser User?        @relation("ModifiedByLand", fields: [modifiedBy], references: [id])
 }
 
 model Carousel {

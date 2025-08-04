@@ -5,7 +5,8 @@ import {
   getProduct,
   getProductStaticParams,
 } from "@/lib/services/product-service";
-import InvestmentForm from "@/components/investment/investment-form";
+
+import Link from "next/link";
 
 export const generateStaticParams = getProductStaticParams;
 
@@ -31,13 +32,23 @@ export default async function ProductDetailPage({
   return (
     <>
       <Head>
-        <title>{`${product.name} Investment - FAM 8`}</title>
+        <title>{`${product.name} Investment - Agribid`}</title>
         <meta name="description" content={product.description} />
         <meta
           name="keywords"
-          content={`${product.name}, ${product.ProductType.name}, agricultural investment, ${product.duration.name}, FAM 8`}
+          content={`${product.name}, ${product.ProductType.name}, agricultural investment, ${product.duration.name}, Agribid`}
         />
         <meta name="robots" content="index, follow" />
+        <meta
+          property="og:title"
+          content={`${product.name} Investment - Agribid`}
+        />
+        <meta property="og:description" content={product.description} />
+        <meta
+          property="og:image"
+          content={product.imageUrl || "/placeholder-image.jpg"}
+        />
+        <meta property="og:type" content="website" />
       </Head>
       <div className="p-6 max-w-4xl mx-auto">
         <h1
@@ -76,14 +87,17 @@ export default async function ProductDetailPage({
                   Market Price
                 </dt>
                 <dd className="text-gray-900">
-                  ₦{product.currentMarketPricePerKg.toFixed(2)}/kg
+                  ₦{product.currentMarketPricePerKg.toLocaleString()}/kg
                 </dd>
               </div>
             </dl>
-            <InvestmentForm
-              productId={product.id}
-              productTypeId={product.productTypeId}
-            />
+            <Link
+              href={`/investments/land?productId=${product.id}&productTypeId=${product.productTypeId}`}
+              className="inline-block mt-6 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+              aria-label={`Select land for ${product.name} investment`}
+            >
+              Proceed with Investment
+            </Link>
           </div>
         </div>
       </div>
@@ -91,6 +105,7 @@ export default async function ProductDetailPage({
   );
 }
 
+//....................................................................................................................................
 // import { Suspense } from "react";
 // import { notFound } from "next/navigation";
 // import { InvestmentForm } from "@/components/investment/investment-form";

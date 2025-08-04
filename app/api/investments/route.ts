@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import prisma from "@/db/prisma";
 import { investmentSchema } from "@/lib/validators/investment-schema-validators";
-import { auth } from "@/auth";
 
 export async function GET() {
   const session = await auth();
@@ -15,15 +15,46 @@ export async function GET() {
       select: {
         id: true,
         userId: true,
+        inspectorId: true,
         productId: true,
         productTypeId: true,
+        landId: true,
+        plotSize: true,
+        numberOfPlots: true,
+        numberOfTerms: true,
         amount: true,
         expectedReturn: true,
         progress: true,
         status: true,
         createdAt: true,
-        product: { select: { id: true, name: true, imageUrl: true } },
+        createdBy: true,
+        modifiedAt: true,
+        modifiedBy: true,
+        product: {
+          select: {
+            id: true,
+            name: true,
+            imageUrl: true,
+            duration: { select: { id: true, name: true } },
+          },
+        },
         productType: { select: { id: true, name: true } },
+        land: {
+          select: {
+            id: true,
+            name: true,
+            gpsCoordinates: true,
+            halfPlotPrice: true,
+            fullPlotPrice: true,
+            location: {
+              select: {
+                id: true,
+                name: true,
+                state: { select: { id: true, name: true } },
+              },
+            },
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -54,7 +85,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const { userId, productId, productTypeId, amount } = parsed.data;
+    const {
+      userId,
+      productId,
+      productTypeId,
+      landId,
+      plotSize,
+      numberOfPlots,
+      numberOfTerms,
+    } = parsed.data;
 
     if (userId !== session.user.id) {
       return NextResponse.json(
@@ -65,7 +104,12 @@ export async function POST(request: Request) {
 
     const product = await prisma.product.findUnique({
       where: { id: productId },
-      select: { id: true, productTypeId: true, currentMarketPricePerKg: true },
+      select: {
+        id: true,
+        productTypeId: true,
+        currentMarketPricePerKg: true,
+        duration: { select: { name: true } },
+      },
     });
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
@@ -77,13 +121,33 @@ export async function POST(request: Request) {
       );
     }
 
-    const expectedReturn = amount * 1.2; // Example: 20% return, adjust as needed
+    const land = await prisma.land.findUnique({
+      where: { id: landId },
+      select: { id: true, halfPlotPrice: true, fullPlotPrice: true },
+    });
+    if (!land) {
+      return NextResponse.json({ error: "Land not found" }, { status: 404 });
+    }
+
+    const plotPrice =
+      plotSize === "HALF" ? land.halfPlotPrice : land.fullPlotPrice;
+    const farmerMonthlyPayment = 10000; // ₦10,000 per month
+    const monthsMatch = product.duration.name.match(/(\d+)\s*month/i);
+    const durationMonths = monthsMatch ? parseInt(monthsMatch[1]) : 1; // Default to 1 month if parsing fails
+    const plotCost = plotPrice * numberOfPlots * numberOfTerms;
+    const farmerCost = farmerMonthlyPayment * durationMonths * numberOfTerms;
+    const amount = plotCost + farmerCost;
+    const expectedReturn = plotCost * 1.2; // 20% return on plot cost only
 
     const investment = await prisma.investment.create({
       data: {
         userId,
         productId,
         productTypeId,
+        landId,
+        plotSize,
+        numberOfPlots,
+        numberOfTerms,
         amount,
         expectedReturn,
         progress: 0,
@@ -92,6 +156,7 @@ export async function POST(request: Request) {
       },
       include: {
         product: { select: { name: true } },
+        land: { select: { name: true } },
       },
     });
 
@@ -101,6 +166,9 @@ export async function POST(request: Request) {
         investment: {
           id: investment.id,
           productName: investment.product.name,
+          landName: investment.land?.name,
+          numberOfPlots: investment.numberOfPlots,
+          numberOfTerms: investment.numberOfTerms,
           amount: investment.amount,
           expectedReturn: investment.expectedReturn,
           status: investment.status,
