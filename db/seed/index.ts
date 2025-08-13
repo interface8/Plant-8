@@ -8,6 +8,7 @@ import { seedProducts } from "./seedProducts";
 import { seedInvestments } from "./seedInvestments";
 import { seedAddressTypes } from "./seedAddressTypes";
 import { seedPreTasks } from "./seedPreTasks";
+import { seedLands } from "./seedLands";
 
 async function main() {
   try {
@@ -32,6 +33,9 @@ async function main() {
 
     const preTasks = await seedPreTasks(admin.id, products);
     console.log(`Seeded ${preTasks.length} pre-tasks`);
+
+    const lands = await seedLands();
+    console.log(`Seeded ${lands} lands`);
 
     const investments = await seedInvestments(admin.id, productTypes, products);
     console.log(`Seeded ${investments.count} investments`);

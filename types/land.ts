@@ -14,10 +14,17 @@ export interface Location {
 export interface Land {
   id: string;
   name: string;
-  locationId: string;
   gpsCoordinates: string | null;
   halfPlotPrice: number;
   fullPlotPrice: number;
   imageUrl: string | null;
-  location: { id: string; name: string; state: { id: string; name: string } };
+  locationId: string;
+  location: {
+    id: string;
+    name: string;
+    state: {
+      id: string;
+      name: string;
+    };
+  };
 }

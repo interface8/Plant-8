@@ -21,6 +21,7 @@ export async function getProduct(id: string): Promise<Product | null> {
         durationId: true,
         imageUrl: true,
         currentMarketPricePerKg: true,
+        farmerMonthlyPayment: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
       },

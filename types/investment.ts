@@ -1,6 +1,12 @@
 export interface InvestmentFormData {
+  userId: string;
   productId: string;
   productTypeId: string;
+  landId: string;
+  plotSize: "HALF" | "FULL";
+  numberOfPlots: number;
+  numberOfTerms: number;
+  durationId: string;
   amount: number;
 }
 
@@ -26,6 +32,7 @@ export interface Investment {
     id: string;
     name: string;
     imageUrl: string | null;
+    farmerMonthlyPayment: number;
     duration: { id: string; name: string };
   };
   productType: { id: string; name: string };
@@ -35,10 +42,10 @@ export interface Investment {
     gpsCoordinates: string | null;
     halfPlotPrice: number;
     fullPlotPrice: number;
-    location?: {
+    location: {
       id: string;
       name: string;
-      state?: { id: string; name: string };
+      state: { id: string; name: string };
     };
   } | null;
 }

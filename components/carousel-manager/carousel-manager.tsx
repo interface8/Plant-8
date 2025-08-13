@@ -77,7 +77,6 @@ export default function CarouselManager() {
     setValue("imageUrl", item.imageUrl);
     setValue("link", item.link || "");
     setValue("description", item.description);
-    // Format ISO strings to datetime-local format (e.g., 2025-06-13T00:00)
     setValue("startDate", new Date(item.startDate).toISOString().slice(0, 16));
     setValue("endDate", new Date(item.endDate).toISOString().slice(0, 16));
     setValue("isActive", item.isActive);

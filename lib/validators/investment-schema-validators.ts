@@ -6,16 +6,8 @@ export const investmentSchema = z.object({
   productTypeId: z.string().uuid("Invalid product type ID"),
   landId: z.string().uuid("Invalid land ID"),
   plotSize: z.enum(["HALF", "FULL"]).optional(),
-  numberOfPlots: z
-    .number()
-    .int()
-    .min(1, "Select at least 1 plot")
-    .max(10, "Cannot select more than 10 plots"),
-  numberOfTerms: z
-    .number()
-    .int()
-    .min(1, "Select at least 1 term")
-    .max(4, "Cannot select more than 4 terms"),
+  numberOfPlots: z.number().int().min(1).max(10),
+  numberOfTerms: z.number().int().min(1).max(4),
 });
 
 // export const investmentSchema = z.object({

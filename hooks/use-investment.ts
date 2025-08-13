@@ -1,23 +1,28 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import type { Investment, InvestmentFormData } from "@/types/investment";
+import { useState, useEffect } from "react";
+import { Investment } from "@/types/investment";
 
-export function useInvestments(userId?: string) {
+interface UseInvestmentsResult {
+  investments: Investment[];
+  loading: boolean;
+  error: string | null;
+  refetch: () => void;
+}
+
+export function useInvestments(): UseInvestmentsResult {
   const [investments, setInvestments] = useState<Investment[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Use useCallback to memoize the function and fix the dependency issue
-  const fetchInvestments = useCallback(async () => {
+  const fetchInvestments = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      setError(null);
-
-      const params = userId ? `?userId=${userId}` : "";
-      const response = await fetch(`/api/investments${params}`);
-      if (!response.ok) throw new Error("Failed to fetch investments");
-
+      const response = await fetch("/api/investments");
+      if (!response.ok) {
+        throw new Error("Failed to fetch investments");
+      }
       const data = await response.json();
       setInvestments(data);
     } catch (err) {
@@ -25,37 +30,11 @@ export function useInvestments(userId?: string) {
     } finally {
       setLoading(false);
     }
-  }, [userId]); // Add userId as dependency
-
-  const createInvestment = async (data: InvestmentFormData) => {
-    try {
-      const response = await fetch("/api/investments", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) throw new Error("Failed to create investment");
-
-      const newInvestment = await response.json();
-      setInvestments((prev) => [newInvestment, ...prev]);
-      return newInvestment;
-    } catch (err) {
-      throw new Error(
-        err instanceof Error ? err.message : "Failed to create investment"
-      );
-    }
   };
 
   useEffect(() => {
     fetchInvestments();
-  }, [fetchInvestments]); // Now fetchInvestments is properly memoized
+  }, []);
 
-  return {
-    investments,
-    loading,
-    error,
-    createInvestment,
-    refetch: fetchInvestments,
-  };
+  return { investments, loading, error, refetch: fetchInvestments };
 }

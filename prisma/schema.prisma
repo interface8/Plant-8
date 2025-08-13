@@ -205,6 +205,7 @@ model Product {
   productTypeId           String    @db.Uuid
   durationId              String    @db.Uuid
   currentMarketPricePerKg Float     @default(0)
+  farmerMonthlyPayment    Float     @default(10000)
 
   ProductType    ProductType  @relation("ProductToType", fields: [productTypeId], references: [id])
   duration       Duration     @relation("ProductToDuration", fields: [durationId], references: [id])
@@ -369,6 +370,8 @@ model Land {
   investments    Investment[]
   createdByUser  User?        @relation("CreatedByLand", fields: [createdBy], references: [id])
   modifiedByUser User?        @relation("ModifiedByLand", fields: [modifiedBy], references: [id])
+
+  @@unique([name, locationId])
 }
 
 model Carousel {

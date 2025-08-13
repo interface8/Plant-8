@@ -22,6 +22,7 @@ export async function getCategoryAndProducts(name: string): Promise<{
         durationId: true,
         imageUrl: true,
         currentMarketPricePerKg: true,
+        farmerMonthlyPayment: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
       },

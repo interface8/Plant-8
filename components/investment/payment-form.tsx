@@ -1,111 +1,122 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/store/store";
+import { setError, setInvestmentData } from "@/store/slices/investmentSlice";
+import prisma from "@/db/prisma";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
 
-interface PaymentFormProps {
-  investmentId: string;
-  amount: number;
-}
-
-export default function PaymentForm({
-  investmentId,
-  amount,
-}: PaymentFormProps) {
-  const { data: session, status } = useSession();
+export default function PaymentForm() {
   const router = useRouter();
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const dispatch = useDispatch();
+  const { data: session } = useSession();
+  const investmentData = useSelector((state: RootState) => state.investment);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    const productId = searchParams.get("productId") || "";
+    const productTypeId = searchParams.get("productTypeId") || "";
+    const landId = searchParams.get("landId") || "";
+    const plotSize =
+      (searchParams.get("plotSize") as "HALF" | "FULL") || "FULL";
+    const numberOfPlots = parseInt(searchParams.get("numberOfPlots") || "1");
+    const durationId = searchParams.get("durationId") || "";
+    const numberOfTerms = parseInt(searchParams.get("numberOfTerms") || "1");
+
+    dispatch(
+      setInvestmentData({
+        productId,
+        productTypeId,
+        landId,
+        plotSize,
+        numberOfPlots,
+        numberOfTerms,
+        durationId,
+        userId: session?.user?.id || "",
+        amount: investmentData.amount,
+      })
+    );
+  }, [dispatch, searchParams, session, investmentData.amount]);
+
+  const handlePayment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (status !== "authenticated") {
-      setError("Please sign in to proceed with payment.");
-      return;
-    }
-
-    if (!paymentMethod) {
-      setError("Please select a payment method.");
-      return;
-    }
-
-    setError(null);
     setIsSubmitting(true);
+    dispatch(setError(null));
+
+    if (!session?.user?.id) {
+      dispatch(setError("Please sign in to complete the payment."));
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!investmentData.productId || !investmentData.productTypeId) {
+      dispatch(setError("Invalid investment data."));
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
-      // Placeholder for payment processing logic
-      // In a real application, integrate with a payment gateway (e.g., Stripe, Paystack)
-      alert(
-        `Payment of ₦${amount.toLocaleString()} via ${paymentMethod} would be processed here.`
-      );
-      router.push("/investments?success=true");
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (err) {
-      setError("Failed to process payment. Please try again.");
+      // Simulate payment processing (replace with actual payment gateway logic)
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Save investment to database
+      await prisma.investment.create({
+        data: {
+          userId: session.user.id,
+          productId: investmentData.productId,
+          productTypeId: investmentData.productTypeId,
+          landId: investmentData.landId,
+          plotSize: investmentData.plotSize,
+          numberOfPlots: investmentData.numberOfPlots,
+          numberOfTerms: investmentData.numberOfTerms,
+          amount: investmentData.amount,
+          expectedReturn: investmentData.amount * 1.2,
+          progress: 0,
+          status: "PENDING",
+          createdAt: new Date(),
+          createdBy: session.user.id,
+        },
+      });
+
+      router.push("/dashboard?payment=success");
+    } catch {
+      dispatch(setError("Payment failed. Please try again."));
       setIsSubmitting(false);
     }
   };
 
-  if (status !== "authenticated") {
-    return (
-      <div className="mt-6">
-        <Link
-          href="/sign-in"
-          className="inline-block bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-          aria-label="Sign in to pay"
-        >
-          Sign In to Pay
-        </Link>
-      </div>
-    );
-  }
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold mb-2">Select Payment Method</h3>
-        <div className="space-y-2">
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="card"
-              checked={paymentMethod === "card"}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="mr-2"
-            />
-            Credit/Debit Card
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="paymentMethod"
-              value="bank"
-              checked={paymentMethod === "bank"}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              className="mr-2"
-            />
-            Bank Transfer
-          </label>
-          {/* Add more payment methods as needed */}
+    <div className="p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-4">Complete Payment</h1>
+      <form onSubmit={handlePayment} className="space-y-6">
+        <div>
+          <p className="text-sm font-medium text-gray-700">
+            Investment Amount: ₦{investmentData.amount.toLocaleString()}
+          </p>
+          <p className="text-sm font-medium text-gray-700">
+            Farmer Monthly Payout: ₦
+            {investmentData.farmerMonthlyPayment?.toLocaleString() || "N/A"}
+          </p>
         </div>
-      </div>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      <button
-        type="submit"
-        disabled={isSubmitting || !paymentMethod}
-        className={`w-full bg-green-600 text-white px-4 py-2 rounded-md ${
-          isSubmitting || !paymentMethod
-            ? "opacity-50 cursor-not-allowed"
-            : "hover:bg-green-700"
-        } transition-colors`}
-        aria-label="Complete Payment"
-      >
-        {isSubmitting ? "Processing..." : `Pay ₦${amount.toLocaleString()}`}
-      </button>
-    </form>
+        {investmentData.error && (
+          <p className="text-red-500 text-sm">{investmentData.error}</p>
+        )}
+        <button
+          type="submit"
+          disabled={isSubmitting || !session?.user?.id}
+          className={`w-full bg-green-600 text-white px-4 py-2 rounded-md ${
+            isSubmitting || !session?.user?.id
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-green-700"
+          } transition-colors`}
+          aria-label="Complete Payment"
+        >
+          {isSubmitting ? "Processing..." : "Pay Now"}
+        </button>
+      </form>
+    </div>
   );
 }

@@ -7,17 +7,47 @@ import FinancialCharts from "@/components/dashboard/financialCharts";
 import InvestmentSummary from "@/components/dashboard/InvestmentSummary";
 import ProgressFeed from "@/components/dashboard/progressFeed";
 
-export default async function Dashboard() {
+export default async function Dashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ payment?: string }>;
+}) {
   const session = await auth();
   if (!session?.user?.id) {
     redirect("/sign-in");
   }
 
+  const { payment } = await searchParams;
+
   const investments = await prisma.investment.findMany({
     where: { userId: session.user.id },
     include: {
-      product: { select: { id: true, name: true, imageUrl: true } },
+      product: {
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+          farmerMonthlyPayment: true,
+          duration: { select: { id: true, name: true } },
+        },
+      },
       productType: { select: { id: true, name: true } },
+      land: {
+        select: {
+          id: true,
+          name: true,
+          gpsCoordinates: true,
+          halfPlotPrice: true,
+          fullPlotPrice: true,
+          location: {
+            select: {
+              id: true,
+              name: true,
+              state: { select: { id: true, name: true } },
+            },
+          },
+        },
+      },
     },
     orderBy: { createdAt: "desc" },
   });
@@ -27,7 +57,7 @@ export default async function Dashboard() {
     (inv) => inv.status === "PENDING" || inv.status === "ACTIVE"
   ).length;
   const monthlyReturns =
-    investments.reduce((sum, inv) => sum + (inv.expectedReturn || 0), 0) * 0.1; //  10% monthly
+    investments.reduce((sum, inv) => sum + (inv.expectedReturn || 0), 0) * 0.1;
   const portfolioGrowth =
     totalInvestment > 0
       ? ((totalInvestment + monthlyReturns) / totalInvestment - 1) * 100
@@ -62,6 +92,11 @@ export default async function Dashboard() {
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
               Your Dashboard
             </h1>
+            {payment === "success" && (
+              <p className="text-green-600 mt-2">
+                Payment successful! Your investment has been recorded.
+              </p>
+            )}
           </div>
         </div>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
@@ -89,56 +124,3 @@ export default async function Dashboard() {
     </>
   );
 }
-
-// import ActiveProjects from "@/components/dashboard/activeProjects";
-// import FinancialCharts from "@/components/dashboard/financialCharts";
-// import InvestmentSummary from "@/components/dashboard/InvestmentSummary";
-// import ProgressFeed from "@/components/dashboard/progressFeed";
-
-// // export default async function Dashboard() {
-// //   return (
-// //     <div className="min-h-screen bg-gray-50 py-8">
-// //       <div className="container mx-auto px-4">
-// //         <h1 className="text-3xl font-bold mb-8">Your Dashboard</h1>
-// //         <InvestmentSummary />
-// //         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-5 mb-5">
-// //           <ActiveProjects />
-// //           <ProgressFeed />
-// //         </div>
-// //         <FinancialCharts />
-// //       </div>
-// //     </div>
-// //   );
-// // }
-
-// export default function Dashboard() {
-//   return (
-//     <div className="min-h-screen bg-gray-50">
-//       {/* Header */}
-//       <div className="bg-white shadow-sm border-b border-gray-200">
-//         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 md:py-6">
-//           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-//             Your Dashboard
-//           </h1>
-//         </div>
-//       </div>
-
-//       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-//         <div className="mb-6 md:mb-8">
-//           <InvestmentSummary />
-//         </div>
-
-//         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-//           <div className="lg:col-span-2 space-y-6 md:space-y-8">
-//             <FinancialCharts />
-//             <ActiveProjects />
-//           </div>
-
-//           <div className="lg:col-span-1">
-//             <ProgressFeed />
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }

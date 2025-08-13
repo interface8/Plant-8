@@ -138,6 +138,7 @@ CREATE TABLE "Product" (
     "productTypeId" UUID NOT NULL,
     "durationId" UUID NOT NULL,
     "currentMarketPricePerKg" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "farmerMonthlyPayment" DOUBLE PRECISION DEFAULT 10000,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
@@ -176,6 +177,10 @@ CREATE TABLE "Investment" (
     "inspectorId" UUID,
     "productId" UUID NOT NULL,
     "productTypeId" UUID NOT NULL,
+    "landId" UUID,
+    "plotSize" TEXT,
+    "numberOfPlots" INTEGER NOT NULL DEFAULT 1,
+    "numberOfTerms" INTEGER NOT NULL DEFAULT 1,
     "amount" DOUBLE PRECISION NOT NULL,
     "expectedReturn" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "progress" INTEGER NOT NULL DEFAULT 0,
@@ -229,6 +234,48 @@ CREATE TABLE "TaskAudit" (
     "taskId" UUID NOT NULL,
 
     CONSTRAINT "TaskAudit_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "State" (
+    "id" UUID NOT NULL,
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdBy" UUID,
+    "modifiedAt" TIMESTAMP(6),
+    "modifiedBy" UUID,
+
+    CONSTRAINT "State_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Location" (
+    "id" UUID NOT NULL,
+    "name" TEXT NOT NULL,
+    "stateId" UUID NOT NULL,
+    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdBy" UUID,
+    "modifiedAt" TIMESTAMP(6),
+    "modifiedBy" UUID,
+
+    CONSTRAINT "Location_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Land" (
+    "id" UUID NOT NULL,
+    "locationId" UUID NOT NULL,
+    "name" TEXT NOT NULL,
+    "gpsCoordinates" TEXT,
+    "halfPlotPrice" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "fullPlotPrice" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "imageUrl" TEXT,
+    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdBy" UUID,
+    "modifiedAt" TIMESTAMP(6),
+    "modifiedBy" UUID,
+
+    CONSTRAINT "Land_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -291,6 +338,15 @@ CREATE INDEX "Duration_createdBy_idx" ON "Duration"("createdBy");
 
 -- CreateIndex
 CREATE INDEX "Duration_modifiedBy_idx" ON "Duration"("modifiedBy");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "State_name_key" ON "State"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Location_name_stateId_key" ON "Location"("name", "stateId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Land_name_locationId_key" ON "Land"("name", "locationId");
 
 -- AddForeignKey
 ALTER TABLE "User" ADD CONSTRAINT "User_modifiedBy_fkey" FOREIGN KEY ("modifiedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
@@ -374,6 +430,9 @@ ALTER TABLE "Investment" ADD CONSTRAINT "Investment_productId_fkey" FOREIGN KEY 
 ALTER TABLE "Investment" ADD CONSTRAINT "Investment_productTypeId_fkey" FOREIGN KEY ("productTypeId") REFERENCES "ProductType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Investment" ADD CONSTRAINT "Investment_landId_fkey" FOREIGN KEY ("landId") REFERENCES "Land"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Investment" ADD CONSTRAINT "Investment_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -396,6 +455,30 @@ ALTER TABLE "Task" ADD CONSTRAINT "Task_inspectorId_fkey" FOREIGN KEY ("inspecto
 
 -- AddForeignKey
 ALTER TABLE "TaskAudit" ADD CONSTRAINT "TaskAudit_taskId_fkey" FOREIGN KEY ("taskId") REFERENCES "Task"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "State" ADD CONSTRAINT "State_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "State" ADD CONSTRAINT "State_modifiedBy_fkey" FOREIGN KEY ("modifiedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Location" ADD CONSTRAINT "Location_stateId_fkey" FOREIGN KEY ("stateId") REFERENCES "State"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Location" ADD CONSTRAINT "Location_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Location" ADD CONSTRAINT "Location_modifiedBy_fkey" FOREIGN KEY ("modifiedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Land" ADD CONSTRAINT "Land_locationId_fkey" FOREIGN KEY ("locationId") REFERENCES "Location"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Land" ADD CONSTRAINT "Land_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Land" ADD CONSTRAINT "Land_modifiedBy_fkey" FOREIGN KEY ("modifiedBy") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Testimony" ADD CONSTRAINT "Testimony_createdBy_fkey" FOREIGN KEY ("createdBy") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

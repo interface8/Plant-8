@@ -1,9 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import {
+  setInvestmentData,
+  setFarmerMonthlyPayment,
+  setError,
+} from "@/store/slices/investmentSlice";
 import { z } from "zod";
 import { Land } from "@/types/land";
 import { Product } from "@/types/product";
@@ -23,8 +29,6 @@ const investmentDetailsSchema = z.object({
     .max(4, "Cannot select more than 4 terms"),
 });
 
-type InvestmentDetailsFormData = z.infer<typeof investmentDetailsSchema>;
-
 interface InvestmentDetailsFormProps {
   product: Product;
   land: Land;
@@ -38,44 +42,79 @@ export default function InvestmentDetailsForm({
 }: InvestmentDetailsFormProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [formData, setFormData] = useState<InvestmentDetailsFormData>({
-    plotSize: "FULL",
-    numberOfPlots: 1,
-    durationId: product.durationId,
-    numberOfTerms: 1,
-  });
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useDispatch();
+  const investmentData = useSelector((state: RootState) => state.investment);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    dispatch(setFarmerMonthlyPayment(product.farmerMonthlyPayment));
+    dispatch(
+      setInvestmentData({
+        productId: product.id,
+        productTypeId: product.productTypeId,
+        landId: land.id,
+        plotSize: investmentData.plotSize || "FULL",
+        numberOfPlots: investmentData.numberOfPlots || 1,
+        durationId: product.durationId,
+        numberOfTerms: investmentData.numberOfTerms || 1,
+        amount: 0, // Initialize amount, will be calculated below
+      })
+    );
+
+    const plotPrice =
+      investmentData.plotSize === "HALF"
+        ? land.halfPlotPrice
+        : land.fullPlotPrice;
+    const farmerMonthlyPayment = product.farmerMonthlyPayment;
+    const duration = durations.find((d) => d.id === investmentData.durationId);
+    const monthsMatch = duration?.name.match(/(\d+)\s*month/i);
+    const durationMonths = monthsMatch ? parseInt(monthsMatch[1]) : 1;
+    const plotCost =
+      plotPrice * investmentData.numberOfPlots * investmentData.numberOfTerms;
+    const farmerCost =
+      farmerMonthlyPayment * durationMonths * investmentData.numberOfTerms;
+    const total = plotCost + farmerCost;
+    dispatch(setInvestmentData({ amount: total }));
+  }, [
+    investmentData.plotSize,
+    investmentData.numberOfPlots,
+    investmentData.numberOfTerms,
+    investmentData.durationId, // Added to fix react-hooks/exhaustive-deps
+    land,
+    durations,
+    dispatch,
+    product,
+    product.farmerMonthlyPayment,
+  ]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (status !== "authenticated") {
-      setError("Please sign in to invest.");
+    if (status !== "authenticated" || !session?.user?.id) {
+      dispatch(setError("Please sign in to invest."));
       return;
     }
 
-    const parsed = investmentDetailsSchema.safeParse(formData);
+    const parsed = investmentDetailsSchema.safeParse({
+      plotSize: investmentData.plotSize,
+      numberOfPlots: investmentData.numberOfPlots,
+      durationId: investmentData.durationId,
+      numberOfTerms: investmentData.numberOfTerms,
+    });
     if (!parsed.success) {
-      setError(parsed.error.errors[0].message);
+      dispatch(setError(parsed.error.errors[0].message));
       return;
     }
 
-    setError(null);
+    dispatch(setError(null));
     setIsSubmitting(true);
 
     try {
       router.push(
-        `/investments/summary?productId=${product.id}&productTypeId=${
-          product.productTypeId
-        }&landId=${land.id}&plotSize=${formData.plotSize || ""}&numberOfPlots=${
-          formData.numberOfPlots
-        }&durationId=${formData.durationId}&numberOfTerms=${
-          formData.numberOfTerms
-        }`
+        `/investments/summary?productId=${investmentData.productId}&productTypeId=${investmentData.productTypeId}&landId=${investmentData.landId}&plotSize=${investmentData.plotSize}&numberOfPlots=${investmentData.numberOfPlots}&durationId=${investmentData.durationId}&numberOfTerms=${investmentData.numberOfTerms}`
       );
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
-      setError("Failed to proceed. Please try again.");
+      dispatch(setError("Failed to proceed. Please try again."));
       setIsSubmitting(false);
     }
   };
@@ -83,13 +122,13 @@ export default function InvestmentDetailsForm({
   if (status !== "authenticated") {
     return (
       <div className="mt-6">
-        <Link
+        <a
           href="/sign-in"
           className="inline-block bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
           aria-label="Sign in to invest"
         >
           Sign In to Invest
-        </Link>
+        </a>
       </div>
     );
   }
@@ -111,12 +150,11 @@ export default function InvestmentDetailsForm({
         </label>
         <select
           id="plotSize"
-          value={formData.plotSize || ""}
+          value={investmentData.plotSize || ""}
           onChange={(e) =>
-            setFormData({
-              ...formData,
-              plotSize: e.target.value as "HALF" | "FULL",
-            })
+            dispatch(
+              setInvestmentData({ plotSize: e.target.value as "HALF" | "FULL" })
+            )
           }
           className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
         >
@@ -138,12 +176,11 @@ export default function InvestmentDetailsForm({
         <input
           type="number"
           id="numberOfPlots"
-          value={formData.numberOfPlots}
+          value={investmentData.numberOfPlots}
           onChange={(e) =>
-            setFormData({
-              ...formData,
-              numberOfPlots: parseInt(e.target.value),
-            })
+            dispatch(
+              setInvestmentData({ numberOfPlots: parseInt(e.target.value) })
+            )
           }
           min="1"
           max="10"
@@ -160,11 +197,9 @@ export default function InvestmentDetailsForm({
         </label>
         <select
           id="durationId"
-          value={formData.durationId}
-          onChange={(e) =>
-            setFormData({ ...formData, durationId: e.target.value })
-          }
-          className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
+          value={investmentData.durationId || ""}
+          disabled={true}
+          className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500 opacity-50 cursor-not-allowed"
           required
         >
           {durations.map((duration) => (
@@ -184,12 +219,11 @@ export default function InvestmentDetailsForm({
         <input
           type="number"
           id="numberOfTerms"
-          value={formData.numberOfTerms}
+          value={investmentData.numberOfTerms}
           onChange={(e) =>
-            setFormData({
-              ...formData,
-              numberOfTerms: parseInt(e.target.value),
-            })
+            dispatch(
+              setInvestmentData({ numberOfTerms: parseInt(e.target.value) })
+            )
           }
           min="1"
           max="4"
@@ -197,7 +231,18 @@ export default function InvestmentDetailsForm({
           required
         />
       </div>
-      {error && <p className="text-red-500 text-sm">{error}</p>}
+      <div>
+        <p className="text-sm font-medium text-gray-700">
+          Farmer Monthly Payout: ₦
+          {product.farmerMonthlyPayment.toLocaleString()} per plot
+        </p>
+        <p className="text-sm font-medium text-gray-700">
+          Estimated Total: ₦{investmentData.amount.toLocaleString()}
+        </p>
+      </div>
+      {investmentData.error && (
+        <p className="text-red-500 text-sm">{investmentData.error}</p>
+      )}
       <button
         type="submit"
         disabled={isSubmitting}

@@ -35,6 +35,7 @@ export async function GET() {
             id: true,
             name: true,
             imageUrl: true,
+            farmerMonthlyPayment: true,
             duration: { select: { id: true, name: true } },
           },
         },
@@ -108,6 +109,7 @@ export async function POST(request: Request) {
         id: true,
         productTypeId: true,
         currentMarketPricePerKg: true,
+        farmerMonthlyPayment: true,
         duration: { select: { name: true } },
       },
     });
@@ -131,13 +133,13 @@ export async function POST(request: Request) {
 
     const plotPrice =
       plotSize === "HALF" ? land.halfPlotPrice : land.fullPlotPrice;
-    const farmerMonthlyPayment = 10000; // ₦10,000 per month
+    const farmerMonthlyPayment = product.farmerMonthlyPayment;
     const monthsMatch = product.duration.name.match(/(\d+)\s*month/i);
-    const durationMonths = monthsMatch ? parseInt(monthsMatch[1]) : 1; // Default to 1 month if parsing fails
+    const durationMonths = monthsMatch ? parseInt(monthsMatch[1]) : 1;
     const plotCost = plotPrice * numberOfPlots * numberOfTerms;
     const farmerCost = farmerMonthlyPayment * durationMonths * numberOfTerms;
     const amount = plotCost + farmerCost;
-    const expectedReturn = plotCost * 1.2; // 20% return on plot cost only
+    const expectedReturn = plotCost * 1.2;
 
     const investment = await prisma.investment.create({
       data: {
