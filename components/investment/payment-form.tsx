@@ -17,6 +17,7 @@ export default function PaymentForm({ onSuccess }: PaymentFormProps) {
   const { data: session } = useSession();
   const investmentData = useSelector((state: RootState) => state.investment);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const handlePayment = async () => {
     setIsSubmitting(true);
@@ -40,10 +41,8 @@ export default function PaymentForm({ onSuccess }: PaymentFormProps) {
     }
 
     try {
-      // Simulate payment processing (replace with actual payment gateway logic)
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Call the POST /api/investments endpoint
       const response = await fetch("/api/investments", {
         method: "POST",
         headers: {
@@ -66,6 +65,7 @@ export default function PaymentForm({ onSuccess }: PaymentFormProps) {
       if (response.ok && result.investment) {
         dispatch(setError(null));
         onSuccess?.();
+        setIsNavigating(true);
         router.push("/dashboard?payment=success");
       } else {
         dispatch(setError(result.error || "Failed to create investment."));
@@ -76,6 +76,10 @@ export default function PaymentForm({ onSuccess }: PaymentFormProps) {
       setIsSubmitting(false);
     }
   };
+
+  if (isNavigating) {
+    return <p>Navigating to dashboard...</p>;
+  }
 
   return (
     <div className="p-6 max-w-4xl mx-auto">

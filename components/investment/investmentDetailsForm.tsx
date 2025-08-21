@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -33,7 +32,7 @@ interface InvestmentDetailsFormProps {
   product: Product;
   land: Land;
   durations: { id: string; name: string }[];
-  onSubmit?: () => void; // Added for advancing step
+  onSubmit?: () => void;
 }
 
 export default function InvestmentDetailsForm({
@@ -98,7 +97,8 @@ export default function InvestmentDetailsForm({
     setIsSubmitting(true);
 
     try {
-      onSubmit?.(); // Call callback to advance
+      onSubmit?.();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
       dispatch(setError("Failed to proceed. Please try again."));
     } finally {
@@ -163,12 +163,19 @@ export default function InvestmentDetailsForm({
         <input
           type="number"
           id="numberOfPlots"
-          value={investmentData.numberOfPlots}
-          onChange={(e) =>
-            dispatch(
-              setInvestmentData({ numberOfPlots: parseInt(e.target.value) })
-            )
+          value={
+            investmentData.numberOfPlots === 0
+              ? ""
+              : investmentData.numberOfPlots
           }
+          onChange={(e) => {
+            const value = e.target.value;
+            dispatch(
+              setInvestmentData({
+                numberOfPlots: value === "" ? 0 : parseInt(value, 10) || 0,
+              })
+            );
+          }}
           min="1"
           max="10"
           className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
@@ -206,12 +213,19 @@ export default function InvestmentDetailsForm({
         <input
           type="number"
           id="numberOfTerms"
-          value={investmentData.numberOfTerms}
-          onChange={(e) =>
-            dispatch(
-              setInvestmentData({ numberOfTerms: parseInt(e.target.value) })
-            )
+          value={
+            investmentData.numberOfTerms === 0
+              ? ""
+              : investmentData.numberOfTerms
           }
+          onChange={(e) => {
+            const value = e.target.value;
+            dispatch(
+              setInvestmentData({
+                numberOfTerms: value === "" ? 0 : parseInt(value, 10) || 0,
+              })
+            );
+          }}
           min="1"
           max="4"
           className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
