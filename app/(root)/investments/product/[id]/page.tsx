@@ -92,7 +92,7 @@ export default async function ProductDetailPage({
               </div>
             </dl>
             <Link
-              href={`/investments/land?productId=${product.id}&productTypeId=${product.productTypeId}`}
+              href={`/investments?productId=${product.id}&productTypeId=${product.productTypeId}`}
               className="inline-block mt-6 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
               aria-label={`Select land for ${product.name} investment`}
             >

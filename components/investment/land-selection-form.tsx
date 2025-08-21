@@ -1,34 +1,27 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
-import { Product } from "@/types/product";
 import { Land } from "@/types/land";
 import { State } from "@/types/state";
 
 interface LandSelectionFormProps {
-  product: Product;
   lands: Land[];
   states: State[];
   initialState?: string;
+  onLandSelect?: (landId: string) => void;
 }
 
 export default function LandSelectionForm({
-  product,
   lands,
   states,
   initialState,
+  onLandSelect,
 }: LandSelectionFormProps) {
-  const router = useRouter();
   const [stateFilter, setStateFilter] = useState(initialState || "");
 
   const handleStateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newState = e.target.value;
-    setStateFilter(newState);
-    router.push(
-      `/investments/land?productId=${product.id}&productTypeId=${product.productTypeId}&state=${newState}`
-    );
+    setStateFilter(e.target.value);
   };
 
   const filteredLands = stateFilter
@@ -84,13 +77,13 @@ export default function LandSelectionForm({
               Half Plot: ₦{land.halfPlotPrice.toLocaleString()} | Full Plot: ₦
               {land.fullPlotPrice.toLocaleString()}
             </p>
-            <a
-              href={`/investments/details?productId=${product.id}&productTypeId=${product.productTypeId}&landId=${land.id}`}
+            <button
+              onClick={() => onLandSelect?.(land.id)}
               className="inline-block mt-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
               aria-label={`Select ${land.name} for investment`}
             >
               Select This Land
-            </a>
+            </button>
           </div>
         ))}
       </div>

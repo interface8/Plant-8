@@ -1,48 +1,24 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
-import { setError, setInvestmentData } from "@/store/slices/investmentSlice";
-import prisma from "@/db/prisma";
+import { setError } from "@/store/slices/investmentSlice";
 import { useSession } from "next-auth/react";
 
-export default function PaymentForm() {
+interface PaymentFormProps {
+  onSuccess?: () => void;
+}
+
+export default function PaymentForm({ onSuccess }: PaymentFormProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const { data: session } = useSession();
   const investmentData = useSelector((state: RootState) => state.investment);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    const productId = searchParams.get("productId") || "";
-    const productTypeId = searchParams.get("productTypeId") || "";
-    const landId = searchParams.get("landId") || "";
-    const plotSize =
-      (searchParams.get("plotSize") as "HALF" | "FULL") || "FULL";
-    const numberOfPlots = parseInt(searchParams.get("numberOfPlots") || "1");
-    const durationId = searchParams.get("durationId") || "";
-    const numberOfTerms = parseInt(searchParams.get("numberOfTerms") || "1");
-
-    dispatch(
-      setInvestmentData({
-        productId,
-        productTypeId,
-        landId,
-        plotSize,
-        numberOfPlots,
-        numberOfTerms,
-        durationId,
-        userId: session?.user?.id || "",
-        amount: investmentData.amount,
-      })
-    );
-  }, [dispatch, searchParams, session, investmentData.amount]);
-
-  const handlePayment = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handlePayment = async () => {
     setIsSubmitting(true);
     dispatch(setError(null));
 
@@ -52,7 +28,12 @@ export default function PaymentForm() {
       return;
     }
 
-    if (!investmentData.productId || !investmentData.productTypeId) {
+    if (
+      !investmentData.productId ||
+      !investmentData.productTypeId ||
+      !investmentData.landId ||
+      !investmentData.durationId
+    ) {
       dispatch(setError("Invalid investment data."));
       setIsSubmitting(false);
       return;
@@ -62,9 +43,13 @@ export default function PaymentForm() {
       // Simulate payment processing (replace with actual payment gateway logic)
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      // Save investment to database
-      await prisma.investment.create({
-        data: {
+      // Call the POST /api/investments endpoint
+      const response = await fetch("/api/investments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           userId: session.user.id,
           productId: investmentData.productId,
           productTypeId: investmentData.productTypeId,
@@ -72,18 +57,22 @@ export default function PaymentForm() {
           plotSize: investmentData.plotSize,
           numberOfPlots: investmentData.numberOfPlots,
           numberOfTerms: investmentData.numberOfTerms,
-          amount: investmentData.amount,
-          expectedReturn: investmentData.amount * 1.2,
-          progress: 0,
-          status: "PENDING",
-          createdAt: new Date(),
-          createdBy: session.user.id,
-        },
+          durationId: investmentData.durationId,
+        }),
       });
 
-      router.push("/dashboard?payment=success");
+      const result = await response.json();
+
+      if (response.ok && result.investment) {
+        dispatch(setError(null));
+        onSuccess?.();
+        router.push("/dashboard?payment=success");
+      } else {
+        dispatch(setError(result.error || "Failed to create investment."));
+      }
     } catch {
       dispatch(setError("Payment failed. Please try again."));
+    } finally {
       setIsSubmitting(false);
     }
   };
@@ -91,7 +80,7 @@ export default function PaymentForm() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-4">Complete Payment</h1>
-      <form onSubmit={handlePayment} className="space-y-6">
+      <div className="space-y-6">
         <div>
           <p className="text-sm font-medium text-gray-700">
             Investment Amount: ₦{investmentData.amount.toLocaleString()}
@@ -105,7 +94,8 @@ export default function PaymentForm() {
           <p className="text-red-500 text-sm">{investmentData.error}</p>
         )}
         <button
-          type="submit"
+          type="button"
+          onClick={handlePayment}
           disabled={isSubmitting || !session?.user?.id}
           className={`w-full bg-green-600 text-white px-4 py-2 rounded-md ${
             isSubmitting || !session?.user?.id
@@ -116,7 +106,7 @@ export default function PaymentForm() {
         >
           {isSubmitting ? "Processing..." : "Pay Now"}
         </button>
-      </form>
+      </div>
     </div>
   );
 }

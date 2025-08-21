@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -33,33 +33,22 @@ interface InvestmentDetailsFormProps {
   product: Product;
   land: Land;
   durations: { id: string; name: string }[];
+  onSubmit?: () => void; // Added for advancing step
 }
 
 export default function InvestmentDetailsForm({
   product,
   land,
   durations,
+  onSubmit,
 }: InvestmentDetailsFormProps) {
   const { data: session, status } = useSession();
-  const router = useRouter();
   const dispatch = useDispatch();
   const investmentData = useSelector((state: RootState) => state.investment);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     dispatch(setFarmerMonthlyPayment(product.farmerMonthlyPayment));
-    dispatch(
-      setInvestmentData({
-        productId: product.id,
-        productTypeId: product.productTypeId,
-        landId: land.id,
-        plotSize: investmentData.plotSize || "FULL",
-        numberOfPlots: investmentData.numberOfPlots || 1,
-        durationId: product.durationId,
-        numberOfTerms: investmentData.numberOfTerms || 1,
-        amount: 0, // Initialize amount, will be calculated below
-      })
-    );
 
     const plotPrice =
       investmentData.plotSize === "HALF"
@@ -79,7 +68,7 @@ export default function InvestmentDetailsForm({
     investmentData.plotSize,
     investmentData.numberOfPlots,
     investmentData.numberOfTerms,
-    investmentData.durationId, // Added to fix react-hooks/exhaustive-deps
+    investmentData.durationId,
     land,
     durations,
     dispatch,
@@ -109,12 +98,10 @@ export default function InvestmentDetailsForm({
     setIsSubmitting(true);
 
     try {
-      router.push(
-        `/investments/summary?productId=${investmentData.productId}&productTypeId=${investmentData.productTypeId}&landId=${investmentData.landId}&plotSize=${investmentData.plotSize}&numberOfPlots=${investmentData.numberOfPlots}&durationId=${investmentData.durationId}&numberOfTerms=${investmentData.numberOfTerms}`
-      );
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      onSubmit?.(); // Call callback to advance
     } catch (err) {
       dispatch(setError("Failed to proceed. Please try again."));
+    } finally {
       setIsSubmitting(false);
     }
   };

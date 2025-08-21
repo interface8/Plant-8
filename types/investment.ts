@@ -5,6 +5,7 @@ export interface InvestmentFormData {
   landId: string;
   plotSize: "HALF" | "FULL";
   numberOfPlots: number;
+  farmerMonthlyPayment: number;
   numberOfTerms: number;
   durationId: string;
   amount: number;

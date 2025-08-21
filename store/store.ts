@@ -1,9 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
+
 import investmentReducer from "./slices/investmentSlice";
+import investmentStepReducer from "./slices/investmentStepSlice";
 
 export const store = configureStore({
   reducer: {
     investment: investmentReducer,
+    investmentStep: investmentStepReducer,
   },
 });
 
