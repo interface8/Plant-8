@@ -60,7 +60,7 @@ export default function InvestmentStepWrapper({
     );
   }, [dispatch, product]);
 
-  // Validation: Go back if data missing for step
+  
   useEffect(() => {
     if (currentStep === 2 && !investment.landId) {
       dispatch(setError("Please select a land before proceeding."));
@@ -82,7 +82,7 @@ export default function InvestmentStepWrapper({
     }
   }, [currentStep, investment, dispatch]);
 
-  // Derive selected land and duration from IDs
+
   const selectedLand = lands.find((l) => l.id === investment.landId) || null;
   const selectedDuration =
     durations.find((d) => d.id === investment.durationId) || null;
@@ -142,7 +142,7 @@ export default function InvestmentStepWrapper({
                 farmerMonthlyPayment: 0,
               })
             );
-            // No 'error' property here, as it's not in InvestmentFormData
+        
           }}
         />
       )}

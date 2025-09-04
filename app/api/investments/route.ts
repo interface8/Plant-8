@@ -107,6 +107,7 @@ export async function POST(request: Request) {
       where: { id: productId },
       select: {
         id: true,
+        name: true,
         productTypeId: true,
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
@@ -159,6 +160,16 @@ export async function POST(request: Request) {
       include: {
         product: { select: { name: true } },
         land: { select: { name: true } },
+      },
+    });
+
+    await prisma.preTask.create({
+      data: {
+        title: `Land Clearing for Investment ${investment.id} on Product ${product.name}`,
+        description:
+          "Clear and prepare the land for the new investment, including initial setup and inspections.",
+        estimatedCompletionDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+        productId: productId,
       },
     });
 
