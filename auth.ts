@@ -33,11 +33,6 @@ declare module "next-auth" {
   }
 }
 
-console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
-console.log(
-  "GOOGLE_CLIENT_SECRET:",
-  process.env.GOOGLE_CLIENT_SECRET ? "[set]" : "[not set]"
-);
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
   trustHost: true,
