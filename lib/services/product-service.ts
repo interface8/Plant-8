@@ -1,3 +1,25 @@
+export async function getProducts(): Promise<Product[]> {
+  try {
+    return await prisma.product.findMany({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        productTypeId: true,
+        durationId: true,
+        imageUrl: true,
+        currentMarketPricePerKg: true,
+        farmerMonthlyPayment: true,
+        ProductType: { select: { id: true, name: true } },
+        duration: { select: { id: true, name: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    return [];
+  }
+}
 import prisma from "@/db/prisma";
 import { Product } from "@/types/product";
 

@@ -9,4 +9,7 @@ export const productSchema = z.object({
   currentMarketPricePerKg: z
     .number()
     .nonnegative("Market price must be non-negative"),
+  farmerMonthlyPayment: z
+    .number()
+    .nonnegative("Farmer monthly payment must be non-negative"),
 });

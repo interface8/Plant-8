@@ -12,7 +12,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bell, LogOut } from "lucide-react";
 
-
 export function AdminHeader() {
   const { data: session } = useSession();
 
@@ -23,8 +22,12 @@ export function AdminHeader() {
   return (
     <header className="h-16 border-b bg-background flex items-center justify-between px-6 shadow-sm">
       <div className="flex items-center gap-3">
-        <span className="font-bold text-xl tracking-tight text-primary">Admin</span>
-        <span className="text-muted-foreground text-sm hidden sm:inline">Dashboard</span>
+        <span className="font-bold text-xl tracking-tight text-primary">
+          Admin
+        </span>
+        <span className="text-muted-foreground text-sm hidden sm:inline">
+          Dashboard
+        </span>
       </div>
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon" aria-label="Notifications">
@@ -32,7 +35,10 @@ export function AdminHeader() {
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
+            <Button
+              variant="ghost"
+              className="relative h-8 w-8 rounded-full p-0"
+            >
               <Avatar className="h-8 w-8">
                 <AvatarImage
                   src={session?.user?.image || ""}
@@ -56,12 +62,19 @@ export function AdminHeader() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <span className="font-medium text-sm">{session?.user?.name || "Admin"}</span>
-                <span className="text-xs text-muted-foreground">{session?.user?.email}</span>
+                <span className="font-medium text-sm">
+                  {session?.user?.name || "Admin"}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {session?.user?.email}
+                </span>
               </div>
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+            <DropdownMenuItem
+              onClick={handleSignOut}
+              className="cursor-pointer"
+            >
               <LogOut className="mr-2 h-4 w-4" />
               <span>Log out</span>
             </DropdownMenuItem>

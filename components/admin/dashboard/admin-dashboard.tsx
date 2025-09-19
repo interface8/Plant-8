@@ -1,6 +1,12 @@
 import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Package, Users, ShoppingCart, FolderTree, ImagePlus } from "lucide-react";
+import {
+  Package,
+  Users,
+  ShoppingCart,
+  FolderTree,
+  ImagePlus,
+} from "lucide-react";
 
 const stats = [
   {

@@ -62,6 +62,7 @@ export async function POST(request: Request) {
       durationId,
       imageUrl,
       currentMarketPricePerKg,
+      farmerMonthlyPayment,
     } = parsed.data;
 
     const productType = await prisma.productType.findUnique({
@@ -93,6 +94,7 @@ export async function POST(request: Request) {
         durationId,
         imageUrl,
         currentMarketPricePerKg,
+        farmerMonthlyPayment,
         createdBy: session.user.id,
       },
     });
