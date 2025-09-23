@@ -43,8 +43,16 @@ export function ProductForm({
     name: initialData?.name || "",
     description: initialData?.description || "",
     imageUrl: initialData?.imageUrl || "",
-    currentMarketPricePerKg: initialData?.currentMarketPricePerKg || "",
-    farmerMonthlyPayment: initialData?.farmerMonthlyPayment || "",
+    currentMarketPricePerKg:
+      initialData?.currentMarketPricePerKg !== undefined &&
+      initialData?.currentMarketPricePerKg !== null
+        ? String(initialData.currentMarketPricePerKg)
+        : "",
+    farmerMonthlyPayment:
+      initialData?.farmerMonthlyPayment !== undefined &&
+      initialData?.farmerMonthlyPayment !== null
+        ? String(initialData.farmerMonthlyPayment)
+        : "",
     productTypeId: initialData?.productTypeId || "",
     durationId: initialData?.durationId || "",
   });
@@ -88,9 +96,14 @@ export function ProductForm({
     // Client-side validation
     const result = formSchema.safeParse(form);
     if (!result.success) {
-      const fieldErrorsObj = result.error.formErrors.fieldErrors as Record<string, string[]>;
+      const fieldErrorsObj = result.error.formErrors.fieldErrors as Record<
+        string,
+        string[]
+      >;
       const errors: Record<string, string> = {};
-      (Object.keys(fieldErrorsObj) as Array<keyof typeof fieldErrorsObj>).forEach((key) => {
+      (
+        Object.keys(fieldErrorsObj) as Array<keyof typeof fieldErrorsObj>
+      ).forEach((key) => {
         const val = fieldErrorsObj[key];
         if (val && val.length > 0) errors[key] = val[0];
       });
@@ -99,13 +112,13 @@ export function ProductForm({
       return;
     }
     setLoading(true);
-  toast("Submitting... Please wait while we save your product.");
+    toast("Submitting... Please wait while we save your product.");
     try {
       const method = mode === "edit" ? "PUT" : "POST";
       const url =
         mode === "edit" && initialData?.id
-          ? `/api/products/${initialData.id}`
-          : "/api/products";
+          ? `/api/admin/products/${initialData.id}`
+          : "/api/admin/products";
       const payload = {
         ...form,
         currentMarketPricePerKg: Number(form.currentMarketPricePerKg),
@@ -120,20 +133,24 @@ export function ProductForm({
         const data = await res.json();
         if (data.error && typeof data.error === "object") {
           const messages = Object.values(data.error)
-            .map((v) => (Array.isArray((v as { _errors?: string[] })._errors) ? (v as { _errors: string[] })._errors.join(", ") : ""))
+            .map((v) =>
+              Array.isArray((v as { _errors?: string[] })._errors)
+                ? (v as { _errors: string[] })._errors.join(", ")
+                : ""
+            )
             .filter(Boolean)
             .join(" ");
           throw new Error(messages || "Failed to save product");
         }
         throw new Error(data.error || "Failed to save product");
       }
-  toast("Product saved successfully.");
-      router.push("/admin/products/all");
+      toast("Product saved successfully.");
+      router.push("/admin/products");
     } catch (err) {
       if (err instanceof Error)
         setError(err.message || "Failed to save product");
       else setError("Failed to save product");
-  toast(err instanceof Error ? err.message : "Failed to save product");
+      toast(err instanceof Error ? err.message : "Failed to save product");
     } finally {
       setLoading(false);
     }

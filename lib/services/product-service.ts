@@ -1,3 +1,71 @@
+import { productSchema } from "@/lib/validators/product-schema-validation";
+import type { z } from "zod";
+import crypto from "crypto";
+
+export async function createProduct(data: z.infer<typeof productSchema>) {
+  // Validate input
+  const parsed = productSchema.safeParse(data);
+  if (!parsed.success) {
+    throw parsed.error;
+  }
+  const {
+    name,
+    description,
+    productTypeId,
+    durationId,
+    imageUrl,
+    currentMarketPricePerKg,
+    farmerMonthlyPayment,
+  } = parsed.data;
+  return await prisma.product.create({
+    data: {
+      id: crypto.randomUUID(),
+      name,
+      description,
+      productTypeId,
+      durationId,
+      imageUrl,
+      currentMarketPricePerKg,
+      farmerMonthlyPayment,
+    },
+  });
+}
+
+export async function updateProduct(
+  id: string,
+  data: z.infer<typeof productSchema>
+) {
+  // Validate input
+  const parsed = productSchema.safeParse(data);
+  if (!parsed.success) {
+    throw parsed.error;
+  }
+  const {
+    name,
+    description,
+    productTypeId,
+    durationId,
+    imageUrl,
+    currentMarketPricePerKg,
+    farmerMonthlyPayment,
+  } = parsed.data;
+  return await prisma.product.update({
+    where: { id },
+    data: {
+      name,
+      description,
+      productTypeId,
+      durationId,
+      imageUrl,
+      currentMarketPricePerKg,
+      farmerMonthlyPayment,
+    },
+  });
+}
+
+export async function deleteProduct(id: string) {
+  return await prisma.product.delete({ where: { id } });
+}
 export async function getProducts(): Promise<Product[]> {
   try {
     return await prisma.product.findMany({
