@@ -12,8 +12,6 @@ import {
   FolderTree,
   ShoppingCart,
   Users,
-  ShipWheel,
-  Printer,
   ChevronLeft,
   ChevronRight,
   Store,
@@ -58,11 +56,6 @@ const navigation = [
     name: "Carousel",
     href: "/admin/carousel",
     icon: ImagePlus,
-  },
-  {
-    name: "Shipping-fee",
-    href: "/admin/shipping-fee",
-    icon: ShipWheel,
   },
   {
     name: "Customers",
