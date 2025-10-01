@@ -33,39 +33,31 @@ const navigation = [
     children: [
       { name: "All Products", href: "/admin/products" },
       { name: "Add Product", href: "/admin/products/new" },
-      // { name: "Import Products", href: "/admin/products/import" },
-      // { name: "Export Products", href: "/admin/products/export" },
     ],
   },
   {
-    name: "Categories",
-    href: "/admin/categories",
+    name: "Product Types",
+    href: "/admin/product-types",
     icon: FolderTree,
     children: [
-      { name: "All Categories", href: "/admin/categories" },
-      { name: "Add Category", href: "/admin/categories/new" },
+      { name: "All Product Types", href: "/admin/product-types" },
+      { name: "Add Product Type", href: "/admin/product-types/new" },
     ],
   },
   {
-    name: "Orders",
-    href: "/admin/orders",
+    name: "Pre Tasks",
+    href: "/admin/pre-tasks",
     icon: ShoppingCart,
     children: [
-      { name: "All Orders", href: "/admin/orders" },
-      { name: "Pending Orders", href: "/admin/orders?status=pending" },
-      { name: "Processing", href: "/admin/orders?status=processing" },
-      { name: "Shipped", href: "/admin/orders?status=shipped" },
+      { name: "All Pre Tasks", href: "/admin/pre-tasks" },
+      { name: "Pending Pre Tasks", href: "/admin/pre-tasks?status=pending" },
+      { name: "Completed Pre Tasks", href: "/admin/pre-tasks?status=completed" },
     ],
   },
   {
     name: "Carousel",
     href: "/admin/carousel",
     icon: ImagePlus,
-  },
-  {
-    name: "Printers",
-    href: "/admin/printers",
-    icon: Printer,
   },
   {
     name: "Shipping-fee",
@@ -78,37 +70,6 @@ const navigation = [
     icon: Users,
   },
 
-  // {
-  //   name: "Analytics",
-  //   href: "/admin/analytics",
-  //   icon: BarChart3,
-  //   children: [
-  //     { name: "Sales Report", href: "/admin/analytics/sales" },
-  //     { name: "Product Performance", href: "/admin/analytics/products" },
-  //     { name: "Customer Insights", href: "/admin/analytics/customers" },
-  //   ],
-  // },
-  // {
-  //   name: "Reports",
-  //   href: "/admin/reports",
-  //   icon: FileText,
-  //   children: [
-  //     { name: "Sales Reports", href: "/admin/reports/sales" },
-  //     { name: "Inventory Reports", href: "/admin/reports/inventory" },
-  //     { name: "Customer Reports", href: "/admin/reports/customers" },
-  //   ],
-  // },
-  // {
-  //   name: "Settings",
-  //   href: "/admin/settings",
-  //   icon: Settings,
-  //   children: [
-  //     { name: "General", href: "/admin/settings" },
-  //     { name: "Payment", href: "/admin/settings/payment" },
-  //     { name: "Shipping", href: "/admin/settings/shipping" },
-  //     { name: "Email", href: "/admin/settings/email" },
-  //   ],
-  // },
 ];
 
 export function AdminSidebar() {
