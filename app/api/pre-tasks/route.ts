@@ -7,7 +7,22 @@ import { z } from "zod";
 const preTaskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  estimatedCompletionDate: z.date().optional(),
+  estimatedCompletionDate: z.preprocess(
+    (val) => {
+      // Handle undefined/null values
+      if (!val) return undefined;
+      // If it's already a Date, return it
+      if (val instanceof Date) return val;
+      // If it's a string, convert to Date
+      if (typeof val === 'string' && val.trim()) {
+        const date = new Date(val);
+        // Check if it's a valid date
+        return isNaN(date.getTime()) ? undefined : date;
+      }
+      return undefined;
+    },
+    z.date().optional()
+  ),
   productId: z.string().uuid("Invalid product ID"),
 });
 
@@ -57,8 +72,11 @@ export async function POST(request: Request) {
     const body = await request.json();
     const parsed = preTaskSchema.safeParse(body);
     if (!parsed.success) {
+      const errorMessage = parsed.error.errors.map(err => 
+        `${err.path.join('.')}: ${err.message}`
+      ).join(', ');
       return NextResponse.json(
-        { error: parsed.error.format() },
+        { error: errorMessage || "Validation failed" },
         { status: 400 }
       );
     }
