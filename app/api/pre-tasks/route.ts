@@ -7,7 +7,15 @@ import { z } from "zod";
 const preTaskSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  estimatedCompletionDate: z.date().optional(),
+  estimatedCompletionDate: z.preprocess(
+    (val) => {
+      if (!val) return undefined;
+      if (val instanceof Date) return val;
+      if (typeof val === 'string' && val.trim()) return new Date(val);
+      return undefined;
+    },
+    z.date().optional()
+  ),
   productId: z.string().uuid("Invalid product ID"),
 });
 
@@ -57,8 +65,11 @@ export async function POST(request: Request) {
     const body = await request.json();
     const parsed = preTaskSchema.safeParse(body);
     if (!parsed.success) {
+      const errorMessage = parsed.error.errors.map(err => 
+        `${err.path.join('.')}: ${err.message}`
+      ).join(', ');
       return NextResponse.json(
-        { error: parsed.error.format() },
+        { error: errorMessage || "Validation failed" },
         { status: 400 }
       );
     }
@@ -118,8 +129,11 @@ export async function PUT(request: Request) {
     const body = await request.json();
     const parsed = updatePreTaskSchema.safeParse(body);
     if (!parsed.success) {
+      const errorMessage = parsed.error.errors.map(err => 
+        `${err.path.join('.')}: ${err.message}`
+      ).join(', ');
       return NextResponse.json(
-        { error: parsed.error.format() },
+        { error: errorMessage || "Validation failed" },
         { status: 400 }
       );
     }

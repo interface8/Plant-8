@@ -29,8 +29,14 @@ export default function AdminPreTaskForm({ products }: PreTaskFormProps) {
       return;
     }
 
-    if (!title || !productId) {
-      setError("Title and Product are required.");
+    if (!title.trim()) {
+      setError("Title is required.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!productId) {
+      setError("Product selection is required.");
       setIsSubmitting(false);
       return;
     }
@@ -44,9 +50,7 @@ export default function AdminPreTaskForm({ products }: PreTaskFormProps) {
         body: JSON.stringify({
           title,
           description,
-          estimatedCompletionDate: estimatedCompletionDate
-            ? new Date(estimatedCompletionDate)
-            : undefined,
+          estimatedCompletionDate: estimatedCompletionDate || undefined,
           productId,
         }),
       });
@@ -54,9 +58,19 @@ export default function AdminPreTaskForm({ products }: PreTaskFormProps) {
       const result = await response.json();
 
       if (response.ok && result.preTask) {
+        // Clear form on success
+        setTitle("");
+        setDescription("");
+        setEstimatedCompletionDate("");
+        setProductId("");
+        setError(null);
         router.refresh();
       } else {
-        setError(result.error || "Failed to create pre-task.");
+        // Handle both string and object errors
+        const errorMessage = typeof result.error === 'string' 
+          ? result.error 
+          : JSON.stringify(result.error) || "Failed to create pre-task.";
+        setError(errorMessage);
       }
     } catch {
       setError("Failed to create pre-task. Please try again.");
