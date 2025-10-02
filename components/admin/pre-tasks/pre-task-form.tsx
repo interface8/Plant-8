@@ -94,7 +94,7 @@ export default function AdminPreTaskForm({ products }: PreTaskFormProps) {
           description: errorMessage,
         });
       }
-    } catch (error) {
+    } catch {
       const errorMsg = "Failed to create pre-task. Please try again.";
       setError(errorMsg);
       
