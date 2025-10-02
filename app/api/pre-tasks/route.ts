@@ -9,9 +9,16 @@ const preTaskSchema = z.object({
   description: z.string().optional(),
   estimatedCompletionDate: z.preprocess(
     (val) => {
+      // Handle undefined/null values
       if (!val) return undefined;
+      // If it's already a Date, return it
       if (val instanceof Date) return val;
-      if (typeof val === 'string' && val.trim()) return new Date(val);
+      // If it's a string, convert to Date
+      if (typeof val === 'string' && val.trim()) {
+        const date = new Date(val);
+        // Check if it's a valid date
+        return isNaN(date.getTime()) ? undefined : date;
+      }
       return undefined;
     },
     z.date().optional()
