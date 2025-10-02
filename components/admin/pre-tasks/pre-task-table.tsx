@@ -105,7 +105,7 @@ export default function PreTaskTable({ preTasks, products }: PreTaskTableProps) 
           description: errorMessage,
         });
       }
-    } catch (error) {
+    } catch {
       toast.dismiss(loadingToast);
       toast.error("Network Error", {
         description: "Failed to update pre-task. Please try again.",
@@ -123,7 +123,7 @@ export default function PreTaskTable({ preTasks, products }: PreTaskTableProps) 
             <h3 className="font-semibold text-gray-900">Confirm Deletion</h3>
           </div>
           <p className="text-gray-600 mb-4">
-            Are you sure you want to delete "{title}"? This action cannot be undone.
+            Are you sure you want to delete &quot;{title}&quot;? This action cannot be undone.
           </p>
           <div className="flex gap-2 justify-end">
             <button
@@ -175,7 +175,7 @@ export default function PreTaskTable({ preTasks, products }: PreTaskTableProps) 
           description: errorMessage,
         });
       }
-    } catch (error) {
+    } catch {
       toast.dismiss(loadingToast);
       toast.error("Network Error", {
         description: "Failed to delete pre-task. Please try again.",
