@@ -4,7 +4,7 @@ import prisma from "@/db/prisma";
 import { LandEditForm } from "@/components/admin/lands";
 
 interface EditLandPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function EditLandPage({ params }: EditLandPageProps) {
@@ -14,9 +14,11 @@ export default async function EditLandPage({ params }: EditLandPageProps) {
     redirect("/admin");
   }
 
+  const { id } = await params;
+
   // Fetch the land data
   const land = await prisma.land.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       location: {
         include: {
@@ -30,7 +32,6 @@ export default async function EditLandPage({ params }: EditLandPageProps) {
     redirect("/admin/lands");
   }
 
-  // Fetch all locations for the dropdown
   const locations = await prisma.location.findMany({
     include: {
       state: true,
