@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import prisma from "@/db/prisma";
-import LocationEditForm from "@/components/admin/locations/location-edit-form";
+import { LocationEditForm } from "@/components/admin/locations";
 
 interface EditLocationPageProps {
   params: Promise<{ id: string }>;
