@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Store,
   ImagePlus,
+  MapPin,
 } from "lucide-react";
 
 const navigation = [
@@ -50,6 +51,15 @@ const navigation = [
       { name: "All Pre Tasks", href: "/admin/pre-tasks" },
       { name: "Pending Pre Tasks", href: "/admin/pre-tasks?status=pending" },
       { name: "Completed Pre Tasks", href: "/admin/pre-tasks?status=completed" },
+    ],
+  },
+  {
+    name: "Lands",
+    href: "/admin/lands",
+    icon: MapPin,
+    children: [
+      { name: "All Lands", href: "/admin/lands" },
+      { name: "Add Land", href: "/admin/lands/new" },
     ],
   },
   {

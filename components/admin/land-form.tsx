@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { landSchema } from "@/lib/validators/land-schema-validators";
+import { toast } from "sonner";
 
 interface Location {
   id: string;
@@ -31,49 +31,124 @@ export default function LandForm({ locations }: LandFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (
-      status !== "authenticated" ||
-      !session?.user?.roles?.includes("ADMIN")
-    ) {
-      setError("You must be an admin to create a land.");
+    setIsSubmitting(true);
+    setError(null);
+
+    if (status !== "authenticated" || !session?.user?.id) {
+      const errorMsg = "Please sign in to create a land.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      setIsSubmitting(false);
       return;
     }
+
+    if (!session?.user?.roles?.includes("ADMIN")) {
+      const errorMsg = "You must be an admin to create a land.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Client-side validation
+    if (!formData.name.trim()) {
+      const errorMsg = "Land name is required.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.locationId) {
+      const errorMsg = "Location selection is required.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.halfPlotPrice || !formData.fullPlotPrice) {
+      const errorMsg = "Both plot prices are required.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Show loading toast
+    const loadingToast = toast.loading("Creating land...", {
+      description: "Please wait while we save your land.",
+    });
 
     const parsedData = {
       ...formData,
       halfPlotPrice: parseFloat(formData.halfPlotPrice),
       fullPlotPrice: parseFloat(formData.fullPlotPrice),
+      gpsCoordinates: formData.gpsCoordinates || null,
+      imageUrl: formData.imageUrl || null,
+      createdBy: session.user.id,
     };
 
-    const parsed = landSchema.safeParse(parsedData);
-    if (!parsed.success) {
-      setError(parsed.error.errors[0].message);
-      return;
-    }
-
-    setError(null);
-    setIsSubmitting(true);
-
     try {
-      const response = await fetch("/api/lands", {
+      const response = await fetch("/api/admin/lands", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed.data),
+        body: JSON.stringify(parsedData),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to create land");
-      }
+      const result = await response.json();
 
-      router.push("/admin/lands?success=true");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create land");
+      if (response.ok && result.land) {
+        // Clear form on success
+        setFormData({
+          name: "",
+          gpsCoordinates: "",
+          halfPlotPrice: "",
+          fullPlotPrice: "",
+          imageUrl: "",
+          locationId: locations[0]?.id || "",
+        });
+        setError(null);
+        
+        toast.dismiss(loadingToast);
+        toast.success("Land created successfully!", {
+          description: `"${result.land.name}" has been added to the system.`,
+        });
+        
+        router.push("/admin/lands");
+      } else {
+        const errorMessage = typeof result.error === 'string' 
+          ? result.error 
+          : JSON.stringify(result.error) || "Failed to create land.";
+        setError(errorMessage);
+        
+        toast.dismiss(loadingToast);
+        toast.error("Failed to create land", {
+          description: errorMessage,
+        });
+      }
+    } catch {
+      const errorMsg = "Failed to create land. Please try again.";
+      setError(errorMsg);
+      
+      toast.dismiss(loadingToast);
+      toast.error("Network Error", {
+        description: errorMsg,
+      });
+    } finally {
       setIsSubmitting(false);
     }
   };
 
-  if (status !== "authenticated" || session?.user?.roles?.includes("ADMIN")) {
-    return <p className="text-red-500">Access denied. Admins only.</p>;
+  if (status !== "authenticated" || !session?.user?.roles?.includes("ADMIN")) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <p className="text-red-600 font-medium">Access denied. Admins only.</p>
+        <p className="text-red-500 text-sm mt-1">
+          You need admin privileges to access this page.
+        </p>
+      </div>
+    );
   }
 
   return (
