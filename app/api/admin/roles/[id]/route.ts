@@ -9,7 +9,7 @@ const updateRoleSchema = z.object({
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -19,7 +19,7 @@ export async function PUT(
 
     const body = await request.json();
     const validatedData = updateRoleSchema.parse(body);
-    const { id } = params;
+    const { id } = await params;
 
     // Check if role exists
     const existingRole = await prisma.role.findUnique({
@@ -86,7 +86,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth();
@@ -94,7 +94,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = params;
+    const { id } = await params;
 
     // Check if role exists
     const existingRole = await prisma.role.findUnique({

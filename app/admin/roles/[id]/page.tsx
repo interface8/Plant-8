@@ -19,9 +19,9 @@ import {
 } from "lucide-react";
 
 interface RoleDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function RoleDetailsPage({ params }: RoleDetailsPageProps) {
@@ -30,9 +30,11 @@ export default async function RoleDetailsPage({ params }: RoleDetailsPageProps) 
     redirect("/unauthorized");
   }
 
+  const { id } = await params;
+
   try {
     const role = await prisma.role.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         users: {
           include: {
