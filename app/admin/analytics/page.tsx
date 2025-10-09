@@ -221,7 +221,7 @@ export default async function AdminAnalyticsPage() {
         </div>
 
         {/* Key Performance Indicators */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -268,6 +268,23 @@ export default async function AdminAnalyticsPage() {
                 </div>
                 <div className="bg-purple-400 bg-opacity-50 p-3 rounded-lg">
                   <Users className="h-6 w-6" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-indigo-100 text-sm font-medium mb-1">Total Products</p>
+                  <p className="text-2xl font-bold">{totalProducts}</p>
+                  <p className="text-indigo-100 text-xs mt-1">
+                    Available offerings
+                  </p>
+                </div>
+                <div className="bg-indigo-400 bg-opacity-50 p-3 rounded-lg">
+                  <BarChart3 className="h-6 w-6" />
                 </div>
               </div>
             </CardContent>
