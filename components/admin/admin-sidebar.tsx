@@ -17,6 +17,7 @@ import {
   Store,
   ImagePlus,
   MapPin,
+  TrendingUp,
 } from "lucide-react";
 
 const navigation = [
@@ -71,6 +72,18 @@ const navigation = [
       { name: "Add State", href: "/admin/states/new" },
       { name: "All Locations", href: "/admin/locations" },
       { name: "Add Location", href: "/admin/locations/new" },
+    ],
+  },
+  {
+    name: "Investments",
+    href: "/admin/investments",
+    icon: TrendingUp,
+    children: [
+      { name: "All Investments", href: "/admin/investments" },
+      { name: "Active Investments", href: "/admin/investments?status=ACTIVE" },
+      { name: "Pending Investments", href: "/admin/investments?status=PENDING" },
+      { name: "Completed Investments", href: "/admin/investments?status=COMPLETED" },
+      { name: "Investment Analytics", href: "/admin/investments/analytics" },
     ],
   },
   {
