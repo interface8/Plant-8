@@ -18,6 +18,7 @@ import {
   ImagePlus,
   MapPin,
   TrendingUp,
+  Shield,
 } from "lucide-react";
 
 const navigation = [
@@ -25,6 +26,10 @@ const navigation = [
     name: "Dashboard",
     href: "/admin",
     icon: LayoutDashboard,
+    children: [
+      { name: "Overview", href: "/admin" },
+      { name: "Analytics", href: "/admin/analytics" },
+    ],
   },
   {
     name: "Products",
@@ -95,6 +100,15 @@ const navigation = [
     name: "Customers",
     href: "/admin/customers",
     icon: Users,
+  },
+  {
+    name: "Role Management",
+    href: "/admin/roles",
+    icon: Shield,
+    children: [
+      { name: "All Roles", href: "/admin/roles" },
+      { name: "Audit Log", href: "/admin/roles/audit" },
+    ],
   },
 
 ];
