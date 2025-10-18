@@ -108,13 +108,10 @@ export default function InvestmentCatalog({
         firstInvestment?.land?.location?.name ||
         "Nigeria";
 
-      // Calculate average ROI
-      const avgExpectedReturn =
+      // Use expectedReturn of the first investment for this product
+      const productExpectedReturn =
         product.investments.length > 0
-          ? product.investments.reduce(
-              (sum, inv) => sum + (inv.expectedReturn || 0),
-              0
-            ) / product.investments.length
+          ? product.investments[0].expectedReturn || 15
           : 15; // Default ROI if no investments
 
       // Estimate minimum investment (using market price)
@@ -128,8 +125,8 @@ export default function InvestmentCatalog({
         duration: product.duration.name,
         image: product.imageUrl || "/images/farm.jpg",
         minInvestment,
-        expectedReturn: avgExpectedReturn,
-        riskLevel: calculateRiskLevel(avgExpectedReturn),
+  expectedReturn: productExpectedReturn,
+  riskLevel: calculateRiskLevel(productExpectedReturn),
         location,
         totalInvestment,
         investorCount,
@@ -163,12 +160,12 @@ export default function InvestmentCatalog({
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50">
       {/* Header Section with Stats */}
       <section className="bg-gradient-to-r from-green-600 via-green-700 to-green-800 text-white py-12 lg:py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-              Agricultural Investment Opportunities
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+          <div className="text-left mb-8">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl mb-3">
+              FAM 8
             </h1>
-            <p className="text-lg sm:text-xl text-green-100 max-w-3xl mx-auto">
+            <p className="text-base sm:text-lg text-green-100 max-w-2xl">
               Invest in sustainable agriculture and grow your wealth
             </p>
           </div>
@@ -225,7 +222,7 @@ export default function InvestmentCatalog({
       </section>
 
       {/* Filter Section */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl py-8">
         {/* Crop Type Filter */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-4">

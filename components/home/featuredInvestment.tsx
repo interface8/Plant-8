@@ -172,19 +172,7 @@ export default async function FeaturedInvestments() {
                       {investment.minInvestment}
                     </span>
                   </div>
-                  {investment.totalInvestment > 0 && (
-                    <div className="flex justify-between text-sm text-gray-600">
-                      <span>Total Invested:</span>
-                      <span className="font-medium text-green-600">
-                        {new Intl.NumberFormat("en-NG", {
-                          style: "currency",
-                          currency: "NGN",
-                          minimumFractionDigits: 0,
-                          maximumFractionDigits: 0,
-                        }).format(investment.totalInvestment)}
-                      </span>
-                    </div>
-                  )}
+                  {/* Total Invested removed as requested */}
                 </div>
                 <a
                   href={`/investments/${investment.id}`}
@@ -199,7 +187,7 @@ export default async function FeaturedInvestments() {
 
         <div className="text-center mt-8 sm:mt-12">
           <a
-            href="/investments"
+            href="/investments/catalog"
             className="inline-block bg-gray-100 text-gray-800 px-6 sm:px-8 py-3 sm:py-4 rounded-lg font-semibold hover:bg-gray-200 transition-colors duration-300"
           >
             View All Opportunities
