@@ -257,15 +257,15 @@ export default function InvestmentCatalog({
             Select Duration
           </h3>
           {/* Clean container with subtle background and rounded edges */}
-          <div className="bg-gray-50 p-2 rounded-2xl border border-gray-200">
-            <div className="flex gap-3">
+          <div className="bg-gray-50 p-1 rounded-full border border-gray-200">
+            <div className="flex gap-1.5">
               {durationOptions.map((duration) => (
                 <button
                   key={duration}
                   onClick={() => setSelectedDuration(duration)}
-                  className={`flex-1 px-5 py-2.5 rounded-xl font-medium transition-all duration-300 ${
+                  className={`flex-1 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${
                     selectedDuration === duration
-                      ? "bg-[#1E7B47] text-white shadow-md"
+                      ? "bg-[#1E7B47] text-white shadow-sm"
                       : "bg-transparent text-gray-700 hover:bg-white/50"
                   }`}
                 >
@@ -315,7 +315,7 @@ export default function InvestmentCatalog({
                 </p>
 
                 {/* Details Section - Side by Side Layout */}
-                <div className="space-y-3 mb-4">
+                <div className="mb-4">
                   {/* Duration and Min Investment - Side by Side */}
                   <div className="grid grid-cols-2 gap-4">
                     {/* Duration Column */}
@@ -352,60 +352,6 @@ export default function InvestmentCatalog({
                       </span>
                     </div>
                   </div>
-
-                  {/* Location */}
-                  <div className="flex items-center justify-between w-full pt-2">
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                      </svg>
-                      <span className="text-sm">Location</span>
-                    </div>
-                    <span className="text-gray-700 font-medium text-sm">
-                      {product.location}
-                    </span>
-                  </div>
-
-                  {/* Investors Count */}
-                  {product.investorCount > 0 && (
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-2 text-gray-600">
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                          />
-                        </svg>
-                        <span className="text-sm">Investors</span>
-                      </div>
-                      <span className="text-blue-600 font-medium">
-                        {product.investorCount}
-                      </span>
-                    </div>
-                  )}
                 </div>
 
                 {/* Expected Return Box */}
