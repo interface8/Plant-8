@@ -256,20 +256,23 @@ export default function InvestmentCatalog({
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Select Duration
           </h3>
-          <div className="flex gap-3 w-full">
-            {durationOptions.map((duration) => (
-              <button
-                key={duration}
-                onClick={() => setSelectedDuration(duration)}
-                className={`flex-1 px-5 py-2.5 rounded-full font-medium transition-all duration-300 ${
-                  selectedDuration === duration
-                    ? "bg-[#1E7B47] text-white shadow-lg"
-                    : "bg-[#E9F6EE] text-[#1E7B47] hover:bg-[#D4EDE0]"
-                }`}
-              >
-                {duration}
-              </button>
-            ))}
+          {/* Clean container with subtle background and rounded edges */}
+          <div className="bg-gray-50 p-2 rounded-2xl border border-gray-200">
+            <div className="flex gap-3">
+              {durationOptions.map((duration) => (
+                <button
+                  key={duration}
+                  onClick={() => setSelectedDuration(duration)}
+                  className={`flex-1 px-5 py-2.5 rounded-xl font-medium transition-all duration-300 ${
+                    selectedDuration === duration
+                      ? "bg-[#1E7B47] text-white shadow-md"
+                      : "bg-transparent text-gray-700 hover:bg-white/50"
+                  }`}
+                >
+                  {duration}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -311,44 +314,47 @@ export default function InvestmentCatalog({
                   {product.description}
                 </p>
 
-                {/* Details Section - Grid Layout */}
+                {/* Details Section - Side by Side Layout */}
                 <div className="space-y-3 mb-4">
-                  {/* Duration - Full Width */}
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                      <span className="text-sm">Duration</span>
+                  {/* Duration and Min Investment - Side by Side */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Duration Column */}
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2 text-gray-600 mb-2">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                        <span className="text-sm">Duration</span>
+                      </div>
+                      <span className="text-[#1E7B47] font-semibold text-base">
+                        {product.duration}
+                      </span>
                     </div>
-                    <span className="text-[#1E7B47] font-semibold">
-                      {product.duration}
-                    </span>
-                  </div>
 
-                  {/* Min Investment */}
-                  <div className="flex items-center justify-between w-full">
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <span className="text-sm font-medium">₦</span>
-                      <span className="text-sm">Min. Investment</span>
+                    {/* Min Investment Column */}
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2 text-gray-600 mb-2">
+                        <span className="text-sm font-medium">₦</span>
+                        <span className="text-sm">Min. Investment</span>
+                      </div>
+                      <span className="text-[#1E7B47] font-bold text-base">
+                        {formatCurrency(product.minInvestment)}
+                      </span>
                     </div>
-                    <span className="text-[#1E7B47] font-bold">
-                      {formatCurrency(product.minInvestment)}
-                    </span>
                   </div>
 
                   {/* Location */}
-                  <div className="flex items-center justify-between w-full">
+                  <div className="flex items-center justify-between w-full pt-2">
                     <div className="flex items-center gap-2 text-gray-600">
                       <svg
                         className="w-4 h-4"
