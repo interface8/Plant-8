@@ -132,6 +132,15 @@ export default function InvestmentsDropdown({
         </button>
         {isOpen && (
           <div className="mt-2 pl-4 space-y-2 border-l-2 border-green-200">
+            {/* Browse All Catalog Link */}
+            <Link
+              href="/investments/catalog"
+              className="block mb-3 p-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-semibold text-center text-sm"
+              onClick={handleLinkClick}
+            >
+              Browse All Investments
+            </Link>
+            
             {/* Duration Section */}
             {durations.length > 0 && (
               <div className="space-y-1">
@@ -233,6 +242,19 @@ export default function InvestmentsDropdown({
         role="menu"
       >
         <div className="p-6">
+          {/* Browse All Catalog Link */}
+          <Link
+            href="/investments/catalog"
+            className="block mb-4 p-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold text-center transition-all duration-300 transform hover:scale-105 shadow-md"
+            onClick={handleLinkClick}
+            role="menuitem"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              <span>Browse All Investments</span>
+            </div>
+          </Link>
+          
           {/* Duration Section */}
           {durations.length > 0 && (
             <div className="mb-6">
