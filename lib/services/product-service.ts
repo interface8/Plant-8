@@ -114,6 +114,19 @@ export async function getProduct(id: string): Promise<Product | null> {
         farmerMonthlyPayment: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
+        // Include recent investments so we can read a product-specific expectedReturn
+        investments: {
+          select: {
+            id: true,
+            expectedReturn: true,
+            amount: true,
+          },
+          where: {
+            status: { in: ["ACTIVE", "COMPLETED", "PENDING"] },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
       },
     });
     return product;

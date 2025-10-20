@@ -373,9 +373,13 @@ export default function InvestmentCatalog({
                   >
                     Invest Now
                   </Link>
-                  <button className="w-full border border-[#1E7B47] text-[#1E7B47] font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:bg-[#E9F6EE]">
+                  <Link
+                    href={`/investments/product/${product.id}`}
+                    className="w-full block border border-[#1E7B47] text-[#1E7B47] font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:bg-[#E9F6EE] text-center"
+                    aria-label={`View details for ${product.name} investment`}
+                  >
                     View Details
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))
