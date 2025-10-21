@@ -16,6 +16,7 @@ export async function createProduct(data: z.infer<typeof productSchema>) {
     imageUrl,
     currentMarketPricePerKg,
     farmerMonthlyPayment,
+    roi
   } = parsed.data;
   return await prisma.product.create({
     data: {
@@ -27,6 +28,7 @@ export async function createProduct(data: z.infer<typeof productSchema>) {
       imageUrl,
       currentMarketPricePerKg,
       farmerMonthlyPayment,
+      roi,
     },
   });
 }
@@ -48,6 +50,7 @@ export async function updateProduct(
     imageUrl,
     currentMarketPricePerKg,
     farmerMonthlyPayment,
+    roi
   } = parsed.data;
   return await prisma.product.update({
     where: { id },
@@ -59,6 +62,7 @@ export async function updateProduct(
       imageUrl,
       currentMarketPricePerKg,
       farmerMonthlyPayment,
+      roi,
     },
   });
 }
@@ -68,7 +72,7 @@ export async function deleteProduct(id: string) {
 }
 export async function getProducts(): Promise<Product[]> {
   try {
-    return await prisma.product.findMany({
+    const products = await prisma.product.findMany({
       select: {
         id: true,
         name: true,
@@ -84,6 +88,11 @@ export async function getProducts(): Promise<Product[]> {
       },
       orderBy: { createdAt: "desc" },
     });
+    // Map roi: null to roi: 0 (or another default value)
+    return products.map((product) => ({
+      ...product,
+      roi: product.roi === null ? 10 : product.roi,
+    }));
   } catch (error) {
     console.error("Error fetching products:", error);
     return [];
@@ -113,6 +122,7 @@ export async function getProduct(id: string): Promise<Product | null> {
         imageUrl: true,
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
+        roi: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
         // Include recent investments so we can read a product-specific expectedReturn
@@ -130,6 +140,9 @@ export async function getProduct(id: string): Promise<Product | null> {
         },
       },
     });
+    if (product && typeof product.roi === 'undefined') {
+      product.roi = null;
+    }
     return product;
   } catch (error) {
     console.error("Error fetching product:", error);

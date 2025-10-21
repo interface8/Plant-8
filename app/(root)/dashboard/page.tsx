@@ -28,6 +28,7 @@ export default async function Dashboard({
           name: true,
           imageUrl: true,
           farmerMonthlyPayment: true,
+          roi: true,
           duration: { select: { id: true, name: true } },
         },
       },
