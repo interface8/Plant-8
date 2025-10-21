@@ -15,6 +15,7 @@ export interface Product {
   imageUrl: string;
   currentMarketPricePerKg: number;
   farmerMonthlyPayment: number;
+  roi: number | null;
   ProductType: {
     id: string;
     name: string;

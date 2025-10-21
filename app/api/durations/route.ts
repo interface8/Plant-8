@@ -19,3 +19,22 @@ export async function GET() {
     );
   }
 }
+
+export async function POST(req: Request) {
+  try {
+    const data = await req.json();
+    const duration = await prisma.duration.create({
+      data: {
+        name: data.name,
+        description: data.description,
+      },
+    });
+    return NextResponse.json(duration, { status: 201 });
+  } catch (error) {
+    console.error("Error creating duration:", error);
+    return NextResponse.json(
+      { error: "Failed to create duration" },
+      { status: 500 }
+    );
+  }
+}

@@ -34,7 +34,8 @@ export interface Investment {
     name: string;
     imageUrl: string | null;
     farmerMonthlyPayment: number;
-    duration: { id: string; name: string };
+  roi: number;
+  duration: { id: string; name: string };
   };
   productType: { id: string; name: string };
   land: {

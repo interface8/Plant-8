@@ -206,6 +206,7 @@ model Product {
   durationId              String    @db.Uuid
   currentMarketPricePerKg Float     @default(0)
   farmerMonthlyPayment    Float     @default(10000)
+  roi                     Float?     @default(15)
 
   ProductType    ProductType  @relation("ProductToType", fields: [productTypeId], references: [id])
   duration       Duration     @relation("ProductToDuration", fields: [durationId], references: [id])
@@ -236,6 +237,7 @@ model ProductType {
 model Duration {
   id          String    @id @default(uuid()) @db.Uuid
   name        String    @unique
+  months      Int?       @default(12)
   description String
   createdAt   DateTime  @default(now()) @db.Timestamp(6)
   createdBy   String?   @db.Uuid

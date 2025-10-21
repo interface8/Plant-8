@@ -25,11 +25,20 @@ export async function getProduct(productId: string): Promise<Product | null> {
         imageUrl: true,
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
+        roi: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
       },
     });
-    return product;
+    if (!product) return null;
+    // Always return roi, defaulting to 0 if missing
+    return {
+      ...product,
+      roi: product.roi ?? 10,
+      duration: product.duration
+        ? { id: product.duration.id, name: product.duration.name }
+        : { id: '', name: '' },
+    };
   } catch (error) {
     console.error("Error fetching product:", error);
     return null;
@@ -109,6 +118,19 @@ export async function createInvestment(data: {
   durationId: string;
 }) {
   try {
+    // Fetch product to get ROI
+    const product = await prisma.product.findUnique({
+      where: { id: data.productId },
+      select: { roi: true },
+    });
+
+    if (!product) {
+      return { success: false, error: "Product not found" };
+    }
+
+  const roi = product.roi ?? 10;
+  const expectedReturn = data.amount * (1 + roi / 100);
+
     const investment = await prisma.investment.create({
       data: {
         userId: data.userId,
@@ -119,7 +141,7 @@ export async function createInvestment(data: {
         numberOfPlots: data.numberOfPlots,
         numberOfTerms: data.numberOfTerms,
         amount: data.amount,
-        expectedReturn: data.amount * 1.2,
+        expectedReturn: expectedReturn,
         progress: 0,
         status: "PENDING",
         createdAt: new Date(),

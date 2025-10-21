@@ -12,4 +12,5 @@ export const productSchema = z.object({
   farmerMonthlyPayment: z
     .number()
     .nonnegative("Farmer monthly payment must be non-negative"),
+  roi: z.number().nonnegative("ROI must be non-negative").optional(),
 });
