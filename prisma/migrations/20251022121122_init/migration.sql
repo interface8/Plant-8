@@ -327,6 +327,9 @@ CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON "Account"("provi
 CREATE UNIQUE INDEX "AddressType_name_key" ON "AddressType"("name");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Product_name_key" ON "Product"("name");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "ProductType_name_key" ON "ProductType"("name");
 
 -- CreateIndex
