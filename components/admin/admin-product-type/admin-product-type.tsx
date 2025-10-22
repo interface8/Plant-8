@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { ProductType } from "@/types/product";
-import { productTypeSchema } from "@/lib/validators/product-type-schema-validators";
-import { z } from "zod";
+import ProductTypeForm from "./product-type-form";
+import { Edit2, Trash2, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
 
 export default function AdminProductTypes() {
   const { data: session, status } = useSession();
@@ -12,13 +13,8 @@ export default function AdminProductTypes() {
   const [productTypes, setProductTypes] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [form, setForm] = useState<{
-    id?: string;
-    name: string;
-    description: string;
-    prevId: string | null;
-  }>({ name: "", description: "", prevId: null });
-  const [formErrors, setFormErrors] = useState<z.ZodIssue[]>([]);
+  const [editing, setEditing] = useState<null | ProductType>(null);
+  const [showForm, setShowForm] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -47,61 +43,64 @@ export default function AdminProductTypes() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFormErrors([]);
-
-    const parsed = productTypeSchema.safeParse(form);
-    if (!parsed.success) {
-      setFormErrors(parsed.error.issues);
-      return;
-    }
-
-    try {
-      const method = form.id ? "PUT" : "POST";
-      const url = form.id
-        ? `/api/product-types/${form.id}`
-        : "/api/product-types";
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          description: form.description || undefined,
-          prevId: form.prevId || undefined,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to save product type");
+  const handleFormSuccess = (productType: ProductType) => {
+    setProductTypes((prev) => {
+      if (editing) {
+        toast.success("Product type updated successfully");
+        return prev.map((pt) => (pt.id === productType.id ? productType : pt));
+      } else {
+        toast.success("Product type added successfully");
+        return [...prev, productType];
       }
+    });
+    setEditing(null);
+    setShowForm(false);
+  };
 
-      const updatedProductType = await response.json();
-      setProductTypes((prev) =>
-        form.id
-          ? prev.map((pt) => (pt.id === form.id ? updatedProductType : pt))
-          : [...prev, updatedProductType]
-      );
-      setForm({ name: "", description: "", prevId: null });
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to save product type"
-      );
-    }
+  const handleAdd = () => {
+    setEditing(null);
+    setShowForm(true);
   };
 
   const handleEdit = (productType: ProductType) => {
-    setForm({
-      id: productType.id,
-      name: productType.name,
-      description: productType.description || "",
-      prevId: productType.prevId ?? null,
-    });
-    setFormErrors([]);
+    setEditing(productType);
+    setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (id: string, name?: string) => {
+    toast.custom((t) => (
+      <div className="bg-white border border-red-200 rounded-lg shadow-lg p-4 max-w-md">
+        <div className="flex items-center mb-3">
+          <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+          <h3 className="font-semibold text-gray-900">Confirm Deletion</h3>
+        </div>
+        <p className="text-gray-700 mb-4">
+          Are you sure you want to delete{" "}
+          <strong>{name || "this product type"}</strong>? This action cannot be
+          undone.
+        </p>
+        <div className="flex justify-end space-x-2">
+          <button
+            onClick={() => toast.dismiss(t)}
+            className="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={async () => {
+              toast.dismiss(t);
+              await confirmDelete(id);
+            }}
+            className="px-3 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    ));
+  };
+
+  const confirmDelete = async (id: string) => {
     try {
       const response = await fetch(`/api/product-types/${id}`, {
         method: "DELETE",
@@ -111,10 +110,12 @@ export default function AdminProductTypes() {
         throw new Error(errorData.error || "Failed to delete product type");
       }
       setProductTypes((prev) => prev.filter((pt) => pt.id !== id));
+      toast.success("Product type deleted successfully");
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to delete product type"
       );
+      toast.error(err instanceof Error ? err.message : "Failed to delete product type");
     }
   };
 
@@ -125,84 +126,14 @@ export default function AdminProductTypes() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Manage Product Types</h1>
-
-      {/* Form for Create/Update */}
-      <form onSubmit={handleSubmit} className="mb-8">
-        <div className="grid gap-4">
-          <div>
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Name
-            </label>
-            <input
-              id="name"
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className={`mt-1 block w-full border border-gray-300 rounded-md p-2 ${
-                formErrors.some((e) => e.path.includes("name"))
-                  ? "border-red-500"
-                  : ""
-              }`}
-            />
-            {formErrors.find((e) => e.path.includes("name")) && (
-              <p className="text-red-500 text-sm mt-1">
-                {formErrors.find((e) => e.path.includes("name"))?.message}
-              </p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="description"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Description
-            </label>
-            <textarea
-              id="description"
-              value={form.description}
-              onChange={(e) =>
-                setForm({ ...form, description: e.target.value })
-              }
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="prevId"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Parent Category
-            </label>
-            <select
-              id="prevId"
-              value={form.prevId || ""}
-              onChange={(e) =>
-                setForm({ ...form, prevId: e.target.value || null })
-              }
-              className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-            >
-              <option value="">None (Top-level Category)</option>
-              {productTypes
-                .filter((pt) => !pt.prevId)
-                .map((pt) => (
-                  <option key={pt.id} value={pt.id}>
-                    {pt.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-          <button
-            type="submit"
-            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
-          >
-            {form.id ? "Update" : "Create"} Product Type
-          </button>
-        </div>
-      </form>
-
+      <div className="mb-4 flex justify-end">
+        <button
+          onClick={handleAdd}
+          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+        >
+          Add Product Type
+        </button>
+      </div>
       {/* List of Product Types */}
       <div>
         <h2 className="text-xl font-semibold mb-2">Product Types</h2>
@@ -214,10 +145,9 @@ export default function AdminProductTypes() {
                   <h3 className="font-medium">{pt.name}</h3>
                   <p className="text-sm text-gray-600">{pt.description}</p>
                   <p className="text-sm text-gray-500">
-                    Parent:{" "}
+                    Parent: {" "}
                     {pt.prevId
-                      ? productTypes.find((p) => p.id === pt.prevId)?.name ||
-                        "None"
+                      ? productTypes.find((p) => p.id === pt.prevId)?.name || "None"
                       : "None"}
                   </p>
                   {pt.children?.length > 0 && (
@@ -226,18 +156,20 @@ export default function AdminProductTypes() {
                     </p>
                   )}
                 </div>
-                <div className="space-x-2">
+                <div className="space-x-2 flex items-center">
                   <button
                     onClick={() => handleEdit(pt)}
-                    className="text-blue-600 hover:underline"
+                    className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50"
+                    title="Edit"
                   >
-                    Edit
+                    <Edit2 className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={() => handleDelete(pt.id)}
-                    className="text-red-600 hover:underline"
+                    onClick={() => handleDelete(pt.id, pt.name)}
+                    className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50"
+                    title="Delete"
                   >
-                    Delete
+                    <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
               </div>
@@ -245,6 +177,31 @@ export default function AdminProductTypes() {
           ))}
         </ul>
       </div>
+      {/* Modal for Add/Edit */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white rounded shadow-lg p-6 w-full max-w-lg relative">
+            <ProductTypeForm
+              initial={editing ? {
+                id: editing.id,
+                name: editing.name,
+                description: editing.description || "",
+                prevId: editing.prevId ?? null,
+              } : undefined}
+              productTypes={productTypes}
+              onSuccess={handleFormSuccess}
+              onCancel={() => { setShowForm(false); setEditing(null); }}
+            />
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              onClick={() => { setShowForm(false); setEditing(null); }}
+              aria-label="Close"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
