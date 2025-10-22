@@ -6,6 +6,7 @@ interface Product {
   name: string;
   productTypeId: string;
   durationId: string;
+  roi: number | null;
 }
 
 export async function seedProducts(adminId: string): Promise<Product[]> {
@@ -42,8 +43,8 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
     const sixMonths = await prisma.duration.findFirst({
       where: { name: "6 months" },
     });
-    const oneYear = await prisma.duration.findFirst({
-      where: { name: "1 year" },
+    const twelveMonths = await prisma.duration.findFirst({
+      where: { name: "12 months" },
     });
 
     if (
@@ -57,7 +58,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       !ruminants ||
       !threeMonths ||
       !sixMonths ||
-      !oneYear
+      !twelveMonths
     ) {
       throw new Error("Some product types or durations not found");
     }
@@ -67,10 +68,11 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Maize Grain",
         description: "High-quality maize",
-        imageUrl: "/images/maize.jpg",
+        imageUrl: "https://images.unsplash.com/photo-1634467524884-897d0af5e104?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=870",
         currentMarketPricePerKg: 2.5,
         productTypeId: cereals.id,
         durationId: threeMonths.id,
+        roi: 12,
       },
       {
         name: "Rice Grain",
@@ -79,6 +81,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         currentMarketPricePerKg: 3.0,
         productTypeId: cereals.id,
         durationId: sixMonths.id,
+        roi: 10,
       },
       {
         name: "Sorghum Grain",
@@ -87,6 +90,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         currentMarketPricePerKg: 2.8,
         productTypeId: cereals.id,
         durationId: sixMonths.id,
+        roi: 11,
       },
 
       // Tubers
@@ -97,32 +101,36 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         currentMarketPricePerKg: 2.0,
         productTypeId: tubers.id,
         durationId: sixMonths.id,
+        roi: 13,
       },
       {
         name: "Cassava Root",
         description: "Starchy cassava",
-        imageUrl: "/images/cassava.jpg",
+        imageUrl: "https://images.unsplash.com/photo-1757283961570-682154747d9c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=870",
         currentMarketPricePerKg: 1.8,
         productTypeId: tubers.id,
         durationId: sixMonths.id,
+        roi: 12,
       },
 
       // Vegetables
       {
         name: "Tomato Fruit",
         description: "Juicy tomatoes",
-        imageUrl: "/images/tomato.jpg",
+        imageUrl: "https://images.unsplash.com/photo-1724128239194-4bde5d240555?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774",
         currentMarketPricePerKg: 3.5,
         productTypeId: vegetables.id,
         durationId: threeMonths.id,
+        roi: 15,
       },
       {
         name: "Carrot Root",
         description: "Fresh carrots",
-        imageUrl: "/images/carrot.jpg",
+        imageUrl: "https://images.unsplash.com/photo-1590868309235-ea34bed7bd7f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=927",
         currentMarketPricePerKg: 2.2,
         productTypeId: vegetables.id,
         durationId: threeMonths.id,
+        roi: 14,
       },
       {
         name: "Okra Pods",
@@ -131,6 +139,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         currentMarketPricePerKg: 2.7,
         productTypeId: vegetables.id,
         durationId: threeMonths.id,
+        roi: 13,
       },
 
       // Legumes
@@ -141,6 +150,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         currentMarketPricePerKg: 2.6,
         productTypeId: legumes.id,
         durationId: threeMonths.id,
+        roi: 11,
       },
       {
         name: "Soybean Seeds",
@@ -149,16 +159,18 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         currentMarketPricePerKg: 3.0,
         productTypeId: legumes.id,
         durationId: sixMonths.id,
+        roi: 12,
       },
 
       // Fruits
       {
         name: "Watermelon Fruit",
         description: "Sweet watermelon",
-        imageUrl: "/images/watermelon.jpg",
+        imageUrl: "https://images.unsplash.com/photo-1621961048737-a9993789e1ad?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774",
         currentMarketPricePerKg: 1.5,
         productTypeId: fruits.id,
         durationId: threeMonths.id,
+        roi: 10,
       },
       {
         name: "Pineapple Fruit",
@@ -167,14 +179,16 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         currentMarketPricePerKg: 2.4,
         productTypeId: fruits.id,
         durationId: sixMonths.id,
+        roi: 13,
       },
       {
         name: "Mango Fruit",
         description: "Tropical mango",
-        imageUrl: "/images/mango.jpg",
+        imageUrl: "https://images.unsplash.com/photo-1702040242599-46809572ffce?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=735",
         currentMarketPricePerKg: 3.0,
         productTypeId: fruits.id,
-        durationId: oneYear.id,
+        durationId: twelveMonths.id,
+        roi: 16,
       },
 
       // Spices
@@ -185,6 +199,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         currentMarketPricePerKg: 4.0,
         productTypeId: spices.id,
         durationId: sixMonths.id,
+        roi: 18,
       },
       {
         name: "Garlic Bulbs",
@@ -193,6 +208,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         currentMarketPricePerKg: 3.5,
         productTypeId: spices.id,
         durationId: threeMonths.id,
+        roi: 17,
       },
 
       // Poultry
@@ -203,6 +219,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         currentMarketPricePerKg: 5.0,
         productTypeId: poultry.id,
         durationId: threeMonths.id,
+        roi: 20,
       },
       {
         name: "Turkey Meat",
@@ -211,6 +228,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         currentMarketPricePerKg: 6.5,
         productTypeId: poultry.id,
         durationId: sixMonths.id,
+        roi: 22,
       },
 
       // Ruminants
@@ -220,7 +238,8 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         imageUrl: "/images/cattle.jpg",
         currentMarketPricePerKg: 10.0,
         productTypeId: ruminants.id,
-        durationId: oneYear.id,
+        durationId: twelveMonths.id,
+        roi: 25,
       },
       {
         name: "Goat Meat",
@@ -229,22 +248,25 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         currentMarketPricePerKg: 8.0,
         productTypeId: ruminants.id,
         durationId: sixMonths.id,
+        roi: 21,
       },
     ];
 
-    const products: Product[] = [];
-    for (const product of productData) {
-      const createdProduct = await prisma.product.create({
-        data: {
-          id: crypto.randomUUID(),
-          ...product,
-          createdBy: adminId,
-        },
-      });
-      products.push(createdProduct);
-    }
+    // Add id and createdBy to each product
+    const productDataWithIds = productData.map((product) => ({
+      id: crypto.randomUUID(),
+      ...product,
+      createdBy: adminId,
+    }));
 
-    return products;
+    await prisma.product.createMany({
+      data: productDataWithIds,
+      skipDuplicates: true,
+    });
+
+    // Return all products from DB for further use
+    const allProducts = await prisma.product.findMany();
+    return allProducts;
   } catch (error) {
     console.error("Failed to seed products:", error);
     throw error;

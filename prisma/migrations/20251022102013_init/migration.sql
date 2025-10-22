@@ -138,7 +138,8 @@ CREATE TABLE "Product" (
     "productTypeId" UUID NOT NULL,
     "durationId" UUID NOT NULL,
     "currentMarketPricePerKg" DOUBLE PRECISION NOT NULL DEFAULT 0,
-    "farmerMonthlyPayment" DOUBLE PRECISION DEFAULT 10000,
+    "farmerMonthlyPayment" DOUBLE PRECISION NOT NULL DEFAULT 10000,
+    "roi" DOUBLE PRECISION DEFAULT 15,
 
     CONSTRAINT "Product_pkey" PRIMARY KEY ("id")
 );
@@ -161,6 +162,7 @@ CREATE TABLE "ProductType" (
 CREATE TABLE "Duration" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL,
+    "months" INTEGER DEFAULT 12,
     "description" TEXT NOT NULL,
     "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "createdBy" UUID,

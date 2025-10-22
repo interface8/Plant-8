@@ -5,7 +5,7 @@ import { seedUsers } from "./seedUsers";
 import { seedDurations } from "./seedDurations";
 import { seedProductTypes } from "./seedProductTypes";
 import { seedProducts } from "./seedProducts";
-import { seedInvestments } from "./seedInvestments";
+// import { seedInvestments } from "./seedInvestments";
 import { seedAddressTypes } from "./seedAddressTypes";
 import { seedPreTasks } from "./seedPreTasks";
 import { seedLands } from "./seedLands";
@@ -37,8 +37,8 @@ async function main() {
     const lands = await seedLands();
     console.log(`Seeded ${lands} lands`);
 
-    const investments = await seedInvestments(admin.id, productTypes, products);
-    console.log(`Seeded ${investments.count} investments`);
+    // const investments = await seedInvestments(admin.id, products);
+    // console.log(`Seeded ${investments.count} investments`);
   } catch (error) {
     console.error("Seeding error:", error);
     throw error;
