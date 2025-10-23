@@ -34,7 +34,8 @@ export default async function FeaturedInvestments() {
             in: ['ACTIVE', 'COMPLETED']
           }
         }
-      }
+      },
+      images: { select: { url: true } },
     },
     orderBy: {
       investments: {
@@ -45,6 +46,7 @@ export default async function FeaturedInvestments() {
 
   // Calculate total investment amount for each product
   const investments = topProducts.map((product) => {
+    const images = Array.isArray(product.images) ? product.images.map((img: { url: string }) => img.url) : [];
     const totalInvestment = product.investments.reduce((sum: number, inv) => sum + inv.amount, 0);
     const investorCount = product._count.investments;
     
@@ -73,7 +75,7 @@ export default async function FeaturedInvestments() {
       roi: `${avgExpectedReturn.toFixed(1)}% ROI`,
       location: location,
       minInvestment: minInvestment,
-      image: product.imageUrl || "/images/default-farm.jpg",
+  image: (images && images[0]) || "/images/default-farm.jpg",
       totalInvestment: totalInvestment,
       investorCount: investorCount,
       description: product.description || "",

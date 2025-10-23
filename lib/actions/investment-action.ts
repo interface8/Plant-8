@@ -22,7 +22,7 @@ export async function getProduct(productId: string): Promise<Product | null> {
         description: true,
         productTypeId: true,
         durationId: true,
-        imageUrl: true,
+  images: { select: { url: true } },
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
         roi: true,
@@ -34,6 +34,7 @@ export async function getProduct(productId: string): Promise<Product | null> {
     // Always return roi, defaulting to 0 if missing
     return {
       ...product,
+      images: Array.isArray(product.images) ? product.images.map((img: { url: string }) => img.url) : [],
       roi: product.roi ?? 10,
       duration: product.duration
         ? { id: product.duration.id, name: product.duration.name }

@@ -19,7 +19,7 @@ export async function GET(
         status: true,
         createdAt: true,
         user: { select: { id: true, name: true } },
-        product: { select: { id: true, name: true, imageUrl: true } },
+  product: { select: { id: true, name: true, images: { select: { url: true } } } },
         productType: { select: { id: true, name: true } },
       },
     });
@@ -31,6 +31,31 @@ export async function GET(
       );
     }
 
+    // Build a clean API response with productImages: string[]
+    if (investment && investment.product) {
+      const imgs = Array.isArray(investment.product.images)
+        ? investment.product.images.map((img: { url: string }) => img.url)
+        : [];
+      const response = {
+        id: investment.id,
+        userId: investment.userId,
+        productId: investment.productId,
+        productTypeId: investment.productTypeId,
+        amount: investment.amount,
+        expectedReturn: investment.expectedReturn,
+        progress: investment.progress,
+        status: investment.status,
+        createdAt: investment.createdAt,
+        user: investment.user,
+        product: {
+          id: investment.product.id,
+          name: investment.product.name,
+        },
+        productType: investment.productType,
+        productImages: imgs,
+      };
+      return NextResponse.json(response, { status: 200 });
+    }
     return NextResponse.json(investment, { status: 200 });
   } catch (error) {
     console.error("Error fetching investment:", error);

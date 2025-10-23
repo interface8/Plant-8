@@ -109,7 +109,7 @@ export async function GET(request: Request) {
             select: {
               id: true,
               name: true,
-              imageUrl: true,
+              images: { select: { url: true } },
             },
           },
           productType: {
@@ -154,8 +154,16 @@ export async function GET(request: Request) {
       }),
     ]);
 
+    // Map product.images from {url: string}[] to string[]
+    const investmentsWithImages = investments.map((inv) => ({
+      ...inv,
+      product: {
+        ...inv.product,
+        images: Array.isArray(inv.product.images) ? inv.product.images.map((img) => img.url) : [],
+      },
+    }));
     return NextResponse.json({
-      investments,
+      investments: investmentsWithImages,
       pagination: {
         page,
         limit,
@@ -255,7 +263,7 @@ export async function PUT(request: Request) {
           select: {
             id: true,
             name: true,
-            imageUrl: true,
+            images: { select: { url: true } },
           },
         },
         productType: {

@@ -41,7 +41,7 @@ interface Product {
   id: string;
   name: string;
   description: string;
-  imageUrl: string;
+  images: string[];
   currentMarketPricePerKg: number;
   farmerMonthlyPayment: number;
   ProductType: {
@@ -51,9 +51,6 @@ interface Product {
   duration: {
     id: string;
     name: string;
-  };
-  _count: {
-    investments: number;
   };
   investments: Investment[];
 }
@@ -99,7 +96,7 @@ export default function InvestmentCatalog({
         (sum, inv) => sum + inv.amount,
         0
       );
-      const investorCount = product._count.investments;
+  const investorCount = product.investments ? product.investments.length : 0;
 
       // Get location from first investment's land
       const firstInvestment = product.investments[0];
@@ -123,7 +120,7 @@ export default function InvestmentCatalog({
         description: product.description,
         category: product.ProductType.name,
         duration: product.duration.name,
-        image: product.imageUrl || "/images/farm.jpg",
+  image: (product.images && product.images[0]) || "/images/farm.jpg",
         minInvestment,
   expectedReturn: productExpectedReturn,
   riskLevel: calculateRiskLevel(productExpectedReturn),

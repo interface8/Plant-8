@@ -40,7 +40,7 @@ export default function ActiveProjects({ investments }: ActiveProjectsProps) {
                 <div className="flex items-center gap-3">
                   <Image
                     src={
-                      investment.product.imageUrl || "/placeholder-image.jpg"
+                      (investment.product.images && investment.product.images[0]) || "/placeholder-image.jpg"
                     }
                     alt={`${investment.product.name} investment`}
                     width={64}

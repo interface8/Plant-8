@@ -96,7 +96,7 @@ export default async function AdminInvestmentsPage({ searchParams }: AdminInvest
           select: {
             id: true,
             name: true,
-            imageUrl: true,
+            images: { select: { url: true } },
           },
         },
         productType: {
@@ -169,6 +169,10 @@ export default async function AdminInvestmentsPage({ searchParams }: AdminInvest
         investments={investments.map(inv => ({
           ...inv,
           createdAt: inv.createdAt.toISOString(),
+          product: {
+            ...inv.product,
+            images: Array.isArray(inv.product.images) ? inv.product.images.map((img: { url: string }) => img.url) : [],
+          },
         }))}
         pagination={{
           page,

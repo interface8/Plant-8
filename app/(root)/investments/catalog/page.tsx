@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import InvestmentCatalog from "@/components/investment/investment-catalog";
 import prisma from "@/db/prisma";
 
@@ -23,7 +24,7 @@ export default async function InvestmentCatalogPage() {
   });
 
   // Fetch all products with their investments data
-  const products = await prisma.product.findMany({
+  const productsRaw = await prisma.product.findMany({
     include: {
       ProductType: {
         select: {
@@ -35,11 +36,6 @@ export default async function InvestmentCatalogPage() {
         select: {
           id: true,
           name: true,
-        },
-      },
-      _count: {
-        select: {
-          investments: true,
         },
       },
       investments: {
@@ -69,21 +65,41 @@ export default async function InvestmentCatalogPage() {
           },
         },
       },
+        images: {
+          select: { url: true },
+        },
     },
     orderBy: {
       createdAt: "desc",
     },
   });
+  
+
+  // Map to Product[]
+  const products = productsRaw.map((product: any) => ({
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    productTypeId: product.productTypeId,
+    durationId: product.durationId,
+    images: Array.isArray(product.images) ? product.images.map((img: any) => img.url) : [],
+    currentMarketPricePerKg: product.currentMarketPricePerKg,
+    farmerMonthlyPayment: product.farmerMonthlyPayment,
+    roi: product.roi,
+    ProductType: product.ProductType,
+    duration: product.duration,
+    investments: product.investments,
+  }));
 
   // Calculate statistics
   const totalInvestments = products.reduce(
-    (sum, product) => sum + product._count.investments,
+    (sum, product) => sum + (product.investments?.length || 0),
     0
   );
-  
+
   const avgReturn = products.reduce((sum, product) => {
-    const productAvg = product.investments.length > 0
-      ? product.investments.reduce((s, inv) => s + (inv.expectedReturn || 0), 0) / product.investments.length
+    const productAvg = product.investments && product.investments.length > 0
+      ? product.investments.reduce((s: number, inv: any) => s + (inv.expectedReturn || 0), 0) / product.investments.length
       : 0;
     return sum + productAvg;
   }, 0) / (products.length || 1);

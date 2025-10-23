@@ -44,7 +44,7 @@ interface Investment {
   product: {
     id: string;
     name: string;
-    imageUrl: string | null;
+    images: string[];
   };
   productType: {
     id: string;
@@ -379,9 +379,9 @@ export default function InvestmentsTable({ investments, pagination, currentSort 
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="flex-shrink-0 h-8 w-8">
-                        {investment.product.imageUrl ? (
+                        {(investment.product.images && investment.product.images[0]) ? (
                           <Image 
-                            src={investment.product.imageUrl} 
+                            src={investment.product.images[0]} 
                             alt={investment.product.name}
                             width={32}
                             height={32}

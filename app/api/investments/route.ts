@@ -34,7 +34,7 @@ export async function GET() {
           select: {
             id: true,
             name: true,
-            imageUrl: true,
+            images: { select: { url: true } },
             farmerMonthlyPayment: true,
             duration: { select: { id: true, name: true } },
           },
@@ -60,7 +60,15 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json(investments, { status: 200 });
+    // Map product.images from {url: string}[] to string[]
+    const investmentsWithImages = investments.map((inv) => ({
+      ...inv,
+      product: {
+        ...inv.product,
+        images: Array.isArray(inv.product.images) ? inv.product.images.map((img) => img.url) : [],
+      },
+    }));
+    return NextResponse.json(investmentsWithImages, { status: 200 });
   } catch (error) {
     console.error("Error fetching investments:", error);
     return NextResponse.json(
@@ -158,7 +166,7 @@ export async function POST(request: Request) {
         createdBy: session.user.id,
       },
       include: {
-        product: { select: { name: true } },
+        product: { select: { name: true, images: { select: { url: true } } } },
         land: { select: { name: true } },
       },
     });
@@ -179,6 +187,7 @@ export async function POST(request: Request) {
         investment: {
           id: investment.id,
           productName: investment.product.name,
+          productImages: Array.isArray(investment.product.images) ? investment.product.images.map((img) => img.url) : [],
           landName: investment.land?.name,
           numberOfPlots: investment.numberOfPlots,
           numberOfTerms: investment.numberOfTerms,

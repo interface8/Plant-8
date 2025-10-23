@@ -51,7 +51,7 @@ export default async function CategoryPage({
                   aria-label={`View details for ${product.name} investment`}
                 >
                   <Image
-                    src={product.imageUrl}
+                    src={(product.images && product.images[0]) || "/images/farm.jpg"}
                     alt={`${product.name} investment`}
                     width={400}
                     height={200}
