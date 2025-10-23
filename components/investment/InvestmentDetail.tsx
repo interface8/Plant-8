@@ -48,10 +48,8 @@ export default function InvestmentDetail({ product, onBack }: ProductDetailProps
   ];
 
   const minInvestment = product.currentMarketPricePerKg * 100;
-  const expectedReturn =
-    product.investments && product.investments.length > 0
-      ? product.investments[0].expectedReturn ?? 15
-      : 15;
+  // Use product.roi for expected return
+  const expectedReturn = typeof product.roi === 'number' ? product.roi : 15;
 
   const [investmentAmount, setInvestmentAmount] = useState(minInvestment);
   const estimatedReturn = (investmentAmount * expectedReturn) / 100;

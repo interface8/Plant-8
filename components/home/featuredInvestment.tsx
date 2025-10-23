@@ -64,18 +64,16 @@ export default async function FeaturedInvestments() {
       maximumFractionDigits: 0,
     }).format(product.currentMarketPricePerKg * 100); // Estimate per plot
 
-    // Calculate average ROI from investments
-    const avgExpectedReturn = product.investments.length > 0
-      ? product.investments.reduce((sum: number, inv) => sum + (inv.expectedReturn || 0), 0) / product.investments.length
-      : 0;
+    // Use product.roi (default to 15 if missing)
+    const roi = typeof product.roi === 'number' ? product.roi : 15;
 
     return {
       id: product.id,
       title: product.name,
-      roi: `${avgExpectedReturn.toFixed(1)}% ROI`,
+      roi: `${roi}% ROI`,
       location: location,
       minInvestment: minInvestment,
-  image: (images && images[0]) || "/images/default-farm.jpg",
+      image: (images && images[0]) || "/images/default-farm.jpg",
       totalInvestment: totalInvestment,
       investorCount: investorCount,
       description: product.description || "",

@@ -44,6 +44,7 @@ interface Product {
   images: string[];
   currentMarketPricePerKg: number;
   farmerMonthlyPayment: number;
+  roi?: number;
   ProductType: {
     id: string;
     name: string;
@@ -105,11 +106,9 @@ export default function InvestmentCatalog({
         firstInvestment?.land?.location?.name ||
         "Nigeria";
 
-      // Use expectedReturn of the first investment for this product
-      const productExpectedReturn =
-        product.investments.length > 0
-          ? product.investments[0].expectedReturn || 15
-          : 15; // Default ROI if no investments
+
+      // Use product.roi for expected return
+      const productExpectedReturn = typeof product.roi === 'number' ? product.roi : 15;
 
       // Estimate minimum investment (using market price)
       const minInvestment = product.currentMarketPricePerKg * 100;
