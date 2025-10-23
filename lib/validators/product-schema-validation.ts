@@ -5,12 +5,12 @@ export const productSchema = z.object({
   description: z.string().min(1, "Description is required").trim(),
   productTypeId: z.string().uuid("Invalid product type ID"),
   durationId: z.string().uuid("Invalid duration ID"),
-  imageUrl: z.string().url("Invalid image URL").min(1, "Image URL is required"),
+  images: z.array(z.string().url("Invalid image URL").min(1, "Image URL is required")).min(1, "At least one image is required"),
   currentMarketPricePerKg: z
     .number()
     .nonnegative("Market price must be non-negative"),
   farmerMonthlyPayment: z
     .number()
     .nonnegative("Farmer monthly payment must be non-negative"),
-  roi: z.number().nonnegative("ROI must be non-negative").optional(),
+  roi: z.number().nonnegative("ROI must be non-negative"),
 });

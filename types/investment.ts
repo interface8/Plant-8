@@ -32,7 +32,7 @@ export interface Investment {
   product: {
     id: string;
     name: string;
-    imageUrl: string | null;
+    images: string[];
     farmerMonthlyPayment: number;
     roi: number | null;
     duration: { id: string; name: string };

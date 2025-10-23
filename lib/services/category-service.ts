@@ -20,7 +20,7 @@ export async function getCategoryAndProducts(name: string): Promise<{
         description: true,
         productTypeId: true,
         durationId: true,
-        imageUrl: true,
+        images: { select: { url: true } },
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
         roi: true,
@@ -28,8 +28,13 @@ export async function getCategoryAndProducts(name: string): Promise<{
         duration: { select: { id: true, name: true } },
       },
     });
+    // Map images to string[] for each product
+    const productsWithImages = products.map((p) => ({
+      ...p,
+      images: Array.isArray(p.images) ? p.images.map((img) => img.url) : [],
+    }));
 
-    return { category, products };
+    return { category, products: productsWithImages };
   } catch (error) {
     console.error("Error fetching category and products:", error);
     return { category: null, products: [] };

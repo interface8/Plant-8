@@ -18,25 +18,21 @@ import {
 } from "lucide-react";
 // Removed: ChevronLeft, ChevronRight
 
+
+import type { Product } from "@/types/product";
+
 interface ProductDetailProps {
-  product: {
-    id: string;
-    name: string;
-    description: string;
-    imageUrl: string;
-    currentMarketPricePerKg: number;
-    farmerMonthlyPayment: number;
-    ProductType: { id: string; name: string };
-    duration: { id: string; name: string };
+  product: Product & {
     investments?: { id: string; expectedReturn?: number | null; amount?: number }[];
-    // Add more fields as needed
   };
   onBack?: () => void;
 }
 
 export default function InvestmentDetail({ product, onBack }: ProductDetailProps) {
-  // For demo, use a single image. Replace with carousel if you add more images.
-  const images = [product.imageUrl];
+  // Use product.images (string[]), filter out empty/invalid URLs
+  const images = Array.isArray(product.images)
+    ? product.images.filter((url) => typeof url === "string" && url.trim() !== "")
+    : [];
 
   // Example: You can add more logic for highlights, payoutSchedule, etc.
   const highlights = [
@@ -95,14 +91,20 @@ export default function InvestmentDetail({ product, onBack }: ProductDetailProps
           <div className="lg:col-span-2 space-y-6">
             {/* Image */}
             <div className="relative aspect-video bg-muted rounded-lg overflow-hidden group">
-              <Image
-                src={images[0]}
-                alt={`${product.name} - Image`}
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 66vw"
-                priority
-              />
+              {images.length > 0 ? (
+                <Image
+                  src={images[0]}
+                  alt={`${product.name} - Image`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 66vw"
+                  priority
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                  No Image Available
+                </div>
+              )}
             </div>
 
             {/* Details */}

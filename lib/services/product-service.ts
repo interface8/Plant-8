@@ -13,7 +13,7 @@ export async function createProduct(data: z.infer<typeof productSchema>) {
     description,
     productTypeId,
     durationId,
-    imageUrl,
+    images,
     currentMarketPricePerKg,
     farmerMonthlyPayment,
     roi
@@ -25,11 +25,14 @@ export async function createProduct(data: z.infer<typeof productSchema>) {
       description,
       productTypeId,
       durationId,
-      imageUrl,
       currentMarketPricePerKg,
       farmerMonthlyPayment,
       roi,
+      images: {
+        create: images.map((url: string) => ({ url })),
+      },
     },
+    include: { images: true },
   });
 }
 
@@ -47,11 +50,13 @@ export async function updateProduct(
     description,
     productTypeId,
     durationId,
-    imageUrl,
+    images,
     currentMarketPricePerKg,
     farmerMonthlyPayment,
     roi
   } = parsed.data;
+  // Remove all old images and add new ones
+  await prisma.productImage.deleteMany({ where: { productId: id } });
   return await prisma.product.update({
     where: { id },
     data: {
@@ -59,11 +64,14 @@ export async function updateProduct(
       description,
       productTypeId,
       durationId,
-      imageUrl,
       currentMarketPricePerKg,
       farmerMonthlyPayment,
       roi,
+      images: {
+        create: images.map((url: string) => ({ url })),
+      },
     },
+    include: { images: true },
   });
 }
 
@@ -79,7 +87,7 @@ export async function getProducts(): Promise<Product[]> {
         description: true,
         productTypeId: true,
         durationId: true,
-        imageUrl: true,
+        images: { select: { url: true } },
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
         roi: true,
@@ -88,9 +96,9 @@ export async function getProducts(): Promise<Product[]> {
       },
       orderBy: { createdAt: "desc" },
     });
-    // Map roi: null to roi: 0 (or another default value)
     return products.map((product) => ({
       ...product,
+      images: Array.isArray(product.images) ? product.images.map((img) => img.url) : [],
       roi: product.roi === null ? 10 : product.roi,
     }));
   } catch (error) {
@@ -119,13 +127,12 @@ export async function getProduct(id: string): Promise<Product | null> {
         description: true,
         productTypeId: true,
         durationId: true,
-        imageUrl: true,
+        images: { select: { url: true } },
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
         roi: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
-        // Include recent investments so we can read a product-specific expectedReturn
         investments: {
           select: {
             id: true,
@@ -140,10 +147,11 @@ export async function getProduct(id: string): Promise<Product | null> {
         },
       },
     });
-    if (product && typeof product.roi === 'undefined') {
-      product.roi = null;
-    }
-    return product;
+    if (!product) return null;
+    return {
+      ...product,
+      images: Array.isArray(product.images) ? product.images.map((img) => img.url) : [],
+    };
   } catch (error) {
     console.error("Error fetching product:", error);
     return null;

@@ -20,7 +20,7 @@ export async function getDurationAndProducts(name: string): Promise<{
         description: true,
         productTypeId: true,
         durationId: true,
-        imageUrl: true,
+        images: { select: { url: true } },
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
         roi: true,
@@ -28,8 +28,11 @@ export async function getDurationAndProducts(name: string): Promise<{
         duration: { select: { id: true, name: true } },
       },
     });
-
-    return { duration, products };
+    const productsWithImages = products.map((p) => ({
+      ...p,
+      images: Array.isArray(p.images) ? p.images.map((img) => img.url) : [],
+    }));
+    return { duration, products: productsWithImages };
   } catch (error) {
     console.error("Error fetching duration and products:", error);
     return { duration: null, products: [] };

@@ -41,7 +41,7 @@ export default async function ProductDetailPage({
         <meta property="og:description" content={product.description} />
         <meta
           property="og:image"
-          content={product.imageUrl || "/placeholder-image.jpg"}
+          content={(product.images && product.images[0]) || "/placeholder-image.jpg"}
         />
         <meta property="og:type" content="website" />
       </Head>

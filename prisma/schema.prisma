@@ -197,7 +197,6 @@ model Product {
   id                      String    @id @default(uuid()) @db.Uuid
   name                    String    @unique
   description             String
-  imageUrl                String
   createdAt               DateTime  @default(now()) @db.Timestamp(6)
   createdBy               String?   @db.Uuid
   modifiedAt              DateTime? @db.Timestamp(6)
@@ -208,12 +207,26 @@ model Product {
   farmerMonthlyPayment    Float     @default(10000)
   roi                     Float?     @default(15)
 
+  // Remove imageUrl, use ProductImage relation instead
+  images         ProductImage[]
+
   ProductType    ProductType  @relation("ProductToType", fields: [productTypeId], references: [id])
   duration       Duration     @relation("ProductToDuration", fields: [durationId], references: [id])
   investments    Investment[] @relation("InvestmentToProduct")
   createdByUser  User?        @relation("CreatedByProduct", fields: [createdBy], references: [id])
   modifiedByUser User?        @relation("ModifiedByProduct", fields: [modifiedBy], references: [id])
   preTask        PreTask[]
+}
+
+model ProductImage {
+  id        String   @id @default(uuid()) @db.Uuid
+  url       String
+  productId String   @db.Uuid
+  sortOrder Int     @default(0)
+  createdAt DateTime @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
 }
 
 model ProductType {

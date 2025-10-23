@@ -12,7 +12,7 @@ export interface Product {
   description: string;
   productTypeId: string;
   durationId: string;
-  imageUrl: string;
+  images: string[];
   currentMarketPricePerKg: number;
   farmerMonthlyPayment: number;
   roi: number | null;
