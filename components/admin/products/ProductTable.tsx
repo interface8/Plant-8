@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/types/product";
 import { toast } from "sonner";
@@ -114,23 +115,25 @@ export const ProductTable: React.FC<ProductTableProps> = ({
               </td>
               <td className="px-4 py-2 align-middle">
                 <button
-                  className="text-blue-600 hover:underline cursor-pointer mr-2"
+                  className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50 mr-2"
                   type="button"
                   tabIndex={0}
                   onClick={() => handleEdit(product.id)}
                   aria-label={`Edit ${product.name}`}
+                  title="Edit"
                 >
-                  Edit
+                  <Pencil className="w-5 h-5" />
                 </button>
                 <button
-                  className="text-red-600 hover:underline cursor-pointer"
+                  className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50"
                   type="button"
                   tabIndex={0}
                   onClick={() => handleDelete(product.id, product.name)}
                   aria-label={`Delete ${product.name}`}
+                  title="Delete"
                   disabled={loading}
                 >
-                  Delete
+                  <Trash2 className="w-5 h-5" />
                 </button>
               </td>
             </tr>
