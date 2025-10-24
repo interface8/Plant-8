@@ -9,7 +9,6 @@ import {
   ArrowLeft,
   MapPin,
   Calendar,
-  DollarSign,
   TrendingUp,
   Maximize,
   CheckCircle2,
@@ -255,7 +254,8 @@ export default function InvestmentDetail({ product, onBack }: ProductDetailProps
                       Investment Amount
                     </label>
                     <div className="relative">
-                      <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      {/* Naira sign icon */}
+                      <span className="absolute left-3 top-4 -translate-y-1/2 h-4 w-4 text-muted-foreground">₦</span>
                       <input
                         id="investment-amount"
                         type="number"
@@ -294,10 +294,20 @@ export default function InvestmentDetail({ product, onBack }: ProductDetailProps
 
                 <hr />
 
-                <Button className="w-full bg-[#1E7B47] hover:bg-[#145C33] text-white">
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  Invest Now
-                </Button>
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    // Navigate to the 3-step investment flow, passing product and amount
+                    router.push(
+                      `/investments?productId=${product.id}&productTypeId=${product.productTypeId}&amount=${investmentAmount}`
+                    );
+                  }}
+                >
+                  <Button type="submit" className="w-full bg-[#1E7B47] hover:bg-[#145C33] text-white">
+                    <TrendingUp className="h-4 w-4 mr-2" />
+                    Invest Now
+                  </Button>
+                </form>
 
                 <div className="bg-accent/30 rounded-lg p-4 space-y-2">
                   {highlights.map((highlight, i) => (

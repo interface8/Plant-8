@@ -15,6 +15,7 @@ export default async function InvestmentsPage({
     productId: string;
     productTypeId: string;
     state?: string;
+    amount?: string;
   }>;
 }) {
   const session = await auth();
@@ -22,7 +23,8 @@ export default async function InvestmentsPage({
     redirect("/sign-in");
   }
 
-  const { productId, productTypeId, state } = await searchParams;
+  const params = await searchParams;
+  const { productId, productTypeId, state, amount } = params;
   if (!productId || !productTypeId) {
     return notFound();
   }
@@ -48,6 +50,7 @@ export default async function InvestmentsPage({
       states={states}
       durations={durations}
       initialState={state}
+      initialAmount={amount ? Number(amount) : undefined}
     />
   );
 }

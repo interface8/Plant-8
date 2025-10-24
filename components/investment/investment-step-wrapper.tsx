@@ -29,6 +29,7 @@ interface InvestmentStepWrapperProps {
   states: State[];
   durations: Duration[];
   initialState?: string;
+  initialAmount?: number;
 }
 
 export default function InvestmentStepWrapper({
@@ -37,6 +38,7 @@ export default function InvestmentStepWrapper({
   states,
   durations,
   initialState,
+  initialAmount,
 }: InvestmentStepWrapperProps) {
   const dispatch = useDispatch<AppDispatch>();
   const currentStep = useSelector(
@@ -54,11 +56,11 @@ export default function InvestmentStepWrapper({
         plotSize: "FULL",
         numberOfPlots: 1,
         numberOfTerms: 1,
-        amount: 0,
+        amount: typeof initialAmount === "number" && initialAmount > 0 ? initialAmount : 0,
         userId: "",
       })
     );
-  }, [dispatch, product]);
+  }, [dispatch, product, initialAmount]);
 
   
   useEffect(() => {
