@@ -1,3 +1,4 @@
+export const revalidate = 60; // Revalidate every 60 seconds
 import { notFound } from "next/navigation";
 import Head from "next/head";
 import Link from "next/link";
