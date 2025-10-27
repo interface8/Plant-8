@@ -12,7 +12,6 @@ import { UserInfo } from "@/components/profile/userInfo";
 import { AddressesSection } from "@/components/profile/addressesSection";
 import { LoadingSpinner } from "@/components/ui/loader";
 
-export const revalidate = 60;
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const {
