@@ -7,6 +7,7 @@ import FinancialCharts from "@/components/dashboard/financialCharts";
 import InvestmentSummary from "@/components/dashboard/InvestmentSummary";
 import ProgressFeed from "@/components/dashboard/progressFeed";
 
+export const revalidate = 60;
 export default async function Dashboard({
   searchParams,
 }: {

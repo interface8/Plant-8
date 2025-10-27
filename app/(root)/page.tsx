@@ -4,6 +4,7 @@ import HeroSection from "@/components/home/heroSection";
 import HowItWorks from "@/components/home/howItWork";
 import Testimonials from "@/components/home/testimonials";
 
+export const revalidate = 60;
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">

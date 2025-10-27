@@ -8,6 +8,7 @@ import {
   getDurations,
 } from "@/lib/services/investment-service";
 
+export const revalidate = 60;
 export default async function InvestmentsPage({
   searchParams,
 }: {
