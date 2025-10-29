@@ -5,7 +5,7 @@ import { getProduct, getProductStaticParams } from "@/lib/services/product-servi
 
 export const generateStaticParams = getProductStaticParams;
 
-export const revalidate = 60;
+export const revalidate = 10;
 export default async function ProductDetailPage({
   params,
 }: {

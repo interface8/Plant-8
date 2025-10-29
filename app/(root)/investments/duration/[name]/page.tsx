@@ -7,7 +7,7 @@ import {
   getDurationStaticParams,
 } from "@/lib/services/duration-service";
 
-export const revalidate = 60;
+export const revalidate = 10;
 export const generateStaticParams = getDurationStaticParams;
 export default async function DurationPage({
   params,

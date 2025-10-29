@@ -2,7 +2,7 @@
 import InvestmentCatalog from "@/components/investment/investment-catalog";
 import prisma from "@/db/prisma";
 
-export const revalidate = 60;
+export const revalidate = 10;
 export default async function InvestmentCatalogPage() {
   // Fetch all product types (crop categories)
   const productTypes = await prisma.productType.findMany({

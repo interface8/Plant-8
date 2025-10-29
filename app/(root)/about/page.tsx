@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   keywords: "FAM 8, farm investment, agriculture, Nigeria, sustainable farming",
 };
 
-export const revalidate = 60;
+export const revalidate = 10;
 export default function About() {
   return (
     <div className="min-h-screen bg-gray-50">
