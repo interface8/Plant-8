@@ -1,15 +1,10 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/db/prisma";
-import { z } from "zod";
 import { Prisma } from "@prisma/client";
 
-const updateInvestmentSchema = z.object({
-  status: z.enum(["PENDING", "ACTIVE", "COMPLETED", "FAILED"]).optional(),
-  progress: z.number().min(0).max(100).optional(),
-  expectedReturn: z.number().min(0).optional(),
-  inspectorId: z.string().uuid().optional().nullable(),
-});
+import { investmentSchema } from "@/lib/validators/investment-schema-validation";
+const updateInvestmentSchema = investmentSchema.partial();
 
 export async function GET(request: Request) {
   try {

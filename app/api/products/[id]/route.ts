@@ -14,8 +14,13 @@ export async function GET(
         description: true,
         productTypeId: true,
         durationId: true,
-  images: { select: { url: true } },
+        images: { select: { url: true } },
         currentMarketPricePerKg: true,
+        farmerMonthlyPayment: true,
+        roi: true,
+        estimatedHarvestQuantityPerPlot: true,
+        daysToHarvestPerPlot: true,
+        minimumNoOfFarmersPerPlot: true,
         ProductType: {
           select: {
             id: true,
@@ -35,7 +40,12 @@ export async function GET(
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    return NextResponse.json(product, { status: 200 });
+    // Convert images from array of objects to array of strings
+    const images = Array.isArray(product.images)
+      ? product.images.map((img: { url: string }) => img.url)
+      : [];
+
+    return NextResponse.json({ ...product, images }, { status: 200 });
   } catch (error) {
     console.error("Error fetching product:", error);
     return NextResponse.json(

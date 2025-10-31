@@ -22,10 +22,13 @@ export async function getProduct(productId: string): Promise<Product | null> {
         description: true,
         productTypeId: true,
         durationId: true,
-  images: { select: { url: true } },
+        images: { select: { url: true } },
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
         roi: true,
+        estimatedHarvestQuantityPerPlot: true,
+        daysToHarvestPerPlot: true,
+        minimumNoOfFarmersPerPlot: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
       },
@@ -36,6 +39,9 @@ export async function getProduct(productId: string): Promise<Product | null> {
       ...product,
       images: Array.isArray(product.images) ? product.images.map((img: { url: string }) => img.url) : [],
       roi: product.roi ?? 10,
+      estimatedHarvestQuantityPerPlot: product.estimatedHarvestQuantityPerPlot,
+      daysToHarvestPerPlot: product.daysToHarvestPerPlot,
+      minimumNoOfFarmersPerPlot: product.minimumNoOfFarmersPerPlot,
       duration: product.duration
         ? { id: product.duration.id, name: product.duration.name }
         : { id: '', name: '' },
@@ -58,6 +64,9 @@ export async function getLands(): Promise<Land[]> {
         fullPlotPrice: true,
         imageUrl: true,
         locationId: true,
+        farmerDailyWage: true,
+        fertilizerCostPerPlot: true,
+        inspectionDailyFee: true,
         location: {
           select: {
             id: true,

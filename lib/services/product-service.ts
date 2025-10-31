@@ -16,7 +16,10 @@ export async function createProduct(data: z.infer<typeof productSchema>) {
     images,
     currentMarketPricePerKg,
     farmerMonthlyPayment,
-    roi
+    roi,
+    estimatedHarvestQuantityPerPlot,
+    daysToHarvestPerPlot,
+    minimumNoOfFarmersPerPlot,
   } = parsed.data;
   return await prisma.product.create({
     data: {
@@ -28,6 +31,9 @@ export async function createProduct(data: z.infer<typeof productSchema>) {
       currentMarketPricePerKg,
       farmerMonthlyPayment,
       roi,
+      estimatedHarvestQuantityPerPlot,
+      daysToHarvestPerPlot,
+      minimumNoOfFarmersPerPlot,
       images: {
         create: images.map((url: string) => ({ url })),
       },
@@ -53,7 +59,10 @@ export async function updateProduct(
     images,
     currentMarketPricePerKg,
     farmerMonthlyPayment,
-    roi
+    roi,
+    estimatedHarvestQuantityPerPlot,
+    daysToHarvestPerPlot,
+    minimumNoOfFarmersPerPlot,
   } = parsed.data;
   // Remove all old images and add new ones
   await prisma.productImage.deleteMany({ where: { productId: id } });
@@ -67,6 +76,9 @@ export async function updateProduct(
       currentMarketPricePerKg,
       farmerMonthlyPayment,
       roi,
+      estimatedHarvestQuantityPerPlot,
+      daysToHarvestPerPlot,
+      minimumNoOfFarmersPerPlot,
       images: {
         create: images.map((url: string) => ({ url })),
       },
@@ -91,6 +103,9 @@ export async function getProducts(): Promise<Product[]> {
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
         roi: true,
+        estimatedHarvestQuantityPerPlot: true,
+        daysToHarvestPerPlot: true,
+        minimumNoOfFarmersPerPlot: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
       },
@@ -131,6 +146,9 @@ export async function getProduct(id: string): Promise<Product | null> {
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
         roi: true,
+        estimatedHarvestQuantityPerPlot: true,
+        daysToHarvestPerPlot: true,
+        minimumNoOfFarmersPerPlot: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
         investments: {

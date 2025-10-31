@@ -89,6 +89,10 @@ export async function seedLands() {
         fullPlotPrice: 1000000,
         imageUrl: "/images/ikeja-farm.jpg",
         locationId: locationMap["Ikeja"],
+        farmerDailyWage: 2000,
+        fertilizerCostPerPlot: 15000,
+        inspectionDailyFee: 1000,
+        inflationRate: 0.12,
       },
       {
         name: "Ikorodu Green",
@@ -97,6 +101,10 @@ export async function seedLands() {
         fullPlotPrice: 800000,
         imageUrl: "/images/ikorodu-green.jpg",
         locationId: locationMap["Ikorodu"],
+        farmerDailyWage: 1800,
+        fertilizerCostPerPlot: 12000,
+        inspectionDailyFee: 900,
+        inflationRate: 0.10,
       },
       {
         name: "Ikorodu Farmland",
@@ -105,6 +113,10 @@ export async function seedLands() {
         fullPlotPrice: 840000,
         imageUrl: "/images/ikorodu-farmland.jpg",
         locationId: locationMap["Ikorodu"],
+        farmerDailyWage: 1850,
+        fertilizerCostPerPlot: 12500,
+        inspectionDailyFee: 950,
+        inflationRate: 0.11,
       },
       {
         name: "Agege Fields",
@@ -113,6 +125,10 @@ export async function seedLands() {
         fullPlotPrice: 900000,
         imageUrl: "/images/agege-fields.jpg",
         locationId: locationMap["Agege"],
+        farmerDailyWage: 2100,
+        fertilizerCostPerPlot: 16000,
+        inspectionDailyFee: 1100,
+        inflationRate: 0.13,
       },
       {
         name: "Abeokuta Plains",
@@ -121,6 +137,10 @@ export async function seedLands() {
         fullPlotPrice: 700000,
         imageUrl: "/images/abeokuta-plains.jpg",
         locationId: locationMap["Abeokuta"],
+        farmerDailyWage: 1700,
+        fertilizerCostPerPlot: 11000,
+        inspectionDailyFee: 850,
+        inflationRate: 0.09,
       },
       {
         name: "Ijebu Acres",
@@ -129,6 +149,10 @@ export async function seedLands() {
         fullPlotPrice: 600000,
         imageUrl: "/images/ijebu-acres.jpg",
         locationId: locationMap["Ijebu"],
+        farmerDailyWage: 1600,
+        fertilizerCostPerPlot: 10000,
+        inspectionDailyFee: 800,
+        inflationRate: 0.08,
       },
       {
         name: "Sagamu Farms",
@@ -137,6 +161,10 @@ export async function seedLands() {
         fullPlotPrice: 640000,
         imageUrl: "/images/sagamu-farms.jpg",
         locationId: locationMap["Sagamu"],
+        farmerDailyWage: 1750,
+        fertilizerCostPerPlot: 11500,
+        inspectionDailyFee: 870,
+        inflationRate: 0.10,
       },
       {
         name: "Ibadan Agro",
@@ -145,6 +173,10 @@ export async function seedLands() {
         fullPlotPrice: 760000,
         imageUrl: "/images/ibadan-agro.jpg",
         locationId: locationMap["Ibadan"],
+        farmerDailyWage: 1900,
+        fertilizerCostPerPlot: 13500,
+        inspectionDailyFee: 980,
+        inflationRate: 0.12,
       },
     ];
 

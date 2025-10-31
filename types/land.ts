@@ -18,6 +18,9 @@ export interface Land {
   halfPlotPrice: number;
   fullPlotPrice: number;
   imageUrl: string | null;
+  farmerDailyWage: number;
+  fertilizerCostPerPlot: number;
+  inspectionDailyFee: number;
   locationId: string;
   location: {
     id: string;

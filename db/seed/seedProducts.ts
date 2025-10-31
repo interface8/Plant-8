@@ -7,6 +7,12 @@ interface Product {
   productTypeId: string;
   durationId: string;
   roi: number | null;
+  currentMarketPricePerKg: number;
+  description: string;
+  images: string[];
+  estimatedHarvestQuantityPerPlot: number;
+  daysToHarvestPerPlot: number;
+  minimumNoOfFarmersPerPlot: number;
 }
 
 export async function seedProducts(adminId: string): Promise<Product[]> {
@@ -63,7 +69,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       throw new Error("Some product types or durations not found");
     }
 
-    const productData = [
+  const productData = [
       // Cereals
       {
         name: "Maize Grain",
@@ -73,6 +79,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: cereals.id,
         durationId: threeMonths.id,
         roi: 12,
+        estimatedHarvestQuantityPerPlot: 100,
+        daysToHarvestPerPlot: 90,
+        minimumNoOfFarmersPerPlot: 2,
       },
       {
         name: "Rice Grain",
@@ -82,6 +91,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: cereals.id,
         durationId: sixMonths.id,
         roi: 10,
+        estimatedHarvestQuantityPerPlot: 120,
+        daysToHarvestPerPlot: 120,
+        minimumNoOfFarmersPerPlot: 2,
       },
       {
         name: "Sorghum Grain",
@@ -91,6 +103,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: cereals.id,
         durationId: sixMonths.id,
         roi: 11,
+        estimatedHarvestQuantityPerPlot: 90,
+        daysToHarvestPerPlot: 80,
+        minimumNoOfFarmersPerPlot: 1,
       },
 
       // Tubers
@@ -102,6 +117,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: tubers.id,
         durationId: sixMonths.id,
         roi: 13,
+        estimatedHarvestQuantityPerPlot: 110,
+        daysToHarvestPerPlot: 100,
+        minimumNoOfFarmersPerPlot: 2,
       },
       {
         name: "Cassava Root",
@@ -111,6 +129,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: tubers.id,
         durationId: sixMonths.id,
         roi: 12,
+        estimatedHarvestQuantityPerPlot: 80,
+        daysToHarvestPerPlot: 70,
+        minimumNoOfFarmersPerPlot: 1,
       },
 
       // Vegetables
@@ -122,6 +143,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: vegetables.id,
         durationId: threeMonths.id,
         roi: 15,
+        estimatedHarvestQuantityPerPlot: 95,
+        daysToHarvestPerPlot: 85,
+        minimumNoOfFarmersPerPlot: 1,
       },
       {
         name: "Carrot Root",
@@ -131,6 +155,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: vegetables.id,
         durationId: threeMonths.id,
         roi: 14,
+        estimatedHarvestQuantityPerPlot: 105,
+        daysToHarvestPerPlot: 95,
+        minimumNoOfFarmersPerPlot: 2,
       },
       {
         name: "Okra Pods",
@@ -140,6 +167,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: vegetables.id,
         durationId: threeMonths.id,
         roi: 13,
+        estimatedHarvestQuantityPerPlot: 130,
+        daysToHarvestPerPlot: 110,
+        minimumNoOfFarmersPerPlot: 3,
       },
 
       // Legumes
@@ -151,6 +181,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: legumes.id,
         durationId: threeMonths.id,
         roi: 11,
+        estimatedHarvestQuantityPerPlot: 140,
+        daysToHarvestPerPlot: 115,
+        minimumNoOfFarmersPerPlot: 3,
       },
       {
         name: "Soybean Seeds",
@@ -160,6 +193,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: legumes.id,
         durationId: sixMonths.id,
         roi: 12,
+        estimatedHarvestQuantityPerPlot: 150,
+        daysToHarvestPerPlot: 120,
+        minimumNoOfFarmersPerPlot: 3,
       },
 
       // Fruits
@@ -171,6 +207,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: fruits.id,
         durationId: threeMonths.id,
         roi: 10,
+        estimatedHarvestQuantityPerPlot: 160,
+        daysToHarvestPerPlot: 130,
+        minimumNoOfFarmersPerPlot: 4,
       },
       {
         name: "Pineapple Fruit",
@@ -180,6 +219,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: fruits.id,
         durationId: sixMonths.id,
         roi: 13,
+        estimatedHarvestQuantityPerPlot: 170,
+        daysToHarvestPerPlot: 140,
+        minimumNoOfFarmersPerPlot: 4,
       },
       {
         name: "Mango Fruit",
@@ -189,6 +231,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: fruits.id,
         durationId: twelveMonths.id,
         roi: 16,
+        estimatedHarvestQuantityPerPlot: 180,
+        daysToHarvestPerPlot: 150,
+        minimumNoOfFarmersPerPlot: 5,
       },
 
       // Spices
@@ -200,6 +245,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: spices.id,
         durationId: sixMonths.id,
         roi: 18,
+        estimatedHarvestQuantityPerPlot: 190,
+        daysToHarvestPerPlot: 160,
+        minimumNoOfFarmersPerPlot: 5,
       },
       {
         name: "Garlic Bulbs",
@@ -209,6 +257,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: spices.id,
         durationId: threeMonths.id,
         roi: 17,
+        estimatedHarvestQuantityPerPlot: 200,
+        daysToHarvestPerPlot: 170,
+        minimumNoOfFarmersPerPlot: 6,
       },
 
       // Poultry
@@ -220,6 +271,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: poultry.id,
         durationId: threeMonths.id,
         roi: 20,
+        estimatedHarvestQuantityPerPlot: 210,
+        daysToHarvestPerPlot: 180,
+        minimumNoOfFarmersPerPlot: 6,
       },
       {
         name: "Turkey Meat",
@@ -229,6 +283,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: poultry.id,
         durationId: sixMonths.id,
         roi: 22,
+        estimatedHarvestQuantityPerPlot: 220,
+        daysToHarvestPerPlot: 190,
+        minimumNoOfFarmersPerPlot: 7,
       },
 
       // Ruminants
@@ -240,6 +297,9 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: ruminants.id,
         durationId: twelveMonths.id,
         roi: 25,
+        estimatedHarvestQuantityPerPlot: 230,
+        daysToHarvestPerPlot: 200,
+        minimumNoOfFarmersPerPlot: 7,
       },
       {
         name: "Goat Meat",
@@ -265,7 +325,11 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
 
     // Create products without images
     await prisma.product.createMany({
-      data: productDataWithIds.map(({ images: _images, ...rest }) => rest),
+      data: productDataWithIds.map((prod) => {
+        // Remove images property for createMany
+        const { images, ...rest } = prod;
+        return rest;
+      }),
       skipDuplicates: true,
     });
 
@@ -288,7 +352,14 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
     }
 
     // Return all products from DB for further use
-    return await prisma.product.findMany();
+    // Return all products with images as array of Product (with images as string[])
+    const dbProducts = await prisma.product.findMany({
+      include: { images: true },
+    });
+    return dbProducts.map((p) => ({
+      ...p,
+      images: Array.isArray(p.images) ? p.images.map((img) => img.url) : [],
+    }));
   } catch (error) {
     console.error("Failed to seed products:", error);
     throw error;
