@@ -22,6 +22,7 @@ export interface Land {
   fertilizerCostPerPlot: number;
   inspectionDailyFee: number;
   locationId: string;
+  inflationRate: number;
   location: {
     id: string;
     name: string;

@@ -1,5 +1,5 @@
 
-import { calculateInvestment } from "@/lib/utils/investmentCalculator";
+import { calculateInvestmentROI, InvestmentResult } from "@/lib/utils/investmentCalculator";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { InvestmentFormData } from "@/types/investment";
 import type { Land } from "@/types/land";
@@ -14,6 +14,8 @@ export interface InvestmentState extends InvestmentFormData {
   totalInvestment?: number;
   expectedReturn?: number;
   landCost?: number;
+
+  roiResult?: InvestmentResult;
 }
 
 const initialState: InvestmentState = {
@@ -48,17 +50,15 @@ const investmentSlice = createSlice({
       Object.assign(state, action.payload);
       // If we have product and land, recalculate
       if (state.product && state.land) {
-        const calc = calculateInvestment({
-          land: state.land,
-          product: state.product,
-          noOfPlots: state.numberOfPlots || 1,
-          numberOfFarmers: state.numberOfFarmers || 1,
-          terms: state.numberOfTerms || 1,
-          investmentAmount: state.amount || 0,
-        });
-  state.totalInvestment = calc.totalInvestment;
-  state.expectedReturn = calc.expectedReturn;
-  state.landCost = calc.landCost;
+        const calc = calculateInvestmentROI(
+          state.amount || 0,
+          state.product,
+          state.land,
+          state.numberOfPlots || 1,
+          state.numberOfFarmers || 1,
+          state.numberOfTerms || 1
+        );
+        state.roiResult = calc;
       }
     },
     setFarmerMonthlyPayment(state, action: PayloadAction<number>) {

@@ -22,35 +22,97 @@ export interface InvestmentCalcResult {
   inspectionCostPerTerm: number;
 }
 
+export interface InvestmentResult {
+  totalCost: number;
+  estimatedRevenue: number;
+  adjustedRevenue: number;
+  netReturn: number;
+  roiPercent: number;
+  roiPerDay: number;
+  adjustedYield: number;
+  effectiveDaysToHarvest: number;
+  estimatedHarvestQuantity: number;
+}
 
-export function calculateInvestment({
-  land,
-  product,
-  noOfPlots,
-  numberOfFarmers,
-  terms,
-  investmentAmount,
-}: InvestmentCalcInput): InvestmentCalcResult {
-  // Fallbacks to prevent NaN
-  const plotPrice = typeof land.fullPlotPrice === 'number' && land.fullPlotPrice > 0
-    ? land.fullPlotPrice
-    : (typeof land.halfPlotPrice === 'number' && land.halfPlotPrice > 0 ? land.halfPlotPrice : 0);
-  const landCost = plotPrice * noOfPlots;
-  const farmersCostPerTerm = (land.farmerDailyWage || 0) * (product.daysToHarvestPerPlot || 0) * (numberOfFarmers || 1) * (noOfPlots || 1);
-  const fertilizerCost = (land.fertilizerCostPerPlot || 0) * (noOfPlots || 1);
-  const inspectionCostPerTerm = (land.inspectionDailyFee || 0) * (product.daysToHarvestPerPlot || 0);
-  const subtotalPerTerm = investmentAmount + landCost + farmersCostPerTerm + fertilizerCost + inspectionCostPerTerm;
-  const totalInvestment = subtotalPerTerm * (terms || 1);
-  const expectedReturn = totalInvestment * (1 + ((product.roi ?? 0) / 100));
-  const netProfit = expectedReturn - totalInvestment;
+export function calculateInvestmentROI(
+  investmentAmount: number,
+  product: Product,
+  land: Land,
+  noOfPlots: number,
+  numberOfFarmers: number,
+  terms: number // number of harvest cycles (e.g., 3 terms = 3 harvests)
+): InvestmentResult {
+  // === BASE VALUES ===
+  const {
+    fullPlotPrice: landPrice,
+    farmerDailyWage,
+    fertilizerCostPerPlot,
+    inspectionDailyFee,
+    inflationRate,
+  } = land;
+
+  const {
+    estimatedHarvestQuantityPerPlot,
+    daysToHarvestPerPlot,
+    minimumNoOfFarmersPerPlot,
+    currentMarketPricePerKg,
+  } = product;
+
+  // === DYNAMIC ADJUSTMENTS ===
+  const farmerEfficiency =
+    numberOfFarmers / (minimumNoOfFarmersPerPlot * noOfPlots);
+  const effectiveDaysToHarvestPerTerm = Math.max(
+    1,
+    Math.round(daysToHarvestPerPlot * (1 / Math.min(farmerEfficiency, 1.5)))
+  );
+
+  // More farmers => slightly better yield (up to 20%)
+  const yieldEfficiencyBoost = Math.min(farmerEfficiency, 1.2);
+
+  // Per term yield (with efficiency)
+  const yieldPerTerm =
+    estimatedHarvestQuantityPerPlot * noOfPlots * yieldEfficiencyBoost;
+
+  // === APPLY TERMS ===
+  const effectiveDaysToHarvest =
+    effectiveDaysToHarvestPerTerm * terms;
+
+  const estimatedHarvestQuantity = yieldPerTerm * terms;
+
+  // === COST CALCULATIONS ===
+  const setupCost = (landPrice / 365) * effectiveDaysToHarvestPerTerm * noOfPlots; // one-time land cost
+  const labourCost =
+    farmerDailyWage *
+    effectiveDaysToHarvestPerTerm *
+    numberOfFarmers *
+    noOfPlots *
+    terms; // repeats per term
+
+  const fertilizerCost = fertilizerCostPerPlot * noOfPlots * terms;
+  const inspectionCost = inspectionDailyFee * effectiveDaysToHarvestPerTerm * terms;
+
+  const totalCost = setupCost + labourCost + fertilizerCost + inspectionCost;
+
+  // === REVENUE CALCULATIONS ===
+  const inflationAdjustedPrice = currentMarketPricePerKg * (1 + inflationRate);
+  const estimatedRevenue = estimatedHarvestQuantity * currentMarketPricePerKg;
+  const adjustedRevenue = estimatedHarvestQuantity * inflationAdjustedPrice;
+
+  // === RETURNS ===
+  const netReturn = adjustedRevenue - totalCost;
+  const roiPercent = (netReturn / investmentAmount) * 100;
+  const roiPerDay = roiPercent / effectiveDaysToHarvest;
 
   return {
-    landCost,
-    totalInvestment,
-    expectedReturn,
-    netProfit,
-    farmersCostPerTerm,
-    fertilizerCost,
-    inspectionCostPerTerm,
+    totalCost,
+    estimatedRevenue,
+    adjustedRevenue,
+    netReturn,
+    roiPercent,
+    roiPerDay,
+    adjustedYield: estimatedHarvestQuantity,
+    effectiveDaysToHarvest,
+    estimatedHarvestQuantity,
   };
 }
+
