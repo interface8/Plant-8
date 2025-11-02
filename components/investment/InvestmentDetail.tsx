@@ -1,10 +1,9 @@
 "use client";
-import type { InvestmentState } from "@/store/slices/investmentSlice";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { calculateInvestment } from "@/lib/utils/investmentCalculator";
+import { calculateInvestmentROI } from "@/lib/utils/investmentCalculator";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { setInvestmentData, setProduct, setLand, setDurationName } from "@/store/slices/investmentSlice";
@@ -335,7 +334,7 @@ export default function InvestmentDetail({ product, lands = [], states = [], onB
                   </div>
                   {selectedLand && (
                     <div className="mt-2 text-sm text-gray-700">
-                      Land Price per Plot: ₦{(selectedLand.fullPlotPrice ?? selectedLand.halfPlotPrice).toLocaleString()}
+                      Land Price per Plot: ₦{selectedLand.dailyPrice.toLocaleString()} per day
                     </div>
                   )}
                 </div>
@@ -344,7 +343,8 @@ export default function InvestmentDetail({ product, lands = [], states = [], onB
                   <label className="block text-sm font-medium mb-2">Number of Plots</label>
                   <input
                     type="number"
-                    min={1}
+                    min={0.5}
+                    step={0.5}
                     value={investment.numberOfPlots || 1}
                     onChange={e => handlePlotsChange(Number(e.target.value))}
                     className="w-full border border-border rounded-lg px-3 py-2"
@@ -379,19 +379,15 @@ export default function InvestmentDetail({ product, lands = [], states = [], onB
                     <label className="block text-sm font-medium mb-2">Land Cost</label>
                     <div className="w-full border border-border rounded-lg px-3 py-2 bg-gray-50 flex items-center">
                       ₦{(() => {
-                        const landWithWage = {
-                          ...selectedLand,
-                          farmerDailyWage: typeof selectedLand.farmerDailyWage === 'number' && selectedLand.farmerDailyWage > 0 ? selectedLand.farmerDailyWage : 0,
-                        };
-                        const calc = calculateInvestment({
-                          land: landWithWage,
+                        const roiCalc = calculateInvestmentROI(
+                          investment.amount || 0,
                           product,
-                          noOfPlots: investment.numberOfPlots || 1,
-                          numberOfFarmers: investment.numberOfFarmers || product.minimumNoOfFarmersPerPlot || 1,
-                          terms: 1, // Only 1 term for land cost
-                          investmentAmount: 0, // Only land cost
-                        });
-                        return calc.landCost.toLocaleString();
+                          selectedLand,
+                          investment.numberOfPlots || 1,
+                          investment.numberOfFarmers || product.minimumNoOfFarmersPerPlot || 1,
+                          investment.numberOfTerms || 1
+                        );
+                        return roiCalc.landCost.toLocaleString();
                       })()}
                     </div>
                   </div>
@@ -420,20 +416,33 @@ export default function InvestmentDetail({ product, lands = [], states = [], onB
                 </div>
                 {/* Calculation Results */}
                 {selectedLand ? (() => {
-                  const landWithWage = {
-                    ...selectedLand,
-                    farmerDailyWage: typeof selectedLand.farmerDailyWage === 'number' && selectedLand.farmerDailyWage > 0 ? selectedLand.farmerDailyWage : 0,
-                  };
-                  const roiResult = calculateInvestment({
-                    land: landWithWage,
+                  const roiResult = calculateInvestmentROI(
+                    investment.amount || 0,
                     product,
-                    noOfPlots: investment.numberOfPlots || 1,
-                    numberOfFarmers: investment.numberOfFarmers || product.minimumNoOfFarmersPerPlot || 1,
-                    terms: investment.numberOfTerms || 1,
-                    investmentAmount: investment.amount || 0,
-                  });
+                    selectedLand,
+                    investment.numberOfPlots || 1,
+                    investment.numberOfFarmers || product.minimumNoOfFarmersPerPlot || 1,
+                    investment.numberOfTerms || 1
+                  );
                   return (
                     <div className="rounded-lg p-4 space-y-2 bg-[#F6FBF7]">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Land Cost</span>
+                        <span className="text-[#145C33]">₦{roiResult.landCost?.toLocaleString() || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Labour Cost</span>
+                        <span className="text-[#145C33]">₦{roiResult.labourCost?.toLocaleString() || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Fertilizer Cost</span>
+                        <span className="text-[#145C33]">₦{roiResult.fertilizerCost?.toLocaleString() || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-muted-foreground">Inspection Cost</span>
+                        <span className="text-[#145C33]">₦{roiResult.inspectionCost?.toLocaleString() || 0}</span>
+                      </div>
+                      <hr className="my-2" />
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Total Cost</span>
                         <span className="text-[#145C33]">₦{roiResult.totalCost?.toLocaleString() || 0}</span>
@@ -452,11 +461,11 @@ export default function InvestmentDetail({ product, lands = [], states = [], onB
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">ROI (%)</span>
-                        <span className="text-[#1E7B47]">{roiResult.roiPercent?.toFixed(2) || 0}%</span>
+                        <span className="text-[#1E7B47]">{(roiResult.roiPercent && !isNaN(roiResult.roiPercent) ? roiResult.roiPercent.toFixed(2) : 0)}%</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">ROI per Day (%)</span>
-                        <span className="text-[#1E7B47]">{roiResult.roiPerDay?.toFixed(4) || 0}%</span>
+                        <span className="text-[#1E7B47]">{(roiResult.roiPerDay && !isNaN(roiResult.roiPerDay) ? roiResult.roiPerDay.toFixed(4) : 0)}%</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Adjusted Yield</span>

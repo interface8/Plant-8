@@ -29,6 +29,7 @@ export async function getProduct(productId: string): Promise<Product | null> {
         estimatedHarvestQuantityPerPlot: true,
         daysToHarvestPerPlot: true,
         minimumNoOfFarmersPerPlot: true,
+        dailyMaintenanceFee: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
       },
@@ -60,13 +61,12 @@ export async function getLands(): Promise<Land[]> {
         id: true,
         name: true,
         gpsCoordinates: true,
-        halfPlotPrice: true,
-        fullPlotPrice: true,
+        dailyPrice: true,
         imageUrl: true,
         locationId: true,
-        farmerDailyWage: true,
         fertilizerCostPerPlot: true,
         inspectionDailyFee: true,
+        inflationRate: true,
         location: {
           select: {
             id: true,

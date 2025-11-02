@@ -59,6 +59,10 @@ const investmentSlice = createSlice({
           state.numberOfTerms || 1
         );
         state.roiResult = calc;
+        // Sync calculated values to top-level state for easy access
+        state.totalInvestment = calc.totalCost;
+        state.expectedReturn = calc.adjustedRevenue;
+        state.landCost = calc.landCost;
       }
     },
     setFarmerMonthlyPayment(state, action: PayloadAction<number>) {

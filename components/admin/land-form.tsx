@@ -21,10 +21,11 @@ export default function LandForm({ locations }: LandFormProps) {
   const [formData, setFormData] = useState({
     name: "",
     gpsCoordinates: "",
-    halfPlotPrice: "",
-    fullPlotPrice: "",
+    dailyPrice: "",
     imageUrl: "",
     locationId: locations[0]?.id || "",
+    fertilizerCostPerPlot: "",
+    inspectionDailyFee: "",
   });
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -67,8 +68,8 @@ export default function LandForm({ locations }: LandFormProps) {
       return;
     }
 
-    if (!formData.halfPlotPrice || !formData.fullPlotPrice) {
-      const errorMsg = "Both plot prices are required.";
+    if (!formData.dailyPrice) {
+      const errorMsg = "Daily price is required.";
       setError(errorMsg);
       toast.error(errorMsg);
       setIsSubmitting(false);
@@ -82,8 +83,9 @@ export default function LandForm({ locations }: LandFormProps) {
 
     const parsedData = {
       ...formData,
-      halfPlotPrice: parseFloat(formData.halfPlotPrice),
-      fullPlotPrice: parseFloat(formData.fullPlotPrice),
+      dailyPrice: parseFloat(formData.dailyPrice),
+      fertilizerCostPerPlot: parseFloat(formData.fertilizerCostPerPlot),
+      inspectionDailyFee: parseFloat(formData.inspectionDailyFee),
       gpsCoordinates: formData.gpsCoordinates || null,
       imageUrl: formData.imageUrl || null,
       createdBy: session.user.id,
@@ -103,10 +105,11 @@ export default function LandForm({ locations }: LandFormProps) {
         setFormData({
           name: "",
           gpsCoordinates: "",
-          halfPlotPrice: "",
-          fullPlotPrice: "",
+          dailyPrice: "",
           imageUrl: "",
           locationId: locations[0]?.id || "",
+          fertilizerCostPerPlot: "",
+          inspectionDailyFee: "",
         });
         setError(null);
         
@@ -188,40 +191,20 @@ export default function LandForm({ locations }: LandFormProps) {
       </div>
       <div>
         <label
-          htmlFor="halfPlotPrice"
+          htmlFor="dailyPrice"
           className="block text-sm font-medium text-gray-700"
         >
-          Half Plot Price (₦)
+          Daily Price per Plot (₦)
         </label>
         <input
           type="number"
-          id="halfPlotPrice"
-          value={formData.halfPlotPrice}
+          id="dailyPrice"
+          value={formData.dailyPrice}
           onChange={(e) =>
-            setFormData({ ...formData, halfPlotPrice: e.target.value })
+            setFormData({ ...formData, dailyPrice: e.target.value })
           }
           min="0"
-          step="1000"
-          className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
-          required
-        />
-      </div>
-      <div>
-        <label
-          htmlFor="fullPlotPrice"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Full Plot Price (₦)
-        </label>
-        <input
-          type="number"
-          id="fullPlotPrice"
-          value={formData.fullPlotPrice}
-          onChange={(e) =>
-            setFormData({ ...formData, fullPlotPrice: e.target.value })
-          }
-          min="0"
-          step="1000"
+          step="100"
           className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
           required
         />
@@ -240,6 +223,34 @@ export default function LandForm({ locations }: LandFormProps) {
           onChange={(e) =>
             setFormData({ ...formData, imageUrl: e.target.value })
           }
+          className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
+        />
+      </div>
+      <div>
+        <label htmlFor="fertilizerCostPerPlot" className="block text-sm font-medium text-gray-700">
+          Fertilizer Cost Per Plot (₦)
+        </label>
+        <input
+          type="number"
+          id="fertilizerCostPerPlot"
+          value={formData.fertilizerCostPerPlot}
+          onChange={e => setFormData({ ...formData, fertilizerCostPerPlot: e.target.value })}
+          min="0"
+          step="100"
+          className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
+        />
+      </div>
+      <div>
+        <label htmlFor="inspectionDailyFee" className="block text-sm font-medium text-gray-700">
+          Inspection Daily Fee (₦)
+        </label>
+        <input
+          type="number"
+          id="inspectionDailyFee"
+          value={formData.inspectionDailyFee}
+          onChange={e => setFormData({ ...formData, inspectionDailyFee: e.target.value })}
+          min="0"
+          step="100"
           className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
         />
       </div>

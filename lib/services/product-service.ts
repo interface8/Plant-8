@@ -106,6 +106,7 @@ export async function getProducts(): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: true,
         daysToHarvestPerPlot: true,
         minimumNoOfFarmersPerPlot: true,
+        dailyMaintenanceFee: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
       },
@@ -149,6 +150,7 @@ export async function getProduct(id: string): Promise<Product | null> {
         estimatedHarvestQuantityPerPlot: true,
         daysToHarvestPerPlot: true,
         minimumNoOfFarmersPerPlot: true,
+        dailyMaintenanceFee: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
         investments: {

@@ -11,7 +11,6 @@ export interface InvestmentCalcInput {
   investmentAmount: number;
 }
 
-
 export interface InvestmentCalcResult {
   landCost: number;
   totalInvestment: number;
@@ -32,6 +31,10 @@ export interface InvestmentResult {
   adjustedYield: number;
   effectiveDaysToHarvest: number;
   estimatedHarvestQuantity: number;
+  landCost: number;
+  labourCost: number;
+  fertilizerCost: number;
+  inspectionCost: number;
 }
 
 export function calculateInvestmentROI(
@@ -44,8 +47,7 @@ export function calculateInvestmentROI(
 ): InvestmentResult {
   // === BASE VALUES ===
   const {
-    fullPlotPrice: landPrice,
-    farmerDailyWage,
+    dailyPrice: landPrice,
     fertilizerCostPerPlot,
     inspectionDailyFee,
     inflationRate,
@@ -56,6 +58,7 @@ export function calculateInvestmentROI(
     daysToHarvestPerPlot,
     minimumNoOfFarmersPerPlot,
     currentMarketPricePerKg,
+    dailyMaintenanceFee,
   } = product;
 
   // === DYNAMIC ADJUSTMENTS ===
@@ -80,9 +83,9 @@ export function calculateInvestmentROI(
   const estimatedHarvestQuantity = yieldPerTerm * terms;
 
   // === COST CALCULATIONS ===
-  const setupCost = (landPrice / 365) * effectiveDaysToHarvestPerTerm * noOfPlots; // one-time land cost
+  const landCost = landPrice * effectiveDaysToHarvestPerTerm * noOfPlots;
   const labourCost =
-    farmerDailyWage *
+    dailyMaintenanceFee *
     effectiveDaysToHarvestPerTerm *
     numberOfFarmers *
     noOfPlots *
@@ -91,7 +94,7 @@ export function calculateInvestmentROI(
   const fertilizerCost = fertilizerCostPerPlot * noOfPlots * terms;
   const inspectionCost = inspectionDailyFee * effectiveDaysToHarvestPerTerm * terms;
 
-  const totalCost = setupCost + labourCost + fertilizerCost + inspectionCost;
+  const totalCost = landCost + labourCost + fertilizerCost + inspectionCost;
 
   // === REVENUE CALCULATIONS ===
   const inflationAdjustedPrice = currentMarketPricePerKg * (1 + inflationRate);
@@ -113,6 +116,10 @@ export function calculateInvestmentROI(
     adjustedYield: estimatedHarvestQuantity,
     effectiveDaysToHarvest,
     estimatedHarvestQuantity,
+    landCost,
+    labourCost,
+    fertilizerCost,
+    inspectionCost,
   };
 }
 

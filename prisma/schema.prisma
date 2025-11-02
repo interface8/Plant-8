@@ -208,6 +208,7 @@ model Product {
   estimatedHarvestQuantityPerPlot Float   @default(0) // kg per plot per term
   daysToHarvestPerPlot         Int       @default(0) // days per term
   minimumNoOfFarmersPerPlot    Int       @default(1)
+  dailyMaintenanceFee          Float     @default(0) // ₦ per day - includes labor costs
 
   // Remove imageUrl, use ProductImage relation instead
   images         ProductImage[]
@@ -388,10 +389,8 @@ model Land {
   locationId              String       @db.Uuid
   name                    String
   gpsCoordinates          String? // e.g., "6.5244,3.3792" for map integration
-  halfPlotPrice           Float        @default(0)
-  fullPlotPrice           Float        @default(0)
+  dailyPrice              Float        @default(0) // ₦ per day per plot
   imageUrl                String?
-  farmerDailyWage         Float        @default(0) // ₦ per day
   fertilizerCostPerPlot   Float        @default(0) // ₦ per plot per term
   inspectionDailyFee      Float        @default(0) // ₦ per day
   inflationRate           Float        @default(0)

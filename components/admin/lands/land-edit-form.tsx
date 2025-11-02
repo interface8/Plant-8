@@ -21,6 +21,9 @@ interface Land {
       name: string;
     };
   };
+  farmerDailyWage?: number;
+  fertilizerCostPerPlot?: number;
+  inspectionDailyFee?: number;
 }
 
 interface Location {
@@ -48,6 +51,9 @@ export default function LandEditForm({ land, locations }: LandEditFormProps) {
     fullPlotPrice: land.fullPlotPrice.toString(),
     imageUrl: land.imageUrl || "",
     locationId: land.locationId,
+    farmerDailyWage: land.farmerDailyWage ? land.farmerDailyWage.toString() : "",
+    fertilizerCostPerPlot: land.fertilizerCostPerPlot ? land.fertilizerCostPerPlot.toString() : "",
+    inspectionDailyFee: land.inspectionDailyFee ? land.inspectionDailyFee.toString() : "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,6 +75,9 @@ export default function LandEditForm({ land, locations }: LandEditFormProps) {
           fullPlotPrice: parseFloat(formData.fullPlotPrice),
           imageUrl: formData.imageUrl || null,
           locationId: formData.locationId,
+          farmerDailyWage: parseFloat(formData.farmerDailyWage),
+          fertilizerCostPerPlot: parseFloat(formData.fertilizerCostPerPlot),
+          inspectionDailyFee: parseFloat(formData.inspectionDailyFee),
         }),
       });
 
@@ -201,6 +210,57 @@ export default function LandEditForm({ land, locations }: LandEditFormProps) {
               placeholder="0.00"
               value={formData.fullPlotPrice}
               onChange={(e) => setFormData({ ...formData, fullPlotPrice: e.target.value })}
+            />
+          </div>
+
+          {/* Farmer Daily Wage */}
+          <div>
+            <label htmlFor="farmerDailyWage" className="block text-sm font-medium text-gray-700 mb-2">
+              Farmer Daily Wage (₦)
+            </label>
+            <input
+              type="number"
+              id="farmerDailyWage"
+              min="0"
+              step="100"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="0.00"
+              value={formData.farmerDailyWage}
+              onChange={e => setFormData({ ...formData, farmerDailyWage: e.target.value })}
+            />
+          </div>
+
+          {/* Fertilizer Cost Per Plot */}
+          <div>
+            <label htmlFor="fertilizerCostPerPlot" className="block text-sm font-medium text-gray-700 mb-2">
+              Fertilizer Cost Per Plot (₦)
+            </label>
+            <input
+              type="number"
+              id="fertilizerCostPerPlot"
+              min="0"
+              step="100"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="0.00"
+              value={formData.fertilizerCostPerPlot}
+              onChange={e => setFormData({ ...formData, fertilizerCostPerPlot: e.target.value })}
+            />
+          </div>
+
+          {/* Inspection Daily Fee */}
+          <div>
+            <label htmlFor="inspectionDailyFee" className="block text-sm font-medium text-gray-700 mb-2">
+              Inspection Daily Fee (₦)
+            </label>
+            <input
+              type="number"
+              id="inspectionDailyFee"
+              min="0"
+              step="100"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="0.00"
+              value={formData.inspectionDailyFee}
+              onChange={e => setFormData({ ...formData, inspectionDailyFee: e.target.value })}
             />
           </div>
 

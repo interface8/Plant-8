@@ -19,6 +19,7 @@ export interface Product {
   estimatedHarvestQuantityPerPlot: number;
   daysToHarvestPerPlot: number;
   minimumNoOfFarmersPerPlot: number;
+  dailyMaintenanceFee: number;
   ProductType: {
     id: string;
     name: string;

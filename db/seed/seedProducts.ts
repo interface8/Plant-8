@@ -13,6 +13,7 @@ interface Product {
   estimatedHarvestQuantityPerPlot: number;
   daysToHarvestPerPlot: number;
   minimumNoOfFarmersPerPlot: number;
+  dailyMaintenanceFee: number;
 }
 
 export async function seedProducts(adminId: string): Promise<Product[]> {
@@ -82,6 +83,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 100,
         daysToHarvestPerPlot: 90,
         minimumNoOfFarmersPerPlot: 2,
+        dailyMaintenanceFee: 4000, // 2 farmers × ₦2000/day
       },
       {
         name: "Rice Grain",
@@ -94,6 +96,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 120,
         daysToHarvestPerPlot: 120,
         minimumNoOfFarmersPerPlot: 2,
+        dailyMaintenanceFee: 4000, // 2 farmers × ₦2000/day
       },
       {
         name: "Sorghum Grain",
@@ -106,6 +109,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 90,
         daysToHarvestPerPlot: 80,
         minimumNoOfFarmersPerPlot: 1,
+        dailyMaintenanceFee: 2000, // 1 farmer × ₦2000/day
       },
 
       // Tubers
@@ -120,6 +124,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 110,
         daysToHarvestPerPlot: 100,
         minimumNoOfFarmersPerPlot: 2,
+        dailyMaintenanceFee: 4000, // 2 farmers × ₦2000/day
       },
       {
         name: "Cassava Root",
@@ -132,6 +137,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 80,
         daysToHarvestPerPlot: 70,
         minimumNoOfFarmersPerPlot: 1,
+        dailyMaintenanceFee: 2000, // 1 farmer × ₦2000/day
       },
 
       // Vegetables
@@ -146,6 +152,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 95,
         daysToHarvestPerPlot: 85,
         minimumNoOfFarmersPerPlot: 1,
+        dailyMaintenanceFee: 2000, // 1 farmer × ₦2000/day
       },
       {
         name: "Carrot Root",
@@ -158,6 +165,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 105,
         daysToHarvestPerPlot: 95,
         minimumNoOfFarmersPerPlot: 2,
+        dailyMaintenanceFee: 4000, // 2 farmers × ₦2000/day
       },
       {
         name: "Okra Pods",
@@ -170,6 +178,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 130,
         daysToHarvestPerPlot: 110,
         minimumNoOfFarmersPerPlot: 3,
+        dailyMaintenanceFee: 6000, // 3 farmers × ₦2000/day
       },
 
       // Legumes
@@ -184,6 +193,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 140,
         daysToHarvestPerPlot: 115,
         minimumNoOfFarmersPerPlot: 3,
+        dailyMaintenanceFee: 6000, // 3 farmers × ₦2000/day
       },
       {
         name: "Soybean Seeds",
@@ -196,6 +206,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 150,
         daysToHarvestPerPlot: 120,
         minimumNoOfFarmersPerPlot: 3,
+        dailyMaintenanceFee: 6000, // 3 farmers × ₦2000/day
       },
 
       // Fruits
@@ -210,6 +221,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 160,
         daysToHarvestPerPlot: 130,
         minimumNoOfFarmersPerPlot: 4,
+        dailyMaintenanceFee: 8000, // 4 farmers × ₦2000/day
       },
       {
         name: "Pineapple Fruit",
@@ -222,6 +234,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 170,
         daysToHarvestPerPlot: 140,
         minimumNoOfFarmersPerPlot: 4,
+        dailyMaintenanceFee: 8000, // 4 farmers × ₦2000/day
       },
       {
         name: "Mango Fruit",
@@ -234,6 +247,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 180,
         daysToHarvestPerPlot: 150,
         minimumNoOfFarmersPerPlot: 5,
+        dailyMaintenanceFee: 10000, // 5 farmers × ₦2000/day
       },
 
       // Spices
@@ -248,6 +262,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 190,
         daysToHarvestPerPlot: 160,
         minimumNoOfFarmersPerPlot: 5,
+        dailyMaintenanceFee: 10000, // 5 farmers × ₦2000/day
       },
       {
         name: "Garlic Bulbs",
@@ -260,6 +275,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 200,
         daysToHarvestPerPlot: 170,
         minimumNoOfFarmersPerPlot: 6,
+        dailyMaintenanceFee: 12000, // 6 farmers × ₦2000/day
       },
 
       // Poultry
@@ -274,6 +290,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 210,
         daysToHarvestPerPlot: 180,
         minimumNoOfFarmersPerPlot: 6,
+        dailyMaintenanceFee: 12000, // 6 farmers × ₦2000/day
       },
       {
         name: "Turkey Meat",
@@ -286,6 +303,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 220,
         daysToHarvestPerPlot: 190,
         minimumNoOfFarmersPerPlot: 7,
+        dailyMaintenanceFee: 14000, // 7 farmers × ₦2000/day
       },
 
       // Ruminants
@@ -300,6 +318,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         estimatedHarvestQuantityPerPlot: 230,
         daysToHarvestPerPlot: 200,
         minimumNoOfFarmersPerPlot: 7,
+        dailyMaintenanceFee: 14000, // 7 farmers × ₦2000/day
       },
       {
         name: "Goat Meat",
@@ -309,6 +328,10 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         productTypeId: ruminants.id,
         durationId: sixMonths.id,
         roi: 21,
+        estimatedHarvestQuantityPerPlot: 240,
+        daysToHarvestPerPlot: 210,
+        minimumNoOfFarmersPerPlot: 8,
+        dailyMaintenanceFee: 16000, // 8 farmers × ₦2000/day
       },
     ];
 
@@ -327,6 +350,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
     await prisma.product.createMany({
       data: productDataWithIds.map((prod) => {
         // Remove images property for createMany
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { images, ...rest } = prod;
         return rest;
       }),

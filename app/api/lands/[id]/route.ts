@@ -11,11 +11,12 @@ export async function GET(
       select: {
         id: true,
         name: true,
-        halfPlotPrice: true,
-        fullPlotPrice: true,
+        dailyPrice: true,
         gpsCoordinates: true,
         imageUrl: true,
-        farmerDailyWage: true,
+        fertilizerCostPerPlot: true,
+        inspectionDailyFee: true,
+        inflationRate: true,
         location: {
           select: {
             id: true,

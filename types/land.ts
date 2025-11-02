@@ -15,10 +15,8 @@ export interface Land {
   id: string;
   name: string;
   gpsCoordinates: string | null;
-  halfPlotPrice: number;
-  fullPlotPrice: number;
+  dailyPrice: number;
   imageUrl: string | null;
-  farmerDailyWage: number;
   fertilizerCostPerPlot: number;
   inspectionDailyFee: number;
   locationId: string;

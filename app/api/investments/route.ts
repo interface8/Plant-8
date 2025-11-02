@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/db/prisma";
 import { investmentSchema } from "@/lib/validators/investment-schema-validators";
+import { calculateInvestmentROI } from "@/lib/utils/investmentCalculator";
 
 export async function GET() {
   const session = await auth();
@@ -45,8 +46,10 @@ export async function GET() {
             id: true,
             name: true,
             gpsCoordinates: true,
-            halfPlotPrice: true,
-            fullPlotPrice: true,
+            dailyPrice: true,
+            fertilizerCostPerPlot: true,
+            inspectionDailyFee: true,
+            inflationRate: true,
             location: {
               select: {
                 id: true,
@@ -116,16 +119,32 @@ export async function POST(request: Request) {
       select: {
         id: true,
         name: true,
+        description: true,
         productTypeId: true,
+        durationId: true,
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
-        duration: { select: { name: true } },
+        roi: true,
+        estimatedHarvestQuantityPerPlot: true,
+        daysToHarvestPerPlot: true,
+        minimumNoOfFarmersPerPlot: true,
+        dailyMaintenanceFee: true,
+        images: { select: { url: true } },
+        ProductType: { select: { id: true, name: true } },
+        duration: { select: { id: true, name: true } },
       },
     });
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
-    if (product.productTypeId !== productTypeId) {
+    
+    // Map product images to string array
+    const productWithImages = {
+      ...product,
+      images: Array.isArray(product.images) ? product.images.map((img) => img.url) : [],
+    };
+    
+    if (productWithImages.productTypeId !== productTypeId) {
       return NextResponse.json(
         { error: "Invalid product type" },
         { status: 400 }
@@ -134,21 +153,43 @@ export async function POST(request: Request) {
 
     const land = await prisma.land.findUnique({
       where: { id: landId },
-      select: { id: true, halfPlotPrice: true, fullPlotPrice: true },
+      select: { 
+        id: true,
+        name: true,
+        gpsCoordinates: true,
+        imageUrl: true,
+        locationId: true,
+        dailyPrice: true,
+        fertilizerCostPerPlot: true,
+        inspectionDailyFee: true,
+        inflationRate: true,
+        location: {
+          select: {
+            id: true,
+            name: true,
+            state: { select: { id: true, name: true } },
+          },
+        },
+      },
     });
     if (!land) {
       return NextResponse.json({ error: "Land not found" }, { status: 404 });
     }
 
-    const plotPrice =
-      plotSize === "HALF" ? land.halfPlotPrice : land.fullPlotPrice;
-    const farmerMonthlyPayment = product.farmerMonthlyPayment;
-    const monthsMatch = product.duration.name.match(/(\d+)\s*month/i);
-    const durationMonths = monthsMatch ? parseInt(monthsMatch[1]) : 1;
-    const plotCost = plotPrice * numberOfPlots * numberOfTerms;
-    const farmerCost = farmerMonthlyPayment * durationMonths * numberOfTerms;
-    const amount = plotCost + farmerCost;
-    const expectedReturn = plotCost * 1.2;
+    // Calculate investment amount using the calculator
+    // Use minimum number of farmers if not provided
+    const numberOfFarmers = productWithImages.minimumNoOfFarmersPerPlot;
+    const calculationResult = calculateInvestmentROI(
+      0, // Initial investment (we're calculating it)
+      productWithImages,
+      land,
+      numberOfPlots,
+      numberOfFarmers,
+      numberOfTerms
+    );
+    
+    const amount = calculationResult.totalCost;
+    const expectedReturn = calculationResult.estimatedRevenue;
 
     const investment = await prisma.investment.create({
       data: {
