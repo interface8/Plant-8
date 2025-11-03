@@ -43,8 +43,11 @@ export interface Investment {
     id: string;
     name: string;
     gpsCoordinates: string | null;
-    halfPlotPrice: number;
-    fullPlotPrice: number;
+    dailyPrice: number;
+    imageUrl?: string | null;
+    fertilizerCostPerPlot?: number;
+    inspectionDailyFee?: number;
+    inflationRate?: number;
     location: {
       id: string;
       name: string;

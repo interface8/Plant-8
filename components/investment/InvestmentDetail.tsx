@@ -427,23 +427,6 @@ export default function InvestmentDetail({ product, lands = [], states = [], onB
                   return (
                     <div className="rounded-lg p-4 space-y-2 bg-[#F6FBF7]">
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Land Cost</span>
-                        <span className="text-[#145C33]">₦{roiResult.landCost?.toLocaleString() || 0}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Labour Cost</span>
-                        <span className="text-[#145C33]">₦{roiResult.labourCost?.toLocaleString() || 0}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Fertilizer Cost</span>
-                        <span className="text-[#145C33]">₦{roiResult.fertilizerCost?.toLocaleString() || 0}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Inspection Cost</span>
-                        <span className="text-[#145C33]">₦{roiResult.inspectionCost?.toLocaleString() || 0}</span>
-                      </div>
-                      <hr className="my-2" />
-                      <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Total Cost</span>
                         <span className="text-[#145C33]">₦{roiResult.totalCost?.toLocaleString() || 0}</span>
                       </div>
@@ -452,32 +435,8 @@ export default function InvestmentDetail({ product, lands = [], states = [], onB
                         <span className="text-[#145C33]">₦{roiResult.estimatedRevenue?.toLocaleString() || 0}</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Inflation Adjusted Revenue</span>
-                        <span className="text-[#145C33]">₦{roiResult.adjustedRevenue?.toLocaleString() || 0}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Net Return</span>
                         <span className="text-[#1E7B47]">₦{roiResult.netReturn?.toLocaleString() || 0}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">ROI (%)</span>
-                        <span className="text-[#1E7B47]">{(roiResult.roiPercent && !isNaN(roiResult.roiPercent) ? roiResult.roiPercent.toFixed(2) : 0)}%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">ROI per Day (%)</span>
-                        <span className="text-[#1E7B47]">{(roiResult.roiPerDay && !isNaN(roiResult.roiPerDay) ? roiResult.roiPerDay.toFixed(4) : 0)}%</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Adjusted Yield</span>
-                        <span className="text-[#145C33]">{roiResult.adjustedYield?.toLocaleString() || 0} kg</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Effective Days to Harvest</span>
-                        <span className="text-[#145C33]">{roiResult.effectiveDaysToHarvest?.toLocaleString() || 0} days</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Estimated Harvest Quantity</span>
-                        <span className="text-[#145C33]">{roiResult.estimatedHarvestQuantity?.toLocaleString() || 0} kg</span>
                       </div>
                     </div>
                   );

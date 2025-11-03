@@ -1,5 +1,6 @@
 "use client";
 import { useSelector } from "react-redux";
+import { calculateInvestmentROI } from "@/lib/utils/investmentCalculator";
 import type { InvestmentState } from "@/store/slices/investmentSlice";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -14,13 +15,20 @@ export default function InvestmentSummaryForm() {
   const numberOfPlots = investment.numberOfPlots;
   const numberOfTerms = investment.numberOfTerms;
   const numberOfFarmers = investment.numberOfFarmers;
-  const landCost = investment.landCost || 0;
-  const totalInvestment = investment.totalInvestment || 0;
-  const expectedReturn = investment.expectedReturn || 0;
-  const roi = product?.roi ?? 0;
-  const totalPayout = expectedReturn;
+  // Calculate all breakdowns using the ROI calculator
+  let roiResult = null;
+  if (product && land) {
+    roiResult = calculateInvestmentROI(
+      investment.amount || 0,
+      product,
+      land,
+      numberOfPlots || 1,
+      numberOfFarmers || product.minimumNoOfFarmersPerPlot || 1,
+      numberOfTerms || 1
+    );
+  }
 
-  if (!product || !land) {
+  if (!product || !land || !roiResult) {
     return <div className="max-w-xl mx-auto p-8 text-center text-gray-400">Missing product or land data.</div>;
   }
   return (
@@ -75,31 +83,28 @@ export default function InvestmentSummaryForm() {
             <div className="text-xs text-gray-500">Duration</div>
             <div className="font-medium">{durationName}</div>
           </div>
-          <div>
-            <div className="text-xs text-gray-500">Land Cost</div>
-            <div className="font-medium">₦{landCost.toLocaleString()}</div>
-          </div>
         </div>
-        {/* Returns Section */}
-        <div className="space-y-2">
-          <div className="flex justify-between">
-            <span className="text-gray-500">Total Investment</span>
-            <span className="font-semibold text-[#145C33]">₦{totalInvestment.toLocaleString()}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500">Expected Return (ROI {roi}%)</span>
-            <span className="font-semibold text-[#1E7B47]">+₦{(expectedReturn - totalInvestment).toLocaleString()}</span>
-          </div>
-          <div className="flex justify-between border-t pt-2 mt-2">
-            <span className="font-semibold">Total Payout</span>
-            <span className="font-bold text-[#1E7B47]">₦{totalPayout.toLocaleString()}</span>
-          </div>
+        {/* Full Breakdown Section */}
+        <div className="space-y-2 border-b pb-4 mb-4">
+          <div className="flex justify-between"><span className="text-gray-500">Land Cost</span><span className="font-medium">₦{roiResult.landCost?.toLocaleString() || 0}</span></div>
+          <div className="flex justify-between"><span className="text-gray-500">Labour Cost</span><span className="font-medium">₦{roiResult.labourCost?.toLocaleString() || 0}</span></div>
+          <div className="flex justify-between"><span className="text-gray-500">Fertilizer Cost</span><span className="font-medium">₦{roiResult.fertilizerCost?.toLocaleString() || 0}</span></div>
+          <div className="flex justify-between"><span className="text-gray-500">Inspection Cost</span><span className="font-medium">₦{roiResult.inspectionCost?.toLocaleString() || 0}</span></div>
+          <div className="flex justify-between"><span className="text-gray-500">Total Cost</span><span className="font-medium">₦{roiResult.totalCost?.toLocaleString() || 0}</span></div>
+          <div className="flex justify-between"><span className="text-gray-500">Estimated Revenue</span><span className="font-medium">₦{roiResult.estimatedRevenue?.toLocaleString() || 0}</span></div>
+          <div className="flex justify-between"><span className="text-gray-500">Inflation Adjusted Revenue</span><span className="font-medium">₦{roiResult.adjustedRevenue?.toLocaleString() || 0}</span></div>
+          <div className="flex justify-between"><span className="text-gray-500">Net Return</span><span className="font-medium">₦{roiResult.netReturn?.toLocaleString() || 0}</span></div>
+          <div className="flex justify-between"><span className="text-gray-500">ROI (%)</span><span className="font-medium">{(roiResult.roiPercent && !isNaN(roiResult.roiPercent) ? roiResult.roiPercent.toFixed(2) : 0)}%</span></div>
+          <div className="flex justify-between"><span className="text-gray-500">ROI per Day (%)</span><span className="font-medium">{(roiResult.roiPerDay && !isNaN(roiResult.roiPerDay) ? roiResult.roiPerDay.toFixed(4) : 0)}%</span></div>
+          <div className="flex justify-between"><span className="text-gray-500">Adjusted Yield</span><span className="font-medium">{roiResult.adjustedYield?.toLocaleString() || 0} kg</span></div>
+          <div className="flex justify-between"><span className="text-gray-500">Effective Days to Harvest</span><span className="font-medium">{roiResult.effectiveDaysToHarvest?.toLocaleString() || 0} days</span></div>
+          <div className="flex justify-between"><span className="text-gray-500">Estimated Harvest Quantity</span><span className="font-medium">{roiResult.estimatedHarvestQuantity?.toLocaleString() || 0} kg</span></div>
         </div>
         <button
           onClick={() => router.push("/payment")}
           className="w-full bg-[#1E7B47] text-white px-4 py-2 rounded-md hover:bg-[#145C33] transition-colors font-semibold mt-4"
         >
-          Proceed to Pay ₦{totalInvestment.toLocaleString()}
+          Proceed to Pay ₦{roiResult.totalCost?.toLocaleString() || 0}
         </button>
       </div>
     </div>
