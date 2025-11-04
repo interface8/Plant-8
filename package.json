@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "node server.ts",
     "build": "prisma generate && next build",
-    "start": "next start",
+    "start": "NODE_ENV=production node server.ts",
     "lint": "next lint",
     "seed": "tsx ./db/seed/index.ts",
     "prisma:seed": "ts-node-esm --loader tsconfig-paths/esm db/seed/index.ts"
@@ -48,6 +48,8 @@
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
     "server-only": "^0.0.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "sonner": "^2.0.3",
     "sooner": "^1.1.4",
     "tailwind-merge": "^3.3.0",

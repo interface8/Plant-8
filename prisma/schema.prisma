@@ -46,6 +46,9 @@ model User {
   createdProducts  Product[] @relation("CreatedByProduct")
   modifiedProducts Product[] @relation("ModifiedByProduct")
 
+  marketplaceListings MarketplaceListing[] @relation(name: "UserToListings")
+  orders              Order[]              @relation(name: "UserToOrders")
+
   createdProductTypes  ProductType[] @relation("CreatedByProductType")
   modifiedProductTypes ProductType[] @relation("ModifiedByProductType")
 
@@ -216,6 +219,7 @@ model Product {
   ProductType    ProductType  @relation("ProductToType", fields: [productTypeId], references: [id])
   duration       Duration     @relation("ProductToDuration", fields: [durationId], references: [id])
   investments    Investment[] @relation("InvestmentToProduct")
+  marketplaceListings MarketplaceListing[] @relation("ProductToListings")
   createdByUser  User?        @relation("CreatedByProduct", fields: [createdBy], references: [id])
   modifiedByUser User?        @relation("ModifiedByProduct", fields: [modifiedBy], references: [id])
   preTask        PreTask[]
@@ -307,6 +311,8 @@ model Investment {
   land           Land?       @relation(fields: [landId], references: [id])
   createdByUser  User?       @relation("CreatedByInvestment", fields: [createdBy], references: [id])
   modifiedByUser User?       @relation("ModifiedByInvestment", fields: [modifiedBy], references: [id])
+
+  marketplaceListings MarketplaceListing[] @relation("InvestmentToListings")
 
   tasks Task[]
 }
@@ -457,3 +463,46 @@ enum CarouselTypeEnum {
   testimony
   marketplace
 }
+
+model MarketplaceListing {
+  id             String   @id @default(uuid()) @db.Uuid
+  investorId     String   @db.Uuid
+  investmentId   String   @db.Uuid
+  productId      String   @db.Uuid
+  quantityKg     Float
+  pricePerKg     Float
+  totalValue     Float
+  status         String   @default("PENDING") // PENDING, ACTIVE, SOLD, CANCELLED
+  isNegotiable   Boolean  @default(true)
+  marketRating   Float?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  investor    User        @relation("UserToListings", fields: [investorId], references: [id])
+  investment  Investment  @relation("InvestmentToListings", fields: [investmentId], references: [id])
+  product     Product     @relation("ProductToListings", fields: [productId], references: [id])
+  orders      Order[]     @relation("ListingToOrders")
+
+  @@index([investorId])
+  @@index([investmentId])
+  @@index([productId])
+}
+
+model Order {
+  id            String   @id @default(uuid()) @db.Uuid
+  listingId     String   @db.Uuid
+  buyerId       String   @db.Uuid
+  quantityKg    Float
+  pricePerKg    Float
+  totalPrice    Float
+  status        String   @default("PENDING") // PENDING, PAID, SHIPPED, COMPLETED, CANCELLED
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  listing MarketplaceListing @relation("ListingToOrders", fields: [listingId], references: [id])
+  buyer   User               @relation("UserToOrders", fields: [buyerId], references: [id])
+
+  @@index([listingId])
+  @@index([buyerId])
+}
+

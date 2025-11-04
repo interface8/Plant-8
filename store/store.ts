@@ -2,11 +2,15 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import investmentReducer from "./slices/investmentSlice";
 import investmentStepReducer from "./slices/investmentStepSlice";
+import marketplaceReducer from "./slices/marketplace/listingsSlice";
+import ordersReducer from "./slices/marketplace/ordersSlice";
 
 export const store = configureStore({
   reducer: {
     investment: investmentReducer,
     investmentStep: investmentStepReducer,
+    marketplace: marketplaceReducer,
+    orders: ordersReducer,
   },
 });
 
