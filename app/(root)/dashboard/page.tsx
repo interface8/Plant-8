@@ -40,6 +40,10 @@ export default async function Dashboard({
           name: true,
           gpsCoordinates: true,
           dailyPrice: true,
+          imageUrl: true,
+          fertilizerCostPerPlot: true,
+          inspectionDailyFee: true,
+          inflationRate: true,
           location: {
             select: {
               id: true,

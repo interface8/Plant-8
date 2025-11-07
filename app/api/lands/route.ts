@@ -20,10 +20,12 @@ export async function GET(request: Request) {
       select: {
         id: true,
         name: true,
-        halfPlotPrice: true,
-        fullPlotPrice: true,
+        dailyPrice: true,
         gpsCoordinates: true,
         imageUrl: true,
+        fertilizerCostPerPlot: true,
+        inspectionDailyFee: true,
+        inflationRate: true,
       },
     });
 
@@ -56,10 +58,12 @@ export async function POST(request: Request) {
     const {
       name,
       gpsCoordinates,
-      halfPlotPrice,
-      fullPlotPrice,
+      dailyPrice,
       imageUrl,
       locationId,
+      fertilizerCostPerPlot,
+      inspectionDailyFee,
+      inflationRate,
     } = parsed.data;
 
     const location = await prisma.location.findUnique({
@@ -77,18 +81,22 @@ export async function POST(request: Request) {
         id: crypto.randomUUID(),
         name,
         gpsCoordinates,
-        halfPlotPrice,
-        fullPlotPrice,
+        dailyPrice,
         imageUrl: imageUrl || null,
         locationId,
+        fertilizerCostPerPlot,
+        inspectionDailyFee,
+        inflationRate,
       },
       select: {
         id: true,
         name: true,
         gpsCoordinates: true,
-        halfPlotPrice: true,
-        fullPlotPrice: true,
+        dailyPrice: true,
         imageUrl: true,
+        fertilizerCostPerPlot: true,
+        inspectionDailyFee: true,
+        inflationRate: true,
         location: { select: { name: true, state: { select: { name: true } } } },
       },
     });
@@ -100,8 +108,10 @@ export async function POST(request: Request) {
           id: land.id,
           name: land.name,
           location: `${land.location.name}, ${land.location.state.name}`,
-          halfPlotPrice: land.halfPlotPrice,
-          fullPlotPrice: land.fullPlotPrice,
+          dailyPrice: land.dailyPrice,
+          fertilizerCostPerPlot: land.fertilizerCostPerPlot,
+          inspectionDailyFee: land.inspectionDailyFee,
+          inflationRate: land.inflationRate,
         },
       },
       { status: 201 }

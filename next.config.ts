@@ -11,6 +11,11 @@ const nextConfig = {
         pathname: "/**",
       },
       {
+        protocol: 'https',
+        hostname: 'plus.unsplash.com',
+        pathname: "/**",
+      },
+      {
         protocol: "https",
         hostname: "*.public.blob.vercel-storage.com",
         pathname: "/**",
@@ -19,7 +24,7 @@ const nextConfig = {
         protocol: "https",
         hostname: "cmdjeif.com",
         pathname: "/**",
-      },
+      }, 
     ],
   },
 

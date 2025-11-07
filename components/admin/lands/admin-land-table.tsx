@@ -8,9 +8,11 @@ interface Land {
   id: string;
   name: string;
   gpsCoordinates: string | null;
-  halfPlotPrice: number;
-  fullPlotPrice: number;
+  dailyPrice: number;
   imageUrl: string | null;
+  fertilizerCostPerPlot: number;
+  inspectionDailyFee: number;
+  inflationRate: number;
   createdAt: Date;
   location: {
     id: string;
@@ -181,8 +183,8 @@ export default function AdminLandTable({ lands }: AdminLandTableProps) {
                     <div className="flex items-center">
                       <Banknote className="h-4 w-4 mr-1 text-gray-400" />
                       <div>
-                        <div>Half: {formatCurrency(land.halfPlotPrice)}</div>
-                        <div>Full: {formatCurrency(land.fullPlotPrice)}</div>
+                        <div>Daily: {formatCurrency(land.dailyPrice)}</div>
+                        <div className="text-xs text-gray-500">per plot/day</div>
                       </div>
                     </div>
                   </div>

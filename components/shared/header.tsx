@@ -133,7 +133,7 @@ export default function Header() {
         }`}
       >
         <div
-          className="absolute inset-0 bg-opacity-30 backdrop-blur-sm"
+          className="absolute inset-0 bg-opacity-30 backdrop-blur-sm cursor-pointer"
           onClick={() => setIsMenuOpen(false)}
         />
 

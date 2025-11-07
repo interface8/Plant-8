@@ -12,7 +12,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, 
   // Only modal scrolls, background remains visible and scrollable
   if (!isOpen) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 cursor-default">
       <div
         className={`bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[80vh] p-6 relative overflow-y-auto ${className || ''}`}
         style={{ minHeight: '320px', minWidth: '320px' }}

@@ -44,6 +44,10 @@ export interface Investment {
     name: string;
     gpsCoordinates: string | null;
     dailyPrice: number;
+    imageUrl?: string | null;
+    fertilizerCostPerPlot?: number;
+    inspectionDailyFee?: number;
+    inflationRate?: number;
     location: {
       id: string;
       name: string;

@@ -49,18 +49,14 @@ export default function InvestmentDetailsForm({
   useEffect(() => {
     dispatch(setFarmerMonthlyPayment(product.farmerMonthlyPayment));
 
-    const plotPrice =
-      investmentData.plotSize === "HALF"
-        ? land.halfPlotPrice
-        : land.fullPlotPrice;
+    // Use dailyPrice for all plot sizes (HALF/FULL distinction removed)
+    const plotPrice = land.dailyPrice || 0;
     const farmerMonthlyPayment = product.farmerMonthlyPayment;
     const duration = durations.find((d) => d.id === investmentData.durationId);
     const monthsMatch = duration?.name.match(/(\d+)\s*month/i);
     const durationMonths = monthsMatch ? parseInt(monthsMatch[1]) : 1;
-    const plotCost =
-      plotPrice * investmentData.numberOfPlots * investmentData.numberOfTerms;
-    const farmerCost =
-      farmerMonthlyPayment * durationMonths * investmentData.numberOfTerms;
+    const plotCost = plotPrice * investmentData.numberOfPlots * investmentData.numberOfTerms;
+    const farmerCost = farmerMonthlyPayment * durationMonths * investmentData.numberOfTerms;
     const total = plotCost + farmerCost;
     dispatch(setInvestmentData({ amount: total }));
   }, [
@@ -146,10 +142,10 @@ export default function InvestmentDetailsForm({
           className="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-green-500 focus:border-green-500"
         >
           <option value="HALF">
-            Half Plot (₦{land.halfPlotPrice.toLocaleString()})
+            Half Plot
           </option>
           <option value="FULL">
-            Full Plot (₦{land.fullPlotPrice.toLocaleString()})
+            Full Plot
           </option>
         </select>
       </div>
