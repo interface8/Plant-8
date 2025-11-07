@@ -45,7 +45,6 @@ export function UserInfo({ user, onUpdate }: UserInfoProps) {
       window.dispatchEvent(new Event("profileUpdated")); // Notify UserDropdown
       toast.success("Profile updated successfully");
       form.reset({ ...data, password: "" });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Failed to update profile");
     }

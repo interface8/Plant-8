@@ -17,9 +17,7 @@ import { MarketplaceListing } from "@/types/marketplace";
 import { LoadingSpinner } from "@/components/ui/loader";
 import {
   ArrowLeft,
-  MapPin,
   Package,
-  DollarSign,
   User,
   ShoppingCart,
 } from "lucide-react";
@@ -34,7 +32,7 @@ const orderSchema = z.object({
 type OrderFormData = z.infer<typeof orderSchema>;
 
 export default function ListingDetailPage() {
-  const { data: session, status: sessionStatus } = useSession();
+  const { data: _session } = useSession();
   const params = useParams();
   const router = useRouter();
   const [listing, setListing] = useState<MarketplaceListing | null>(null);
@@ -74,7 +72,7 @@ export default function ListingDetailPage() {
         toast.error("Listing not found");
         router.push("/marketplace");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to fetch listing");
     } finally {
       setLoading(false);

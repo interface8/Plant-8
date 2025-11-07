@@ -48,7 +48,7 @@ export default function MyListingsPage() {
           listing.investment?.userId === session?.user?.id
       );
       setListings(myListings);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to fetch listings");
     } finally {
       setLoading(false);
@@ -62,7 +62,7 @@ export default function MyListingsPage() {
       await axios.delete(`/api/marketplace/listings/${id}`);
       toast.success("Listing deleted successfully");
       fetchMyListings();
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to delete listing");
     }
   };
@@ -72,7 +72,7 @@ export default function MyListingsPage() {
       await axios.patch(`/api/marketplace/listings/${id}`, { status: newStatus });
       toast.success("Listing status updated");
       fetchMyListings();
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to update listing status");
     }
   };

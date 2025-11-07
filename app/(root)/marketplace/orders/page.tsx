@@ -41,7 +41,7 @@ export default function OrdersPage() {
         (order: Order) => order.buyerId === session?.user?.id
       );
       setOrders(myOrders);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to fetch orders");
     } finally {
       setLoading(false);
@@ -126,7 +126,7 @@ export default function OrdersPage() {
                         </TableCell>
                         <TableCell>
                           <div className="space-y-1">
-                            {order.orderItems?.map((item, idx) => (
+                            {order.orderItems?.map((item) => (
                               <div key={item.id} className="text-sm">
                                 <span className="font-medium">
                                   {item.listing?.product?.name || "Product"}

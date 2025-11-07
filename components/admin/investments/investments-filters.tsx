@@ -107,7 +107,6 @@ export default function InvestmentsFilters({ currentFilters }: Pick<InvestmentsF
     ];
 
     const rows = investments.map((investment: unknown) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const inv = investment as Record<string, any>;
       return [
         inv.id || "N/A",

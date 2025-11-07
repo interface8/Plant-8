@@ -78,7 +78,7 @@ export default function InvestmentDetail({ product, lands = [], states = [], onB
       numberOfFarmers: investment.numberOfFarmers || product.minimumNoOfFarmersPerPlot || 1,
       amount: investment.amount || minInvestment,
     }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [product, selectedLand]);
 
   // Handler for selecting land from modal

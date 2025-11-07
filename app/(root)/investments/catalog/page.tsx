@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import InvestmentCatalog from "@/components/investment/investment-catalog";
 import prisma from "@/db/prisma";
 

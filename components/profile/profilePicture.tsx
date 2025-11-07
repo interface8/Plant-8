@@ -53,7 +53,6 @@ export function ProfilePicture({ user, onImageUpload }: ProfilePictureProps) {
       setImageFile(null);
       setImagePreview(null);
       setUploadProgress(0);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Failed to upload image");
     } finally {

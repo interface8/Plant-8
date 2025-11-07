@@ -80,7 +80,7 @@ export default function NewListingPage() {
         (inv: any) => inv.status === "COMPLETED" && inv.userId === session?.user?.id
       );
       setInvestments(completedInvestments);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to fetch investments");
     }
   };
@@ -89,7 +89,7 @@ export default function NewListingPage() {
     try {
       const response = await axios.get("/api/products");
       setProducts(response.data);
-    } catch (error) {
+    } catch (_error) {
       toast.error("Failed to fetch products");
     }
   };

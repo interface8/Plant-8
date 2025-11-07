@@ -9,12 +9,13 @@ const updateListingSchema = z.object({
   status: z.string().optional(),
 });
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  const { id } = await params;
   const body = await request.json();
   const validation = updateListingSchema.safeParse(body);
 
@@ -24,7 +25,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
   try {
     const listing = await prisma.marketplaceListing.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: {
           investment: {
             select: {
@@ -39,7 +40,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     }
 
     const updatedListing = await prisma.marketplaceListing.update({
-      where: { id: params.id },
+      where: { id },
       data: validation.data,
       include: {
         product: {
@@ -63,20 +64,22 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     emitEvent('listing:updated', updatedListing, 'marketplace:listings');
     return NextResponse.json(updatedListing);
   } catch (error) {
-    console.error(`Failed to update listing ${params.id}:`, error);
+    console.error(`Failed to update listing ${id}:`, error);
     return NextResponse.json({ error: 'Failed to update listing' }, { status: 500 });
   }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const session = await auth();
     if (!session?.user?.id) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    const { id } = await params;
+
     try {
         const listing = await prisma.marketplaceListing.findUnique({
-            where: { id: params.id },
+            where: { id },
             include: {
               investment: {
                 select: {
@@ -91,13 +94,13 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
         }
 
         await prisma.marketplaceListing.delete({
-            where: { id: params.id },
+            where: { id },
         });
 
-        emitEvent('listing:deleted', { id: params.id }, 'marketplace:listings');
+        emitEvent('listing:deleted', { id }, 'marketplace:listings');
         return NextResponse.json({ message: 'Listing deleted' });
     } catch (error) {
-        console.error(`Failed to delete listing ${params.id}:`, error);
+        console.error(`Failed to delete listing ${id}:`, error);
         return NextResponse.json({ error: 'Failed to delete listing' }, { status: 500 });
     }
 }

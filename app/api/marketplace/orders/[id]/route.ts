@@ -8,7 +8,7 @@ const updateOrderSchema = z.object({
   status: z.string(),
 });
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -23,7 +23,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
   try {
     const order = await prisma.order.findUnique({
-        where: { id: params.id },
+        where: { id: (await params).id },
         include: { 
           orderItems: {
             include: {
@@ -57,7 +57,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     }
 
     const updatedOrder = await prisma.order.update({
-      where: { id: params.id },
+      where: { id: (await params).id },
       data: { status: validation.data.status },
       include: {
         orderItems: {
@@ -95,7 +95,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     emitEvent('order:statusChanged', updatedOrder, 'marketplace:orders');
     return NextResponse.json(updatedOrder);
   } catch (error) {
-    console.error(`Failed to update order ${params.id}:`, error);
+    console.error(`Failed to update order ${(await params).id}:`, error);
     return NextResponse.json({ error: 'Failed to update order' }, { status: 500 });
   }
 }

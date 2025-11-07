@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/store/store";
 import { fetchListings } from "@/store/slices/marketplace/listingsSlice";
@@ -14,7 +14,6 @@ export default function MarketplacePage() {
   const dispatch = useDispatch();
   const router = useRouter();
   const { listings, status } = useSelector((state: RootState) => state.marketplace);
-  const [cartItemCount, setCartItemCount] = useState(0);
 
   // Initialize socket connection for real-time updates
   useMarketplaceSocket();
@@ -41,7 +40,6 @@ export default function MarketplacePage() {
     <MarketplaceGrid
       listings={listings}
       onListingClick={handleListingClick}
-      cartItemCount={cartItemCount}
       onViewCart={handleViewCart}
     />
   );

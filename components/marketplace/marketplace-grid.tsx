@@ -27,25 +27,22 @@ import {
   Star,
   MapPin,
   Package,
-  Truck,
   Search,
   Filter,
-  Award,
-  Leaf,
 } from "lucide-react";
 import Image from "next/image";
 
 interface MarketplaceProps {
   listings: MarketplaceListing[];
   onListingClick: (listing: MarketplaceListing) => void;
-  cartItemCount: number;
+  cartItemCount?: number;
   onViewCart: () => void;
 }
 
 export function MarketplaceGrid({
   listings,
   onListingClick,
-  cartItemCount,
+  cartItemCount = 0,
   onViewCart,
 }: MarketplaceProps) {
   const [searchQuery, setSearchQuery] = useState("");
