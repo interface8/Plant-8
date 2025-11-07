@@ -10,6 +10,9 @@ const listingSchema = z.object({
   quantityKg: z.number().positive(),
   pricePerKg: z.number().positive(),
   isNegotiable: z.boolean().optional(),
+  harvestDate: z.string().datetime().or(z.date()),
+  expiryDate: z.string().datetime().or(z.date()).optional(),
+  description: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -25,21 +28,46 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: validation.error.format() }, { status: 400 });
   }
 
-  const { investmentId, productId, quantityKg, pricePerKg, isNegotiable } = validation.data;
+  const { investmentId, productId, quantityKg, pricePerKg, isNegotiable, harvestDate, expiryDate, description } = validation.data;
 
   try {
+    // Verify the investment belongs to the user
+    const investment = await prisma.investment.findUnique({
+      where: { id: investmentId },
+      select: { userId: true }
+    });
+
+    if (!investment || investment.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Investment not found or unauthorized' }, { status: 403 });
+    }
+
     const totalValue = quantityKg * pricePerKg;
     const newListing = await prisma.marketplaceListing.create({
       data: {
-        investorId: session.user.id,
         investmentId,
         productId,
         quantityKg,
         pricePerKg,
         totalValue,
-        isNegotiable,
+        isNegotiable: isNegotiable ?? true,
         status: 'PENDING',
+        harvestDate: new Date(harvestDate),
+        expiryDate: expiryDate ? new Date(expiryDate) : null,
+        description,
       },
+      include: {
+        product: true,
+        investment: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                image: true,
+              }
+            }
+          }
+        }
+      }
     });
     emitEvent('listing:created', newListing, 'marketplace:listings');
     return NextResponse.json(newListing, { status: 201 });
@@ -62,11 +90,19 @@ export async function GET(request: Request) {
         const listings = await prisma.marketplaceListing.findMany({
             where,
             include: {
-                product: true,
-                investor: {
-                    select: {
-                        name: true,
-                        image: true,
+                product: {
+                  include: {
+                    ProductType: true,
+                  }
+                },
+                investment: {
+                    include: {
+                        user: {
+                            select: {
+                                name: true,
+                                image: true,
+                            }
+                        }
                     }
                 }
             },

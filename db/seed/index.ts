@@ -9,6 +9,7 @@ import { seedProducts } from "./seedProducts";
 import { seedAddressTypes } from "./seedAddressTypes";
 import { seedPreTasks } from "./seedPreTasks";
 import { seedLands } from "./seedLands";
+import { seedMarketplace } from "./seedMarketplace";
 
 async function main() {
   try {
@@ -36,6 +37,10 @@ async function main() {
 
     const lands = await seedLands();
     console.log(`Seeded ${lands} lands`);
+
+    // Seed marketplace listings and orders
+    await seedMarketplace();
+    console.log(`Marketplace seeded successfully`);
 
     // const investments = await seedInvestments(admin.id, products);
     // console.log(`Seeded ${investments.count} investments`);

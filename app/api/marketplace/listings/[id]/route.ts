@@ -25,15 +25,39 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   try {
     const listing = await prisma.marketplaceListing.findUnique({
         where: { id: params.id },
+        include: {
+          investment: {
+            select: {
+              userId: true
+            }
+          }
+        }
     });
 
-    if (!listing || listing.investorId !== session.user.id) {
+    if (!listing || listing.investment.userId !== session.user.id) {
         return NextResponse.json({ error: 'Listing not found or not owned by user' }, { status: 404 });
     }
 
     const updatedListing = await prisma.marketplaceListing.update({
       where: { id: params.id },
       data: validation.data,
+      include: {
+        product: {
+          include: {
+            ProductType: true,
+          }
+        },
+        investment: {
+          include: {
+            user: {
+              select: {
+                name: true,
+                image: true,
+              }
+            }
+          }
+        }
+      }
     });
 
     emitEvent('listing:updated', updatedListing, 'marketplace:listings');
@@ -53,9 +77,16 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     try {
         const listing = await prisma.marketplaceListing.findUnique({
             where: { id: params.id },
+            include: {
+              investment: {
+                select: {
+                  userId: true
+                }
+              }
+            }
         });
 
-        if (!listing || listing.investorId !== session.user.id) {
+        if (!listing || listing.investment.userId !== session.user.id) {
             return NextResponse.json({ error: 'Listing not found or not owned by user' }, { status: 404 });
         }
 

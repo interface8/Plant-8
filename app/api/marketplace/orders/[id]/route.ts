@@ -24,21 +24,72 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   try {
     const order = await prisma.order.findUnique({
         where: { id: params.id },
-        include: { listing: true }
+        include: { 
+          orderItems: {
+            include: {
+              listing: {
+                include: {
+                  investment: {
+                    select: {
+                      userId: true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          buyer: true,
+        }
     });
 
     if (!order) {
         return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    // Allow buyer to cancel, or seller to update status
-    if (order.buyerId !== session.user.id && order.listing.investorId !== session.user.id) {
+    // Get all unique seller IDs from order items
+    const sellerIds = order.orderItems.map(item => item.listing.investment.userId);
+    
+    // Allow buyer to cancel, or any seller to update status
+    const isAuthorized = order.buyerId === session.user.id || sellerIds.includes(session.user.id);
+    
+    if (!isAuthorized) {
         return NextResponse.json({ error: 'Not authorized to update this order' }, { status: 403 });
     }
 
     const updatedOrder = await prisma.order.update({
       where: { id: params.id },
       data: { status: validation.data.status },
+      include: {
+        orderItems: {
+          include: {
+            listing: {
+              include: {
+                product: {
+                  include: {
+                    ProductType: true,
+                  }
+                },
+                investment: {
+                  include: {
+                    user: {
+                      select: {
+                        name: true,
+                        image: true,
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        buyer: {
+          select: {
+            name: true,
+            image: true,
+          }
+        }
+      }
     });
 
     emitEvent('order:statusChanged', updatedOrder, 'marketplace:orders');

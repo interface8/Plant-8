@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { MarketplaceListing } from '@prisma/client';
+import { MarketplaceListing } from '@/types/marketplace';
 
 interface MarketplaceState {
   listings: MarketplaceListing[];
@@ -27,13 +27,13 @@ const marketplaceSlice = createSlice({
       state.listings.unshift(action.payload);
     },
     updateListing: (state, action) => {
-      const index = state.listings.findIndex((l) => l.id === action.payload.id);
+      const index = state.listings.findIndex((l: MarketplaceListing) => l.id === action.payload.id);
       if (index !== -1) {
         state.listings[index] = action.payload;
       }
     },
     removeListing: (state, action) => {
-      state.listings = state.listings.filter((l) => l.id !== action.payload.id);
+      state.listings = state.listings.filter((l: MarketplaceListing) => l.id !== action.payload.id);
     },
   },
   extraReducers: (builder) => {

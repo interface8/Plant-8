@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { Order } from '@prisma/client';
+import { Order } from '@/types/marketplace';
 
 interface OrdersState {
   orders: Order[];
@@ -27,7 +27,7 @@ const ordersSlice = createSlice({
       state.orders.unshift(action.payload);
     },
     updateOrder: (state, action) => {
-      const index = state.orders.findIndex((o) => o.id === action.payload.id);
+      const index = state.orders.findIndex((o: Order) => o.id === action.payload.id);
       if (index !== -1) {
         state.orders[index] = action.payload;
       }

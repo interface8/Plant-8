@@ -1,17 +1,21 @@
-import { auth } from "@/auth";
+import { getToken } from "next-auth/jwt";
 import { NextRequest, NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-
 export async function middleware(request: NextRequest) {
-  const session = await auth();
-  const isLoggedIn = !!session;
+  const token = await getToken({ 
+    req: request,
+    secret: process.env.AUTH_SECRET 
+  });
+  
+  const isLoggedIn = !!token;
   const isAuthPage =
     request.nextUrl.pathname.startsWith("/sign-in") ||
     request.nextUrl.pathname.startsWith("/sign-up");
   const isProtectedRoute =
     request.nextUrl.pathname.startsWith("/dashboard") ||
-    request.nextUrl.pathname.startsWith("/profile");
+    request.nextUrl.pathname.startsWith("/profile") ||
+    request.nextUrl.pathname.startsWith("/marketplace/my-listings") ||
+    request.nextUrl.pathname.startsWith("/marketplace/listing/new");
 
   if (isAuthPage && isLoggedIn) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
@@ -29,5 +33,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|socketio).*)"],
 };

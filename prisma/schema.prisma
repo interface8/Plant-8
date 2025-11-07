@@ -46,8 +46,7 @@ model User {
   createdProducts  Product[] @relation("CreatedByProduct")
   modifiedProducts Product[] @relation("ModifiedByProduct")
 
-  marketplaceListings MarketplaceListing[] @relation(name: "UserToListings")
-  orders              Order[]              @relation(name: "UserToOrders")
+  orders Order[] @relation(name: "UserToOrders")
 
   createdProductTypes  ProductType[] @relation("CreatedByProductType")
   modifiedProductTypes ProductType[] @relation("ModifiedByProductType")
@@ -465,44 +464,66 @@ enum CarouselTypeEnum {
 }
 
 model MarketplaceListing {
-  id             String   @id @default(uuid()) @db.Uuid
-  investorId     String   @db.Uuid
-  investmentId   String   @db.Uuid
-  productId      String   @db.Uuid
+  id             String    @id @default(uuid()) @db.Uuid
+  investmentId   String    @unique @db.Uuid
+  productId      String    @db.Uuid
   quantityKg     Float
   pricePerKg     Float
   totalValue     Float
-  status         String   @default("PENDING") // PENDING, ACTIVE, SOLD, CANCELLED
-  isNegotiable   Boolean  @default(true)
+  status         String    @default("PENDING") // PENDING, ACTIVE, SOLD, CANCELLED
+  isNegotiable   Boolean   @default(true)
+  harvestDate    DateTime
+  expiryDate     DateTime?
+  description    String?
   marketRating   Float?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
-  investor    User        @relation("UserToListings", fields: [investorId], references: [id])
-  investment  Investment  @relation("InvestmentToListings", fields: [investmentId], references: [id])
+  investment  Investment  @relation("InvestmentToListings", fields: [investmentId], references: [id], onDelete: Cascade)
   product     Product     @relation("ProductToListings", fields: [productId], references: [id])
-  orders      Order[]     @relation("ListingToOrders")
+  orderItems  OrderItem[] @relation("ListingToOrderItems")
 
-  @@index([investorId])
   @@index([investmentId])
   @@index([productId])
+  @@index([status])
 }
 
 model Order {
-  id            String   @id @default(uuid()) @db.Uuid
-  listingId     String   @db.Uuid
-  buyerId       String   @db.Uuid
-  quantityKg    Float
-  pricePerKg    Float
-  totalPrice    Float
-  status        String   @default("PENDING") // PENDING, PAID, SHIPPED, COMPLETED, CANCELLED
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id               String   @id @default(uuid()) @db.Uuid
+  buyerId          String?  @db.Uuid // Optional - allows anonymous buyers
+  totalAmount      Float
+  status           String   @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  paymentStatus    String   @default("PENDING") // PENDING, PAID, FAILED, REFUNDED
+  deliveryAddress  String
+  customerName     String?  // For anonymous buyers
+  customerEmail    String?  // For anonymous buyers
+  customerPhone    String?  // For anonymous buyers
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  listing MarketplaceListing @relation("ListingToOrders", fields: [listingId], references: [id])
-  buyer   User               @relation("UserToOrders", fields: [buyerId], references: [id])
+  buyer      User?       @relation("UserToOrders", fields: [buyerId], references: [id])
+  orderItems OrderItem[] @relation("OrderToOrderItems")
 
-  @@index([listingId])
   @@index([buyerId])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+model OrderItem {
+  id         String   @id @default(uuid()) @db.Uuid
+  orderId    String   @db.Uuid
+  listingId  String   @db.Uuid
+  quantityKg Float
+  pricePerKg Float
+  subtotal   Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  order   Order              @relation("OrderToOrderItems", fields: [orderId], references: [id], onDelete: Cascade)
+  listing MarketplaceListing @relation("ListingToOrderItems", fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([listingId])
 }
 

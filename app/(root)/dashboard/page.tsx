@@ -39,8 +39,7 @@ export default async function Dashboard({
           id: true,
           name: true,
           gpsCoordinates: true,
-          halfPlotPrice: true,
-          fullPlotPrice: true,
+          dailyPrice: true,
           location: {
             select: {
               id: true,

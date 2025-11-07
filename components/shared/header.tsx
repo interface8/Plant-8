@@ -53,6 +53,7 @@ export default function Header() {
       ? [{ href: "/dashboard", label: "Dashboard" }]
       : []),
     { href: "/investments", label: "Investments" },
+    { href: "/marketplace", label: "Marketplace" },
     { href: "/about", label: "About" },
   ];
 
