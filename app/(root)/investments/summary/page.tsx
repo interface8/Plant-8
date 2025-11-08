@@ -11,10 +11,17 @@ export default function InvestmentSummaryPage() {
   const [product, setProduct] = useState(null);
   const [land, setLand] = useState(null);
   const [duration, setDuration] = useState(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   useEffect(() => {
+    // Check if required investment data is missing
+    if (!investment.productId || !investment.landId || !investment.durationId) {
+      setIsRedirecting(true);
+      router.replace("/investments");
+      return;
+    }
+
     async function fetchData() {
-      if (!investment.productId || !investment.landId || !investment.durationId) return;
       const [productRes, landRes, durationRes] = await Promise.all([
         fetch(`/api/products/${investment.productId}`).then(r => r.json()),
         fetch(`/api/lands/${investment.landId}`).then(r => r.json()),
@@ -25,10 +32,9 @@ export default function InvestmentSummaryPage() {
       setDuration(durationRes);
     }
     fetchData();
-  }, [investment.productId, investment.landId, investment.durationId]);
+  }, [investment.productId, investment.landId, investment.durationId, router]);
 
-  if (!investment.productId || !investment.landId || !investment.durationId) {
-    router.replace("/investments");
+  if (isRedirecting) {
     return null;
   }
 
