@@ -102,6 +102,24 @@ export async function GET(request: Request) {
                                 name: true,
                                 image: true,
                             }
+                        },
+                        land: {
+                            select: {
+                                id: true,
+                                name: true,
+                                location: {
+                                    select: {
+                                        id: true,
+                                        name: true,
+                                        state: {
+                                            select: {
+                                                id: true,
+                                                name: true,
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

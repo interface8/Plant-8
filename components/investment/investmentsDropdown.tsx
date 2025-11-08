@@ -151,9 +151,7 @@ export default function InvestmentsDropdown({
                 {durations.map((duration) => (
                   <Link
                     key={duration.id}
-                    href={`/investments/duration/${duration.name
-                      .toLowerCase()
-                      .replace(" ", "-")}`}
+                    href={`/investments/catalog?duration=${encodeURIComponent(duration.name)}`}
                     className="block px-6 py-2 text-sm text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors ml-2"
                     onClick={handleLinkClick}
                   >
@@ -191,9 +189,7 @@ export default function InvestmentsDropdown({
                           {parent.children.map((child) => (
                             <Link
                               key={child.id}
-                              href={`/investments/category/${child.name
-                                .toLowerCase()
-                                .replace(" ", "-")}`}
+                              href={`/investments/catalog?type=${encodeURIComponent(child.name)}`}
                               className="block px-3 py-2 text-sm text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
                               onClick={handleLinkClick}
                             >
@@ -268,9 +264,7 @@ export default function InvestmentsDropdown({
                 {durations.map((duration) => (
                   <Link
                     key={duration.id}
-                    href={`/investments/duration/${duration.name
-                      .toLowerCase()
-                      .replace(" ", "-")}`}
+                    href={`/investments/catalog?duration=${encodeURIComponent(duration.name)}`}
                     className="block px-4 py-2 text-sm text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors group"
                     onClick={handleLinkClick}
                     role="menuitem"
@@ -331,9 +325,7 @@ export default function InvestmentsDropdown({
                             {parent.children.map((child) => (
                               <Link
                                 key={child.id}
-                                href={`/investments/category/${child.name
-                                  .toLowerCase()
-                                  .replace(" ", "-")}`}
+                                href={`/investments/catalog?type=${encodeURIComponent(child.name)}`}
                                 className="block px-4 py-2 text-sm text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors group"
                                 onClick={handleLinkClick}
                                 role="menuitem"

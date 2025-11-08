@@ -20,6 +20,18 @@ export interface MarketplaceListing {
       email: string;
       image?: string | null;
     };
+    land?: {
+      id: string;
+      name: string;
+      location: {
+        id: string;
+        name: string;
+        state: {
+          id: string;
+          name: string;
+        };
+      };
+    } | null;
   };
   investor?: {
     name: string;
