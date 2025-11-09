@@ -103,7 +103,7 @@ export async function POST(request: Request) {
       status: data.status,
       readTime,
       publishedAt: data.publishedAt ? new Date(data.publishedAt) : data.status === "PUBLISHED" ? new Date() : null,
-      createdBy: session.user.id,
+      createdByUser: { connect: { id: session.user.id } },
       ...(data.authorId && { author: { connect: { id: data.authorId } } }),
       ...(data.productId && { product: { connect: { id: data.productId } } }),
       ...(data.productTypeId && { productType: { connect: { id: data.productTypeId } } }),

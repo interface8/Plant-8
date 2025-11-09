@@ -1,5 +1,5 @@
 import prisma from "@/db/prisma";
-import { BlogFilters } from "@/types/blog";
+import { BlogFilters, Blog } from "@/types/blog";
 import { Prisma } from "@prisma/client";
 
 export class BlogService {
@@ -7,7 +7,15 @@ export class BlogService {
     filters: BlogFilters = {},
     page: number = 1,
     pageSize: number = 12
-  ) {
+  ): Promise<{
+    blogs: Blog[];
+    total: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    categories: string[];
+    popularTags: string[];
+  }> {
     const {
       category,
       productId,
@@ -96,7 +104,7 @@ export class BlogService {
       .map(([tag]) => tag);
 
     return {
-      blogs,
+      blogs: blogs as Blog[],
       total,
       page,
       pageSize,
@@ -106,7 +114,7 @@ export class BlogService {
     };
   }
 
-  static async getBlogBySlug(slug: string) {
+  static async getBlogBySlug(slug: string): Promise<Blog | null> {
     const blog = await prisma.blog.findUnique({
       where: { slug },
       include: {
@@ -143,11 +151,11 @@ export class BlogService {
       });
     }
 
-    return blog;
+    return blog as Blog | null;
   }
 
-  static async getBlogById(id: string) {
-    return prisma.blog.findUnique({
+  static async getBlogById(id: string): Promise<Blog | null> {
+    const blog = await prisma.blog.findUnique({
       where: { id },
       include: {
         product: {
@@ -174,6 +182,8 @@ export class BlogService {
         },
       },
     });
+    
+    return blog as Blog | null;
   }
 
   static async getRelatedBlogs(
@@ -182,7 +192,7 @@ export class BlogService {
     productTypeId?: string | null,
     tags?: string[],
     limit: number = 3
-  ) {
+  ): Promise<Blog[]> {
     const where: Prisma.BlogWhereInput = {
       id: { not: blogId },
       status: "PUBLISHED",
@@ -195,7 +205,7 @@ export class BlogService {
       ],
     };
 
-    return prisma.blog.findMany({
+    const blogs = await prisma.blog.findMany({
       where,
       include: {
         author: {
@@ -216,6 +226,8 @@ export class BlogService {
       orderBy: { views: "desc" },
       take: limit,
     });
+
+    return blogs as Blog[];
   }
 
   static async createBlog(data: Prisma.BlogCreateInput) {
