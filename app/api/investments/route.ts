@@ -191,35 +191,61 @@ export async function POST(request: Request) {
     const amount = calculationResult.totalCost;
     const expectedReturn = calculationResult.estimatedRevenue;
 
-    const investment = await prisma.investment.create({
-      data: {
-        userId,
-        productId,
-        productTypeId,
-        landId,
-        plotSize,
-        numberOfPlots,
-        numberOfTerms,
-        amount,
-        expectedReturn,
-        progress: 0,
-        status: "PENDING",
-        createdBy: session.user.id,
-      },
-      include: {
-        product: { select: { name: true, images: { select: { url: true } } } },
-        land: { select: { name: true } },
-      },
+    // Get all pre-tasks for this product
+    const preTasks = await prisma.preTask.findMany({
+      where: { productId: productId },
+      orderBy: { estimatedCompletionDate: 'asc' },
     });
 
-    await prisma.preTask.create({
-      data: {
-        title: `Land Clearing for Investment ${investment.id} on Product ${product.name}`,
-        description:
-          "Clear and prepare the land for the new investment, including initial setup and inspections.",
-        estimatedCompletionDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-        productId: productId,
-      },
+    // Create investment and associated tasks in a transaction
+    const investment = await prisma.$transaction(async (tx) => {
+      // Create the investment
+      const newInvestment = await tx.investment.create({
+        data: {
+          userId,
+          productId,
+          productTypeId,
+          landId,
+          plotSize,
+          numberOfPlots,
+          numberOfTerms,
+          numberOfFarmers,
+          amount,
+          expectedReturn,
+          totalCost: calculationResult.totalCost,
+          estimatedRevenue: calculationResult.estimatedRevenue,
+          adjustedRevenue: calculationResult.adjustedRevenue,
+          netReturn: calculationResult.netReturn,
+          roiPercent: calculationResult.roiPercent,
+          roiPerDay: calculationResult.roiPerDay,
+          adjustedYield: calculationResult.adjustedYield,
+          effectiveDaysToHarvest: calculationResult.effectiveDaysToHarvest,
+          estimatedHarvestQuantity: calculationResult.estimatedHarvestQuantity,
+          progress: 0,
+          status: "PENDING",
+          createdBy: session.user.id,
+        },
+        include: {
+          product: { select: { name: true, images: { select: { url: true } } } },
+          land: { select: { name: true } },
+        },
+      });
+
+      // Copy all pre-tasks to tasks for this investment
+      if (preTasks.length > 0) {
+        await tx.task.createMany({
+          data: preTasks.map((preTask) => ({
+            investmentId: newInvestment.id,
+            userId: userId,
+            name: preTask.title,
+            description: preTask.description || '',
+            status: 'PENDING',
+          })),
+        });
+        console.log(`✅ Created ${preTasks.length} tasks for investment ${newInvestment.id}`);
+      }
+
+      return newInvestment;
     });
 
     return NextResponse.json(
@@ -235,6 +261,7 @@ export async function POST(request: Request) {
           amount: investment.amount,
           expectedReturn: investment.expectedReturn,
           status: investment.status,
+          tasksCreated: preTasks.length,
         },
       },
       { status: 201 }

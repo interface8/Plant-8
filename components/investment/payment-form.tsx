@@ -66,7 +66,8 @@ export default function PaymentForm({ onSuccess }: PaymentFormProps) {
         dispatch(setError(null));
         onSuccess?.();
         setIsNavigating(true);
-        router.push("/dashboard?payment=success");
+        // Redirect to the investment detail page
+        router.push(`/dashboard/investments/${result.investment.id}?payment=success`);
       } else {
         dispatch(setError(result.error || "Failed to create investment."));
       }

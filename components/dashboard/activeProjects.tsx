@@ -75,9 +75,7 @@ export default function ActiveProjects({ investments }: ActiveProjectsProps) {
                     {investment.status}
                   </span>
                   <Link
-                    href={`/investments/product/${investment.product.name
-                      .toLowerCase()
-                      .replace(/[^a-z0-9]+/g, "-")}-${investment.productId}`}
+                    href={`/dashboard/investments/${investment.id}`}
                     className="bg-blue-600 text-white px-3 py-1.5 rounded-md text-xs md:text-sm font-medium hover:bg-blue-700 transition-colors whitespace-nowrap"
                     aria-label={`View details for ${investment.product.name}`}
                   >

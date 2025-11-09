@@ -1,26 +1,86 @@
 import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import prisma from "@/db/prisma";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
+    const { id } = await params;
+
     const investment = await prisma.investment.findUnique({
-      where: { id: (await params).id },
-      select: {
-        id: true,
-        userId: true,
-        productId: true,
-        productTypeId: true,
-        amount: true,
-        expectedReturn: true,
-        progress: true,
-        status: true,
-        createdAt: true,
-        user: { select: { id: true, name: true } },
-  product: { select: { id: true, name: true, images: { select: { url: true } } } },
+      where: { id },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            images: { select: { url: true } },
+            farmerMonthlyPayment: true,
+            roi: true,
+            currentMarketPricePerKg: true,
+            estimatedHarvestQuantityPerPlot: true,
+            daysToHarvestPerPlot: true,
+            duration: { select: { id: true, name: true } },
+            ProductType: { select: { id: true, name: true } },
+          },
+        },
         productType: { select: { id: true, name: true } },
+        land: {
+          select: {
+            id: true,
+            name: true,
+            gpsCoordinates: true,
+            dailyPrice: true,
+            imageUrl: true,
+            fertilizerCostPerPlot: true,
+            inspectionDailyFee: true,
+            inflationRate: true,
+            location: {
+              select: {
+                id: true,
+                name: true,
+                state: { select: { id: true, name: true } },
+              },
+            },
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        tasks: {
+          orderBy: { createdAt: 'asc' },
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            status: true,
+            imageUrl: true,
+            completedAt: true,
+            createdAt: true,
+            updatedAt: true,
+            inspectorId: true,
+            inspector: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -31,32 +91,42 @@ export async function GET(
       );
     }
 
-    // Build a clean API response with productImages: string[]
-    if (investment && investment.product) {
-      const imgs = Array.isArray(investment.product.images)
-        ? investment.product.images.map((img: { url: string }) => img.url)
-        : [];
-      const response = {
-        id: investment.id,
-        userId: investment.userId,
-        productId: investment.productId,
-        productTypeId: investment.productTypeId,
-        amount: investment.amount,
-        expectedReturn: investment.expectedReturn,
-        progress: investment.progress,
-        status: investment.status,
-        createdAt: investment.createdAt,
-        user: investment.user,
-        product: {
-          id: investment.product.id,
-          name: investment.product.name,
-        },
-        productType: investment.productType,
-        productImages: imgs,
-      };
-      return NextResponse.json(response, { status: 200 });
+    // Verify the investment belongs to the user
+    if (investment.userId !== session.user.id) {
+      return NextResponse.json(
+        { error: "Forbidden: You don't have access to this investment" },
+        { status: 403 }
+      );
     }
-    return NextResponse.json(investment, { status: 200 });
+
+    // Calculate task completion statistics
+    const totalTasks = investment.tasks.length;
+    const completedTasks = investment.tasks.filter(t => t.status === 'COMPLETED').length;
+    const inProgressTasks = investment.tasks.filter(t => t.status === 'IN_PROGRESS').length;
+    const pendingTasks = investment.tasks.filter(t => t.status === 'PENDING').length;
+    const overdueTasks = investment.tasks.filter(t => t.status === 'OVERDUE').length;
+    const progressPercentage = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+    // Map product.images from {url: string}[] to string[]
+    const investmentWithImages = {
+      ...investment,
+      product: {
+        ...investment.product,
+        images: Array.isArray(investment.product?.images)
+          ? investment.product.images.map((img) => img.url)
+          : [],
+      },
+      taskStats: {
+        total: totalTasks,
+        completed: completedTasks,
+        inProgress: inProgressTasks,
+        pending: pendingTasks,
+        overdue: overdueTasks,
+        progressPercentage,
+      },
+    };
+
+    return NextResponse.json(investmentWithImages, { status: 200 });
   } catch (error) {
     console.error("Error fetching investment:", error);
     return NextResponse.json(
