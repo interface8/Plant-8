@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import {
@@ -226,10 +227,12 @@ export function BuyerWorkflow({ onGetStarted }: BuyerWorkflowProps) {
             Start with as little as $300.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={onGetStarted} className="bg-primary hover:bg-primary/90">
-              Browse Investments
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link href="/investments/catalog">
+              <Button size="lg" className="bg-primary hover:bg-primary/90">
+                Browse Investments
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
             <Button size="lg" variant="outline">
               Learn More
             </Button>

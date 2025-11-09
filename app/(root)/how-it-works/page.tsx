@@ -7,7 +7,7 @@ export default function HowItWorksPage() {
   const router = useRouter();
 
   const handleGetStarted = () => {
-    router.push("/investments");
+    router.push("/investments/catalog");
   };
 
   return <BuyerWorkflow onGetStarted={handleGetStarted} />;
