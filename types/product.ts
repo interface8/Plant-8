@@ -16,6 +16,10 @@ export interface Product {
   currentMarketPricePerKg: number;
   farmerMonthlyPayment: number;
   roi: number | null;
+  estimatedHarvestQuantityPerPlot: number;
+  daysToHarvestPerPlot: number;
+  minimumNoOfFarmersPerPlot: number;
+  dailyMaintenanceFee: number;
   ProductType: {
     id: string;
     name: string;

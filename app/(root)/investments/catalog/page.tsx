@@ -1,7 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Suspense } from "react";
 import InvestmentCatalog from "@/components/investment/investment-catalog";
 import prisma from "@/db/prisma";
+import { LoadingSpinner } from "@/components/ui/loader";
 
+export const revalidate = 10;
 export default async function InvestmentCatalogPage() {
   // Fetch all product types (crop categories)
   const productTypes = await prisma.productType.findMany({
@@ -105,16 +107,18 @@ export default async function InvestmentCatalogPage() {
   }, 0) / (products.length || 1);
 
   return (
-    <InvestmentCatalog
-      productTypes={productTypes}
-      durations={durations}
-      products={products}
-      stats={{
-        avgReturn,
-        insuredPercentage: 100,
-        totalOptions: products.length,
-        totalInvestments,
-      }}
-    />
+    <Suspense fallback={<LoadingSpinner />}>
+      <InvestmentCatalog
+        productTypes={productTypes}
+        durations={durations}
+        products={products}
+        stats={{
+          avgReturn,
+          insuredPercentage: 100,
+          totalOptions: products.length,
+          totalInvestments,
+        }}
+      />
+    </Suspense>
   );
 }

@@ -175,7 +175,7 @@ export default async function FeaturedInvestments() {
                   {/* Total Invested removed as requested */}
                 </div>
                 <a
-                  href={`/investments/${investment.id}`}
+                  href={`/investments/product/${investment.id}`}
                   className="inline-block text-green-500 font-semibold hover:underline mt-4"
                 >
                   Learn More →

@@ -7,6 +7,7 @@ import FinancialCharts from "@/components/dashboard/financialCharts";
 import InvestmentSummary from "@/components/dashboard/InvestmentSummary";
 import ProgressFeed from "@/components/dashboard/progressFeed";
 
+export const revalidate = 10;
 export default async function Dashboard({
   searchParams,
 }: {
@@ -38,8 +39,11 @@ export default async function Dashboard({
           id: true,
           name: true,
           gpsCoordinates: true,
-          halfPlotPrice: true,
-          fullPlotPrice: true,
+          dailyPrice: true,
+          imageUrl: true,
+          fertilizerCostPerPlot: true,
+          inspectionDailyFee: true,
+          inflationRate: true,
           location: {
             select: {
               id: true,

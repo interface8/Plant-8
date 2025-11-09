@@ -12,8 +12,7 @@ interface LandStats {
 interface LandStatsProps {
   lands: Array<{
     id: string;
-    halfPlotPrice: number;
-    fullPlotPrice: number;
+    dailyPrice: number;
     location: {
       id: string;
       name: string;
@@ -24,9 +23,9 @@ interface LandStatsProps {
 export default function LandStats({ lands }: LandStatsProps) {
   const stats: LandStats = {
     total: lands.length,
-    totalValue: lands.reduce((sum, land) => sum + land.halfPlotPrice + land.fullPlotPrice, 0),
+    totalValue: lands.reduce((sum, land) => sum + land.dailyPrice, 0),
     averagePrice: lands.length > 0 
-      ? lands.reduce((sum, land) => sum + (land.halfPlotPrice + land.fullPlotPrice) / 2, 0) / lands.length
+      ? lands.reduce((sum, land) => sum + land.dailyPrice, 0) / lands.length
       : 0,
     locations: new Set(lands.map(land => land.location.id)).size,
   };

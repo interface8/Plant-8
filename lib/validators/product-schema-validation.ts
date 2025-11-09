@@ -13,4 +13,15 @@ export const productSchema = z.object({
     .number()
     .nonnegative("Farmer monthly payment must be non-negative"),
   roi: z.number().nonnegative("ROI must be non-negative"),
+  estimatedHarvestQuantityPerPlot: z
+    .number()
+    .nonnegative("Estimated harvest quantity per plot must be non-negative"),
+  daysToHarvestPerPlot: z
+    .number()
+    .int("Days to harvest per plot must be an integer")
+    .nonnegative("Days to harvest per plot must be non-negative"),
+  minimumNoOfFarmersPerPlot: z
+    .number()
+    .int("Minimum number of farmers per plot must be an integer")
+    .min(1, "Minimum number of farmers per plot must be at least 1"),
 });

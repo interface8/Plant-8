@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { 
   TrendingUp, 
@@ -81,6 +82,11 @@ export default function InvestmentCatalog({
   products,
   stats,
 }: InvestmentCatalogProps) {
+  // Get URL params for filters
+  const searchParams = useSearchParams();
+  const urlDuration = searchParams.get("duration");
+  const urlType = searchParams.get("type");
+
   // Create filter options from real data
   const cropCategories = ["All", ...productTypes.map((pt) => pt.name)];
   const durationOptions = durations.map((d) => d.name);
@@ -89,6 +95,16 @@ export default function InvestmentCatalog({
   const [selectedDuration, setSelectedDuration] = useState<string>(
     durationOptions[0] || ""
   );
+
+  // Apply URL params on mount
+  useEffect(() => {
+    if (urlDuration && durationOptions.includes(urlDuration)) {
+      setSelectedDuration(urlDuration);
+    }
+    if (urlType && cropCategories.includes(urlType)) {
+      setSelectedCategory(urlType);
+    }
+  }, [urlDuration, urlType, durationOptions, cropCategories]);
 
   // Transform products into display format
   const transformedProducts = useMemo(() => {

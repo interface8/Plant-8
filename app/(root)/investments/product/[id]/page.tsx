@@ -1,10 +1,13 @@
 import { notFound } from "next/navigation";
 import Head from "next/head";
+
 import InvestmentDetail from "@/components/investment/InvestmentDetail";
 import { getProduct, getProductStaticParams } from "@/lib/services/product-service";
+import { getLands, getStates } from "@/lib/services/investment-service";
 
 export const generateStaticParams = getProductStaticParams;
 
+export const revalidate = 10;
 export default async function ProductDetailPage({
   params,
 }: {
@@ -23,6 +26,12 @@ export default async function ProductDetailPage({
     console.error(`Product not found for ID: ${productId}`);
     return notFound();
   }
+
+  // Fetch all lands and states for modal land selection
+  const [lands, states] = await Promise.all([
+    getLands(),
+    getStates(),
+  ]);
 
   return (
     <>
@@ -45,7 +54,7 @@ export default async function ProductDetailPage({
         />
         <meta property="og:type" content="website" />
       </Head>
-      <InvestmentDetail product={product} />
+      <InvestmentDetail product={product} lands={lands} states={states} />
     </>
   );
 }

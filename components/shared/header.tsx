@@ -53,6 +53,7 @@ export default function Header() {
       ? [{ href: "/dashboard", label: "Dashboard" }]
       : []),
     { href: "/investments", label: "Investments" },
+    { href: "/marketplace", label: "Marketplace" },
     { href: "/about", label: "About" },
   ];
 
@@ -132,7 +133,7 @@ export default function Header() {
         }`}
       >
         <div
-          className="absolute inset-0 bg-opacity-30 backdrop-blur-sm"
+          className="absolute inset-0 bg-opacity-30 backdrop-blur-sm cursor-pointer"
           onClick={() => setIsMenuOpen(false)}
         />
 

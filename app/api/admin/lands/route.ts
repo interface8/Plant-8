@@ -7,10 +7,12 @@ const landSchema = z.object({
   name: z.string().min(1, "Land name is required"),
   locationId: z.string().uuid("Invalid location ID"),
   gpsCoordinates: z.string().nullable().optional(),
-  halfPlotPrice: z.number().positive("Half plot price must be positive"),
-  fullPlotPrice: z.number().positive("Full plot price must be positive"),
+  dailyPrice: z.number().positive("Daily price must be positive"),
   imageUrl: z.string().url("Invalid image URL").nullable().optional(),
   createdBy: z.string().uuid("Invalid user ID").optional(),
+  fertilizerCostPerPlot: z.number().min(0, "Fertilizer cost per plot must be non-negative"),
+  inspectionDailyFee: z.number().min(0, "Inspection daily fee must be non-negative"),
+  inflationRate: z.number().min(0, "Inflation rate must be non-negative"),
 });
 
 const updateLandSchema = landSchema.partial();
@@ -38,12 +40,14 @@ export async function POST(request: Request) {
       name,
       locationId,
       gpsCoordinates,
-      halfPlotPrice,
-      fullPlotPrice,
+      dailyPrice,
       imageUrl,
       createdBy,
+      fertilizerCostPerPlot,
+      inspectionDailyFee,
+      inflationRate,
     } = parsed.data;
-    
+
     // Use the session user ID if createdBy is not provided
     const finalCreatedBy = createdBy || session.user.id;
 
@@ -62,10 +66,12 @@ export async function POST(request: Request) {
         name,
         locationId,
         gpsCoordinates,
-        halfPlotPrice,
-        fullPlotPrice,
+        dailyPrice,
         imageUrl,
         createdBy: finalCreatedBy,
+        fertilizerCostPerPlot,
+        inspectionDailyFee,
+        inflationRate,
       },
     });
 

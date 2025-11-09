@@ -24,6 +24,10 @@ export async function getDurationAndProducts(name: string): Promise<{
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
         roi: true,
+        estimatedHarvestQuantityPerPlot: true,
+        daysToHarvestPerPlot: true,
+        minimumNoOfFarmersPerPlot: true,
+        dailyMaintenanceFee: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
       },
@@ -31,6 +35,9 @@ export async function getDurationAndProducts(name: string): Promise<{
     const productsWithImages = products.map((p) => ({
       ...p,
       images: Array.isArray(p.images) ? p.images.map((img) => img.url) : [],
+      estimatedHarvestQuantityPerPlot: p.estimatedHarvestQuantityPerPlot,
+      daysToHarvestPerPlot: p.daysToHarvestPerPlot,
+      minimumNoOfFarmersPerPlot: p.minimumNoOfFarmersPerPlot,
     }));
     return { duration, products: productsWithImages };
   } catch (error) {

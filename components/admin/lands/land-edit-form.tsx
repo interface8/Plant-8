@@ -9,8 +9,7 @@ interface Land {
   id: string;
   name: string;
   gpsCoordinates: string | null;
-  halfPlotPrice: number;
-  fullPlotPrice: number;
+  dailyPrice: number;
   imageUrl: string | null;
   locationId: string;
   location: {
@@ -21,6 +20,9 @@ interface Land {
       name: string;
     };
   };
+  fertilizerCostPerPlot: number;
+  inspectionDailyFee: number;
+  inflationRate: number;
 }
 
 interface Location {
@@ -44,10 +46,12 @@ export default function LandEditForm({ land, locations }: LandEditFormProps) {
   const [formData, setFormData] = useState({
     name: land.name,
     gpsCoordinates: land.gpsCoordinates || "",
-    halfPlotPrice: land.halfPlotPrice.toString(),
-    fullPlotPrice: land.fullPlotPrice.toString(),
+    dailyPrice: land.dailyPrice.toString(),
     imageUrl: land.imageUrl || "",
     locationId: land.locationId,
+    fertilizerCostPerPlot: land.fertilizerCostPerPlot.toString(),
+    inspectionDailyFee: land.inspectionDailyFee.toString(),
+    inflationRate: land.inflationRate.toString(),
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -65,10 +69,12 @@ export default function LandEditForm({ land, locations }: LandEditFormProps) {
         body: JSON.stringify({
           name: formData.name,
           gpsCoordinates: formData.gpsCoordinates || null,
-          halfPlotPrice: parseFloat(formData.halfPlotPrice),
-          fullPlotPrice: parseFloat(formData.fullPlotPrice),
+          dailyPrice: parseFloat(formData.dailyPrice),
           imageUrl: formData.imageUrl || null,
           locationId: formData.locationId,
+          fertilizerCostPerPlot: parseFloat(formData.fertilizerCostPerPlot),
+          inspectionDailyFee: parseFloat(formData.inspectionDailyFee),
+          inflationRate: parseFloat(formData.inflationRate),
         }),
       });
 
@@ -168,40 +174,80 @@ export default function LandEditForm({ land, locations }: LandEditFormProps) {
             </div>
           </div>
 
-          {/* Half Plot Price */}
+          {/* Daily Price */}
           <div>
-            <label htmlFor="halfPlotPrice" className="block text-sm font-medium text-gray-700 mb-2">
-              Half Plot Price (₦) *
+            <label htmlFor="dailyPrice" className="block text-sm font-medium text-gray-700 mb-2">
+              Daily Price per Plot (₦) *
             </label>
             <input
               type="number"
-              id="halfPlotPrice"
+              id="dailyPrice"
               required
               min="0"
               step="0.01"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="0.00"
-              value={formData.halfPlotPrice}
-              onChange={(e) => setFormData({ ...formData, halfPlotPrice: e.target.value })}
+              value={formData.dailyPrice}
+              onChange={(e) => setFormData({ ...formData, dailyPrice: e.target.value })}
             />
           </div>
 
-          {/* Full Plot Price */}
+          {/* Fertilizer Cost Per Plot */}
           <div>
-            <label htmlFor="fullPlotPrice" className="block text-sm font-medium text-gray-700 mb-2">
-              Full Plot Price (₦) *
+            <label htmlFor="fertilizerCostPerPlot" className="block text-sm font-medium text-gray-700 mb-2">
+              Fertilizer Cost Per Plot (₦) *
             </label>
             <input
               type="number"
-              id="fullPlotPrice"
+              id="fertilizerCostPerPlot"
               required
               min="0"
-              step="0.01"
+              step="100"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="0.00"
-              value={formData.fullPlotPrice}
-              onChange={(e) => setFormData({ ...formData, fullPlotPrice: e.target.value })}
+              value={formData.fertilizerCostPerPlot}
+              onChange={e => setFormData({ ...formData, fertilizerCostPerPlot: e.target.value })}
             />
+          </div>
+
+          {/* Inspection Daily Fee */}
+          <div>
+            <label htmlFor="inspectionDailyFee" className="block text-sm font-medium text-gray-700 mb-2">
+              Inspection Daily Fee (₦) *
+            </label>
+            <input
+              type="number"
+              id="inspectionDailyFee"
+              required
+              min="0"
+              step="100"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="0.00"
+              value={formData.inspectionDailyFee}
+              onChange={e => setFormData({ ...formData, inspectionDailyFee: e.target.value })}
+            />
+          </div>
+
+          {/* Inflation Rate */}
+          <div>
+            <label htmlFor="inflationRate" className="block text-sm font-medium text-gray-700 mb-2">
+              Inflation Rate (decimal) *
+            </label>
+            <input
+              type="number"
+              id="inflationRate"
+              required
+              min="0"
+              max="1"
+              step="0.01"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="0.15"
+              value={formData.inflationRate}
+              onChange={e => setFormData({ ...formData, inflationRate: e.target.value })}
+            />
+            <p className="mt-1 text-sm text-gray-500">
+              Example: 0.15 for 15% inflation
+            </p>
           </div>
 
           {/* GPS Coordinates */}
