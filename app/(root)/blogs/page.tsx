@@ -2,144 +2,236 @@
 
 import { useState } from "react";
 import { useBlogs } from "@/hooks/use-blogs";
-import BlogCard from "@/components/blog/blog-card";
-import BlogFilter from "@/components/blog/blog-filter";
+import { useRouter } from "next/navigation";
+import { Blog } from "@/types/blog";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Clock, Calendar, User, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { formatDistanceToNow } from "date-fns";
 
 export default function BlogsPage() {
-  const [category, setCategory] = useState<string | undefined>();
-  const [tags, setTags] = useState<string[]>([]);
-  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [page, setPage] = useState(1);
+  const router = useRouter();
+
+  const categories = ["All", "Investment Tips", "Farming Guide", "Market Insights", "Sustainability", "Product", "Technology"];
 
   const { data, loading, error } = useBlogs(
-    { category, tags, search, status: "PUBLISHED" },
+    { 
+      category: selectedCategory === "All" ? undefined : selectedCategory,
+      status: "PUBLISHED" 
+    },
     page,
     12
   );
 
+  const formatDate = (date: Date | null) => {
+    if (!date) return "Recently";
+    return formatDistanceToNow(new Date(date), { addSuffix: true });
+  };
+
+  const handlePostClick = (blog: Blog) => {
+    router.push(`/blogs/${blog.slug}`);
+  };
+
+  const filteredPosts = data?.blogs || [];
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-gradient-to-r from-green-600 to-green-700 text-white">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-            Agribid Blog
-          </h1>
-          <p className="text-lg sm:text-xl text-green-50 max-w-3xl">
-            Explore insights, tips, and stories from the world of agricultural
-            investment
+      <div className="bg-primary text-primary-foreground py-16 px-4">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">FAM 8 Insights</h1>
+          <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto">
+            Expert insights, farming guides, and success stories to help you make informed
+            investment decisions in agriculture.
           </p>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Sidebar */}
-          <aside className="lg:col-span-1">
-            {data && (
-              <BlogFilter
-                categories={data.categories}
-                popularTags={data.popularTags}
-                selectedCategory={category}
-                selectedTags={tags}
-                searchQuery={search}
-                onCategoryChange={setCategory}
-                onTagsChange={setTags}
-                onSearchChange={setSearch}
-              />
-            )}
-          </aside>
-
-          {/* Main Content */}
-          <main className="lg:col-span-3">
-            {loading && (
-              <div className="text-center py-12">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-green-600 border-t-transparent"></div>
-                <p className="mt-4 text-gray-600">Loading blogs...</p>
-              </div>
-            )}
-
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-                <p className="text-red-600">{error}</p>
-              </div>
-            )}
-
-            {data && !loading && (
-              <>
-                {/* Results Summary */}
-                <div className="mb-6">
-                  <p className="text-gray-600">
-                    Showing <span className="font-semibold">{data.blogs.length}</span> of{" "}
-                    <span className="font-semibold">{data.total}</span> articles
-                  </p>
-                </div>
-
-                {/* Blog Grid */}
-                {data.blogs.length > 0 ? (
-                  <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
-                      {data.blogs.map((blog) => (
-                        <BlogCard key={blog.id} blog={blog} />
-                      ))}
-                    </div>
-
-                    {/* Pagination */}
-                    {data.totalPages > 1 && (
-                      <div className="flex justify-center items-center gap-2 mt-8">
-                        <button
-                          onClick={() => setPage((p) => Math.max(1, p - 1))}
-                          disabled={page === 1}
-                          className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          Previous
-                        </button>
-                        
-                        {Array.from({ length: data.totalPages }, (_, i) => i + 1).map((p) => (
-                          <button
-                            key={p}
-                            onClick={() => setPage(p)}
-                            className={`px-4 py-2 rounded-lg ${
-                              page === p
-                                ? "bg-green-600 text-white"
-                                : "border border-gray-300 hover:bg-gray-50"
-                            }`}
-                          >
-                            {p}
-                          </button>
-                        ))}
-
-                        <button
-                          onClick={() => setPage((p) => Math.min(data.totalPages, p + 1))}
-                          disabled={page === data.totalPages}
-                          className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          Next
-                        </button>
-                      </div>
-                    )}
-                  </>
-                ) : (
-                  <div className="text-center py-12 bg-white rounded-lg shadow">
-                    <p className="text-gray-600 text-lg mb-4">No blogs found matching your filters</p>
-                    <button
-                      onClick={() => {
-                        setCategory(undefined);
-                        setTags([]);
-                        setSearch("");
-                      }}
-                      className="text-green-600 hover:text-green-700 font-medium"
-                    >
-                      Clear all filters
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-          </main>
+      {/* Category Filter */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="flex flex-wrap gap-2 justify-center">
+          {categories.map((category) => (
+            <Badge
+              key={category}
+              variant={selectedCategory === category ? "default" : "outline"}
+              className={`cursor-pointer px-4 py-2 transition-all ${
+                selectedCategory === category
+                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "hover:bg-accent"
+              }`}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </Badge>
+          ))}
         </div>
       </div>
+
+      {loading && (
+        <div className="text-center py-12">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+          <p className="mt-4 text-muted-foreground">Loading articles...</p>
+        </div>
+      )}
+
+      {error && (
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-6 text-center">
+            <p className="text-destructive">{error}</p>
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && (
+        <>
+          {/* Featured Post (First Post) */}
+          {filteredPosts.length > 0 && (
+            <div className="max-w-7xl mx-auto px-4 pb-12">
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handlePostClick(filteredPosts[0])}>
+                <div className="grid grid-cols-1 lg:grid-cols-2">
+                  <div className="aspect-video lg:aspect-auto">
+                    <img
+                      src={filteredPosts[0].coverImage || filteredPosts[0].product?.images?.[0]?.url || "/images/default-blog.jpg"}
+                      alt={filteredPosts[0].title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <CardContent className="p-8 flex flex-col justify-center">
+                    <Badge className="w-fit mb-4 bg-primary/10 text-primary hover:bg-primary/20">
+                      Featured
+                    </Badge>
+                    <h2 className="text-2xl font-bold mb-4">{filteredPosts[0].title}</h2>
+                    <p className="text-muted-foreground mb-6">{filteredPosts[0].excerpt}</p>
+                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
+                      {filteredPosts[0].author && (
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4" />
+                          {filteredPosts[0].author.name}
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        {formatDate(filteredPosts[0].publishedAt)}
+                      </div>
+                      {filteredPosts[0].readTime && (
+                        <div className="flex items-center gap-2">
+                          <Clock className="h-4 w-4" />
+                          {filteredPosts[0].readTime} min read
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {filteredPosts[0].tags.slice(0, 3).map((tag, index) => (
+                        <Badge key={index} variant="outline">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                    <Button className="w-fit">
+                      Read Full Article
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </CardContent>
+                </div>
+              </Card>
+            </div>
+          )}
+
+          {/* Blog Posts Grid */}
+          <div className="max-w-7xl mx-auto px-4 pb-16">
+            <h3 className="text-2xl font-bold mb-6">
+              {selectedCategory === "All" ? "All Articles" : selectedCategory}
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredPosts.slice(1).map((post) => (
+                <Card
+                  key={post.id}
+                  className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                  onClick={() => handlePostClick(post)}
+                >
+                  <div className="aspect-video overflow-hidden">
+                    <img
+                      src={post.coverImage || post.product?.images?.[0]?.url || "/images/default-blog.jpg"}
+                      alt={post.title}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <CardContent className="p-6">
+                    <Badge className="mb-3 bg-primary/10 text-primary hover:bg-primary/20">
+                      {post.category}
+                    </Badge>
+                    <h4 className="text-lg font-semibold mb-3 line-clamp-2">{post.title}</h4>
+                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                      {post.excerpt}
+                    </p>
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground mb-4">
+                      {post.author && (
+                        <div className="flex items-center gap-1">
+                          <User className="h-3 w-3" />
+                          {post.author.name}
+                        </div>
+                      )}
+                      {post.readTime && (
+                        <div className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {post.readTime} min
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {post.tags.slice(0, 2).map((tag, index) => (
+                        <Badge key={index} variant="outline" className="text-xs">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {filteredPosts.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No articles found in this category.</p>
+              </div>
+            )}
+
+            {/* Pagination */}
+            {data && data.totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-8">
+                <Button
+                  variant="outline"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                >
+                  Previous
+                </Button>
+                
+                {Array.from({ length: Math.min(data.totalPages, 5) }, (_, i) => i + 1).map((p) => (
+                  <Button
+                    key={p}
+                    variant={page === p ? "default" : "outline"}
+                    onClick={() => setPage(p)}
+                  >
+                    {p}
+                  </Button>
+                ))}
+
+                <Button
+                  variant="outline"
+                  onClick={() => setPage((p) => Math.min(data.totalPages, p + 1))}
+                  disabled={page === data.totalPages}
+                >
+                  Next
+                </Button>
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
