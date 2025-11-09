@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import InvestmentCatalog from "@/components/investment/investment-catalog";
 import prisma from "@/db/prisma";
 import { LoadingSpinner } from "@/components/ui/loader";
+import { BlogService } from "@/lib/services/blogService";
+import RelatedBlogs from "@/components/blog/related-blogs";
 
 export const revalidate = 10;
 export default async function InvestmentCatalogPage() {
@@ -106,19 +108,37 @@ export default async function InvestmentCatalogPage() {
     return sum + productAvg;
   }, 0) / (products.length || 1);
 
+  // Fetch general investment blogs
+  const investmentBlogs = await BlogService.getBlogs(
+    { category: "Investment Tips", status: "PUBLISHED" },
+    1,
+    3
+  );
+
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <InvestmentCatalog
-        productTypes={productTypes}
-        durations={durations}
-        products={products}
-        stats={{
-          avgReturn,
-          insuredPercentage: 100,
-          totalOptions: products.length,
-          totalInvestments,
-        }}
-      />
-    </Suspense>
+    <>
+      <Suspense fallback={<LoadingSpinner />}>
+        <InvestmentCatalog
+          productTypes={productTypes}
+          durations={durations}
+          products={products}
+          stats={{
+            avgReturn,
+            insuredPercentage: 100,
+            totalOptions: products.length,
+            totalInvestments,
+          }}
+        />
+      </Suspense>
+      
+      {investmentBlogs.blogs.length > 0 && (
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <RelatedBlogs 
+            blogs={investmentBlogs.blogs} 
+            title="Investment Tips & Insights" 
+          />
+        </div>
+      )}
+    </>
   );
 }

@@ -79,6 +79,11 @@ model User {
   AccountModifiedByUser Account[] @relation("AccountModifiedByUser")
   accountCreatedByUser  Account[] @relation("AccountCreatedByUser")
   Task                  Task[]
+
+  // Blog Relations
+  authoredBlogs   Blog[] @relation("BlogAuthor")
+  createdBlogs    Blog[] @relation("CreatedByBlog")
+  modifiedBlogs   Blog[] @relation("ModifiedByBlog")
 }
 
 model PaymentMethodDomain {
@@ -222,6 +227,7 @@ model Product {
   createdByUser  User?        @relation("CreatedByProduct", fields: [createdBy], references: [id])
   modifiedByUser User?        @relation("ModifiedByProduct", fields: [modifiedBy], references: [id])
   preTask        PreTask[]
+  blogs          Blog[]       @relation("BlogToProduct")
 }
 
 model ProductImage {
@@ -251,6 +257,7 @@ model ProductType {
   productTypeInvestments Investment[]  @relation("ProductTypeToInvestments")
   createdByUser          User?         @relation("CreatedByProductType", fields: [createdBy], references: [id])
   modifiedByUser         User?         @relation("ModifiedByProductType", fields: [modifiedBy], references: [id])
+  blogs                  Blog[]        @relation("BlogToProductType")
 }
 
 model Duration {
@@ -525,5 +532,45 @@ model OrderItem {
 
   @@index([orderId])
   @@index([listingId])
+}
+
+model Blog {
+  id             String    @id @default(uuid()) @db.Uuid
+  title          String
+  slug           String    @unique
+  content        String    @db.Text
+  excerpt        String?   @db.Text
+  coverImage     String?
+  category       String    @default("General") // General, Product, Category, Investment Tips, Farming Guide, etc.
+  tags           String[]  @default([])
+  status         String    @default("DRAFT") // DRAFT, PUBLISHED, ARCHIVED
+  views          Int       @default(0)
+  readTime       Int?      // estimated read time in minutes
+  publishedAt    DateTime?
+  
+  // Optional Relations
+  productId      String?   @db.Uuid
+  productTypeId  String?   @db.Uuid
+  authorId       String?   @db.Uuid
+  
+  // Audit
+  createdAt      DateTime  @default(now()) @db.Timestamp(6)
+  createdBy      String?   @db.Uuid
+  modifiedAt     DateTime? @db.Timestamp(6)
+  modifiedBy     String?   @db.Uuid
+
+  // Relations
+  product        Product?     @relation("BlogToProduct", fields: [productId], references: [id], onDelete: SetNull)
+  productType    ProductType? @relation("BlogToProductType", fields: [productTypeId], references: [id], onDelete: SetNull)
+  author         User?        @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  createdByUser  User?        @relation("CreatedByBlog", fields: [createdBy], references: [id])
+  modifiedByUser User?        @relation("ModifiedByBlog", fields: [modifiedBy], references: [id])
+
+  @@index([slug])
+  @@index([status])
+  @@index([category])
+  @@index([productId])
+  @@index([productTypeId])
+  @@index([publishedAt])
 }
 

@@ -10,6 +10,8 @@ import { seedAddressTypes } from "./seedAddressTypes";
 import { seedPreTasks } from "./seedPreTasks";
 import { seedLands } from "./seedLands";
 import { seedMarketplace } from "./seedMarketplace";
+import { seedCarousel } from "./seedCarousel";
+import { seedBlogs } from "./seedBlogs";
 
 async function main() {
   try {
@@ -41,6 +43,14 @@ async function main() {
     // Seed marketplace listings and orders
     await seedMarketplace();
     console.log(`Marketplace seeded successfully`);
+
+    // Seed carousel
+    await seedCarousel();
+    console.log(`Carousel seeded successfully`);
+
+    // Seed blogs
+    await seedBlogs();
+    console.log(`Blogs seeded successfully`);
 
     // const investments = await seedInvestments(admin.id, products);
     // console.log(`Seeded ${investments.count} investments`);

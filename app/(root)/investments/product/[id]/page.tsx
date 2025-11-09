@@ -4,6 +4,8 @@ import Head from "next/head";
 import InvestmentDetail from "@/components/investment/InvestmentDetail";
 import { getProduct, getProductStaticParams } from "@/lib/services/product-service";
 import { getLands, getStates } from "@/lib/services/investment-service";
+import { BlogService } from "@/lib/services/blogService";
+import RelatedBlogs from "@/components/blog/related-blogs";
 
 export const generateStaticParams = getProductStaticParams;
 
@@ -33,6 +35,13 @@ export default async function ProductDetailPage({
     getStates(),
   ]);
 
+  // Fetch related blogs for this product
+  const relatedBlogs = await BlogService.getBlogs(
+    { productId: product.id, status: "PUBLISHED" },
+    1,
+    3
+  );
+
   return (
     <>
       <Head>
@@ -54,7 +63,14 @@ export default async function ProductDetailPage({
         />
         <meta property="og:type" content="website" />
       </Head>
-      <InvestmentDetail product={product} lands={lands} states={states} />
+      <div>
+        <InvestmentDetail product={product} lands={lands} states={states} />
+        {relatedBlogs.blogs.length > 0 && (
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <RelatedBlogs blogs={relatedBlogs.blogs} title={`Articles about ${product.name}`} />
+          </div>
+        )}
+      </div>
     </>
   );
 }

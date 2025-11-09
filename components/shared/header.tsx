@@ -54,6 +54,7 @@ export default function Header() {
       : []),
     { href: "/investments", label: "Investments" },
     { href: "/marketplace", label: "Marketplace" },
+    { href: "/blogs", label: "Blog" },
     { href: "/about", label: "About" },
   ];
 
