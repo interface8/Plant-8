@@ -88,15 +88,15 @@ export default function InvestmentCatalog({
   const urlType = searchParams.get("type");
 
   // Create filter options from real data
-  const cropCategories = ["All", ...productTypes.map((pt) => pt.name)];
-  const durationOptions = durations.map((d) => d.name);
+  const cropCategories = useMemo(() => ["All", ...productTypes.map((pt) => pt.name)], [productTypes]);
+  const durationOptions = useMemo(() => durations.map((d) => d.name), [durations]);
 
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [selectedDuration, setSelectedDuration] = useState<string>(
     durationOptions[0] || ""
   );
 
-  // Apply URL params on mount
+  // Apply URL params on mount only once
   useEffect(() => {
     if (urlDuration && durationOptions.includes(urlDuration)) {
       setSelectedDuration(urlDuration);
