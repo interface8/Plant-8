@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -364,11 +365,12 @@ export default function InvestmentDetailView({ investment }: InvestmentDetailVie
             <Card>
               <CardContent className="p-6">
                 {investment.product.images && investment.product.images[0] && (
-                  <div className="aspect-video rounded-lg overflow-hidden mb-4">
-                    <img
+                  <div className="aspect-video rounded-lg overflow-hidden mb-4 relative">
+                    <Image
                       src={investment.product.images[0]}
                       alt={investment.product.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   </div>
                 )}
