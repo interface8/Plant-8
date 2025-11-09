@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { BlogService } from "@/lib/services/blogService";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
@@ -40,7 +41,7 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     <div className="min-h-screen bg-background">
       {/* Hero Image */}
       <div className="relative h-[400px] bg-muted">
-        <img src={coverImage} alt={blog.title} className="w-full h-full object-cover" />
+        <Image src={coverImage} alt={blog.title} fill className="object-cover" priority />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
       </div>
 
@@ -150,11 +151,12 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
               {relatedBlogs.map((relatedPost: any) => (
                 <Link key={relatedPost.id} href={`/blogs/${relatedPost.slug}`}>
                   <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer h-full">
-                    <div className="aspect-video overflow-hidden">
-                      <img
+                    <div className="aspect-video overflow-hidden relative">
+                      <Image
                         src={relatedPost.coverImage || relatedPost.product?.images?.[0]?.url || "/images/default-blog.jpg"}
                         alt={relatedPost.title}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        fill
+                        className="object-cover hover:scale-105 transition-transform duration-300"
                       />
                     </div>
                     <CardContent className="p-6">

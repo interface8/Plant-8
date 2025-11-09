@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { BLOG_CATEGORIES } from "@/types/blog";
 
 interface BlogFilterProps {
   categories: string[];

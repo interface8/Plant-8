@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock, Calendar, User, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 
 export default function BlogsPage() {
@@ -92,11 +93,12 @@ export default function BlogsPage() {
             <div className="max-w-7xl mx-auto px-4 pb-12">
               <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handlePostClick(filteredPosts[0])}>
                 <div className="grid grid-cols-1 lg:grid-cols-2">
-                  <div className="aspect-video lg:aspect-auto">
-                    <img
+                  <div className="aspect-video lg:aspect-auto relative">
+                    <Image
                       src={filteredPosts[0].coverImage || filteredPosts[0].product?.images?.[0]?.url || "/images/default-blog.jpg"}
                       alt={filteredPosts[0].title}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                   </div>
                   <CardContent className="p-8 flex flex-col justify-center">
@@ -152,11 +154,12 @@ export default function BlogsPage() {
                   className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
                   onClick={() => handlePostClick(post)}
                 >
-                  <div className="aspect-video overflow-hidden">
-                    <img
+                  <div className="aspect-video overflow-hidden relative">
+                    <Image
                       src={post.coverImage || post.product?.images?.[0]?.url || "/images/default-blog.jpg"}
                       alt={post.title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <CardContent className="p-6">
