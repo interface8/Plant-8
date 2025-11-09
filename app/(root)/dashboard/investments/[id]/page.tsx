@@ -9,32 +9,6 @@ interface InvestmentDetailPageProps {
 
 export const revalidate = 10;
 
-async function getInvestmentData(investmentId: string, userId: string) {
-  try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/investments/${investmentId}`,
-      {
-        headers: {
-          'Cookie': `next-auth.session-token=${userId}`,
-        },
-        cache: 'no-store',
-      }
-    );
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        return null;
-      }
-      throw new Error('Failed to fetch investment');
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching investment:', error);
-    return null;
-  }
-}
-
 export default async function InvestmentDetailPage({
   params,
 }: InvestmentDetailPageProps) {
