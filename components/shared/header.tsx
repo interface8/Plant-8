@@ -49,6 +49,7 @@ export default function Header() {
 
   const navigationLinks = [
     { href: "/", label: "Home" },
+    { href: "/how-it-works", label: "How It Works" },
     ...(status === "authenticated"
       ? [{ href: "/dashboard", label: "Dashboard" }]
       : []),

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function HowItWorks() {
   const steps = [
     {
@@ -67,6 +69,15 @@ export default function HowItWorks() {
               </div>
             ))}
           </div>
+        </div>
+        
+        <div className="text-center mt-8 sm:mt-12">
+          <Link
+            href="/how-it-works"
+            className="inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Learn More About Our Process
+          </Link>
         </div>
       </div>
     </section>
