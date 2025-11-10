@@ -102,7 +102,10 @@ export default function InvestmentsDropdown({
   if (loading) {
     return (
       <div className="flex items-center px-3 py-2">
-        <span className="text-gray-700 text-sm">Loading...</span>
+        <div className="relative inline-block mr-2">
+          <div className="text-xl animate-bounce">🌱</div>
+        </div>
+        <span className="text-gray-700 text-sm">Loading investments...</span>
       </div>
     );
   }

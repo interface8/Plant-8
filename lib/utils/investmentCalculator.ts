@@ -103,8 +103,11 @@ export function calculateInvestmentROI(
 
   // === RETURNS ===
   const netReturn = adjustedRevenue - totalCost;
-  const roiPercent = (netReturn / investmentAmount) * 100;
-  const roiPerDay = roiPercent / effectiveDaysToHarvest;
+  
+  // Use investmentAmount if provided and > 0, otherwise use totalCost
+  const baseAmount = investmentAmount > 0 ? investmentAmount : totalCost;
+  const roiPercent = baseAmount > 0 ? (netReturn / baseAmount) * 100 : 0;
+  const roiPerDay = effectiveDaysToHarvest > 0 ? roiPercent / effectiveDaysToHarvest : 0;
 
   return {
     totalCost,

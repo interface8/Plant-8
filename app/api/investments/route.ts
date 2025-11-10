@@ -179,8 +179,20 @@ export async function POST(request: Request) {
     // Calculate investment amount using the calculator
     // Use minimum number of farmers if not provided
     const numberOfFarmers = productWithImages.minimumNoOfFarmersPerPlot;
+    
+    // First calculate to get total cost
+    const initialCalc = calculateInvestmentROI(
+      1, // Temporary value to avoid division by zero
+      productWithImages,
+      land,
+      numberOfPlots,
+      numberOfFarmers,
+      numberOfTerms
+    );
+    
+    // Now recalculate with actual total cost as investment amount
     const calculationResult = calculateInvestmentROI(
-      0, // Initial investment (we're calculating it)
+      initialCalc.totalCost,
       productWithImages,
       land,
       numberOfPlots,
@@ -191,42 +203,73 @@ export async function POST(request: Request) {
     const amount = calculationResult.totalCost;
     const expectedReturn = calculationResult.estimatedRevenue;
 
+    // Validate calculation results to prevent invalid float values
+    const safeFloat = (value: number, defaultValue: number = 0): number => {
+      if (!isFinite(value) || isNaN(value)) {
+        console.warn(`Invalid float value detected: ${value}, using default: ${defaultValue}`);
+        return defaultValue;
+      }
+      return value;
+    };
+
     // Get all pre-tasks for this product
     const preTasks = await prisma.preTask.findMany({
       where: { productId: productId },
       orderBy: { estimatedCompletionDate: 'asc' },
+      select: {
+        title: true,
+        description: true,
+      }
     });
+    
+    console.log(`📋 Found ${preTasks.length} pre-tasks for product ${productId}`);
 
-    // Create investment and associated tasks in a transaction
+    // Create investment and associated tasks in a transaction with timeout
     const investment = await prisma.$transaction(async (tx) => {
       // Create the investment
       const newInvestment = await tx.investment.create({
         data: {
-          userId,
-          productId,
-          productTypeId,
-          landId,
+          user: {
+            connect: { id: userId }
+          },
+          product: {
+            connect: { id: productId }
+          },
+          productType: {
+            connect: { id: productTypeId }
+          },
+          land: landId ? {
+            connect: { id: landId }
+          } : undefined,
+          createdByUser: {
+            connect: { id: session.user.id }
+          },
           plotSize,
           numberOfPlots,
           numberOfTerms,
           numberOfFarmers,
           amount,
           expectedReturn,
-          totalCost: calculationResult.totalCost,
-          estimatedRevenue: calculationResult.estimatedRevenue,
-          adjustedRevenue: calculationResult.adjustedRevenue,
-          netReturn: calculationResult.netReturn,
-          roiPercent: calculationResult.roiPercent,
-          roiPerDay: calculationResult.roiPerDay,
-          adjustedYield: calculationResult.adjustedYield,
-          effectiveDaysToHarvest: calculationResult.effectiveDaysToHarvest,
-          estimatedHarvestQuantity: calculationResult.estimatedHarvestQuantity,
+          totalCost: safeFloat(calculationResult.totalCost),
+          estimatedRevenue: safeFloat(calculationResult.estimatedRevenue),
+          adjustedRevenue: safeFloat(calculationResult.adjustedRevenue),
+          netReturn: safeFloat(calculationResult.netReturn),
+          roiPercent: safeFloat(calculationResult.roiPercent),
+          roiPerDay: safeFloat(calculationResult.roiPerDay),
+          adjustedYield: safeFloat(calculationResult.adjustedYield),
+          effectiveDaysToHarvest: Math.max(1, calculationResult.effectiveDaysToHarvest),
+          estimatedHarvestQuantity: safeFloat(calculationResult.estimatedHarvestQuantity),
           progress: 0,
           status: "PENDING",
-          createdBy: session.user.id,
         },
-        include: {
-          product: { select: { name: true, images: { select: { url: true } } } },
+        select: {
+          id: true,
+          amount: true,
+          expectedReturn: true,
+          status: true,
+          numberOfPlots: true,
+          numberOfTerms: true,
+          product: { select: { name: true, images: { select: { url: true }, take: 1 } } },
           land: { select: { name: true } },
         },
       });
@@ -243,9 +286,14 @@ export async function POST(request: Request) {
           })),
         });
         console.log(`✅ Created ${preTasks.length} tasks for investment ${newInvestment.id}`);
+      } else {
+        console.warn(`⚠️ No pre-tasks found for product ${productId}. Tasks will not be created.`);
       }
 
       return newInvestment;
+    }, {
+      maxWait: 10000, // 10 seconds max wait to start transaction
+      timeout: 15000, // 15 seconds max transaction time
     });
 
     return NextResponse.json(

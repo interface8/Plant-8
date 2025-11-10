@@ -119,7 +119,17 @@ export default function AdminProductTypes() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center py-12">
+      <div className="text-center">
+        <div className="relative mb-4 inline-block">
+          <div className="text-4xl animate-bounce">🌱</div>
+          <div className="absolute inset-0 text-4xl animate-pulse opacity-50">🌿</div>
+        </div>
+        <p className="text-gray-600">Loading product types...</p>
+      </div>
+    </div>
+  );
   if (error) return <div className="text-red-600">{error}</div>;
   if (!isAdmin) return <div>Access denied. Admin privileges required.</div>;
 

@@ -465,6 +465,14 @@ export default function InvestmentsTable({ investments, pagination, currentSort 
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="flex items-center justify-end gap-2">
                       <button
+                        onClick={() => router.push(`/admin/investments/${investment.id}/tasks`)}
+                        className="text-purple-600 hover:text-purple-900 p-1 rounded hover:bg-purple-50"
+                        title="Manage tasks"
+                      >
+                        <Activity className="h-4 w-4" />
+                      </button>
+                      
+                      <button
                         onClick={() => handleView(investment)}
                         className="text-blue-600 hover:text-blue-900 p-1 rounded hover:bg-blue-50"
                         title="View details"

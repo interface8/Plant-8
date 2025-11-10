@@ -1,6 +1,20 @@
-export function LoadingSpinner() {
+interface LoadingSpinnerProps {
+  title?: string;
+  description?: string;
+  fullScreen?: boolean;
+}
+
+export function LoadingSpinner({ 
+  title = "Loading", 
+  description = "Please wait while we prepare your content...",
+  fullScreen = true 
+}: LoadingSpinnerProps) {
+  const containerClass = fullScreen 
+    ? "min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center"
+    : "flex items-center justify-center py-12";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center">
+    <div className={containerClass}>
       <div className="text-center">
         {/* Animated Plant Icon */}
         <div className="relative mb-8">
@@ -21,9 +35,9 @@ export function LoadingSpinner() {
 
         {/* Loading Text */}
         <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-          Loading Your Profile
+          {title}
         </h2>
-        <p className="text-gray-600">Preparing your farming profile...</p>
+        <p className="text-gray-600">{description}</p>
 
         {/* Loading Dots */}
         <div className="flex justify-center mt-4 space-x-1">
@@ -37,6 +51,18 @@ export function LoadingSpinner() {
             style={{ animationDelay: "0.4s" }}
           ></div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Inline spinner for smaller spaces (buttons, dropdowns, etc.)
+export function InlinePlantSpinner({ className = "" }: { className?: string }) {
+  return (
+    <div className={`relative inline-block ${className}`}>
+      <div className="text-xl animate-bounce">🌱</div>
+      <div className="absolute inset-0 text-xl animate-pulse opacity-50">
+        🌿
       </div>
     </div>
   );
