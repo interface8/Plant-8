@@ -1,3 +1,5 @@
+import Image from "next/image";
+import Link from "next/link";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
 import {
@@ -168,10 +170,11 @@ export function BuyerWorkflow({ onGetStarted }: BuyerWorkflowProps) {
               {/* Image */}
               <div className="w-full lg:w-1/2">
                 <div className="relative aspect-video rounded-xl overflow-hidden shadow-lg">
-                  <img
+                  <Image
                     src={step.image}
                     alt={step.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                   <div className="absolute top-4 left-4 bg-primary text-primary-foreground w-14 h-14 rounded-full flex items-center justify-center">
                     <span className="text-2xl font-bold">{step.step}</span>
@@ -224,10 +227,12 @@ export function BuyerWorkflow({ onGetStarted }: BuyerWorkflowProps) {
             Start with as little as $300.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" onClick={onGetStarted} className="bg-primary hover:bg-primary/90">
-              Browse Investments
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link href="/investments/catalog">
+              <Button size="lg" className="bg-primary hover:bg-primary/90">
+                Browse Investments
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
             <Button size="lg" variant="outline">
               Learn More
             </Button>

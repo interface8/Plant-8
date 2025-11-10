@@ -88,7 +88,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Rice Grain",
         description: "Premium rice",
-  images: ["/images/rice.jpg"],
+  images: ["https://images.unsplash.com/photo-1586201375761-83865001e31c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470"],
         currentMarketPricePerKg: 3.0,
         productTypeId: cereals.id,
         durationId: sixMonths.id,
@@ -170,7 +170,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Okra Pods",
         description: "Green okra pods",
-  images: ["/images/okra.jpg"],
+  images: ["https://images.unsplash.com/photo-1558408525-1092038389ae?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=880, https://images.unsplash.com/photo-1551207195-70cb13347c1a?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fG9rcmF8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600"],
         currentMarketPricePerKg: 2.7,
         productTypeId: vegetables.id,
         durationId: threeMonths.id,
@@ -198,7 +198,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Soybean Seeds",
         description: "Protein-rich soybeans",
-  images: ["/images/soybean.jpg"],
+  images: ["https://images.unsplash.com/photo-1639843606783-b2f9c50a7468?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1373"],
         currentMarketPricePerKg: 3.0,
         productTypeId: legumes.id,
         durationId: sixMonths.id,
@@ -360,17 +360,28 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
     // Fetch all products to get their IDs
     const allProducts = await prisma.product.findMany();
 
-    // Insert images for each product
+    // Insert images for each product (only if they don't already exist)
     for (const prod of productDataWithIds) {
       const dbProduct = allProducts.find((p) => p.name === prod.name && p.description === prod.description);
       if (dbProduct && Array.isArray(prod.images)) {
         for (const url of prod.images) {
-          await prisma.productImage.create({
-            data: {
+          // Check if image already exists for this product
+          const existingImage = await prisma.productImage.findFirst({
+            where: {
               url,
               productId: dbProduct.id,
             },
           });
+          
+          // Only create if it doesn't exist
+          if (!existingImage) {
+            await prisma.productImage.create({
+              data: {
+                url,
+                productId: dbProduct.id,
+              },
+            });
+          }
         }
       }
     }
