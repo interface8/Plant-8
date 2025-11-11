@@ -101,7 +101,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Sorghum Grain",
         description: "Drought-resistant sorghum",
-        images: ["/images/sorghum.jpg"],
+        images: ["https://plus.unsplash.com/premium_photo-1705516190746-6fd5e7fe091d?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8c29yZ2h1bSUyMGdyYWlufGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=1000"],
         currentMarketPricePerKg: 2.8,
         productTypeId: cereals.id,
         durationId: sixMonths.id,
@@ -116,7 +116,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Yam Tuber",
         description: "Starchy yam",
-        images: ["/images/yam.jpg"],
+        images: ["https://media.istockphoto.com/id/1395343560/photo/whole-and-halved-raw-african-yam-on-wooden-background.webp?a=1&b=1&s=612x612&w=0&k=20&c=wraUWRkNT_ayKhBUZA8cdOjdIaaNwexG7U4xR8SCtEo="],
         currentMarketPricePerKg: 2.0,
         productTypeId: tubers.id,
         durationId: sixMonths.id,
@@ -188,7 +188,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Cowpea Seeds",
         description: "Black-eyed cowpea",
-        images: ["/images/cowpea.jpg"],
+        images: ["https://plus.unsplash.com/premium_photo-1670135170974-5352088c8ade?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y293cGVhfGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=1000"],
         currentMarketPricePerKg: 2.6,
         productTypeId: legumes.id,
         durationId: threeMonths.id,
@@ -229,7 +229,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Pineapple Fruit",
         description: "Juicy pineapple",
-        images: ["/images/pineapple.jpg"],
+        images: ["https://images.unsplash.com/photo-1550828520-4cb496926fc9?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8cGluZWFwcGxlfGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=1000", "https://images.unsplash.com/photo-1562522513-a22a63a0e21e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fHBpbmVhcHBsZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=1000"],
         currentMarketPricePerKg: 2.4,
         productTypeId: fruits.id,
         durationId: sixMonths.id,
@@ -257,7 +257,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Ginger Root",
         description: "Aromatic ginger",
-  images: ["/images/ginger.jpg"],
+  images: ["https://images.unsplash.com/photo-1741517802684-ba07c444a5d2?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGdpbmdlciUyMHJvb3R8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=1000","https://images.unsplash.com/photo-1635008388183-04ea0313c5d1?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8Z2luZ2VyJTIwcm9vdHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=1000"],
         currentMarketPricePerKg: 4.0,
         productTypeId: spices.id,
         durationId: sixMonths.id,
@@ -270,7 +270,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Garlic Bulbs",
         description: "Flavorful garlic",
-  images: ["/images/garlic.jpg"],
+  images: ["https://plus.unsplash.com/premium_photo-1675731118551-79b3da05a5d4?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Z2FybGljJTIwYnVsYnN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=1000", "https://plus.unsplash.com/premium_photo-1675864033916-88ba6dde849f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Z2FybGljJTIwYnVsYnN8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=1000"],
         currentMarketPricePerKg: 3.5,
         productTypeId: spices.id,
         durationId: threeMonths.id,
@@ -285,7 +285,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Chicken Meat",
         description: "Fresh chicken",
-  images: ["/images/chickens.jpg"],
+  images: ["https://images.unsplash.com/photo-1588164950715-6aa49568dd80?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDZ8fGNoaWNrZW58ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=1000", "https://images.unsplash.com/photo-1620136717591-841a4da27e23?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTB8fGNoaWNrZW58ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=1000"],
         currentMarketPricePerKg: 5.0,
         productTypeId: poultry.id,
         durationId: threeMonths.id,
@@ -298,7 +298,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Turkey Meat",
         description: "Meaty turkey",
-  images: ["/images/turkeys.jpg"],
+  images: ["https://images.unsplash.com/photo-1574387313309-7c2292978b8c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dHVya2V5JTIwYmlyZHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=600", "https://images.unsplash.com/photo-1696254690732-c24885d71249?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8dHVya2V5JTIwYmlyZHxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&q=60&w=1000"],
         currentMarketPricePerKg: 6.5,
         productTypeId: poultry.id,
         durationId: sixMonths.id,
@@ -313,7 +313,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Cattle Beef",
         description: "Beef cattle",
-  images: ["/images/cattle.jpg"],
+  images: ["https://images.unsplash.com/photo-1598715685267-0f45367d8071?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8Y2F0dGxlfGVufDB8fDB8fHww&auto=format&fit=crop&q=60&w=1000"],
         currentMarketPricePerKg: 10.0,
         productTypeId: ruminants.id,
         durationId: twelveMonths.id,
@@ -326,7 +326,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Goat Meat",
         description: "Goat livestock",
-  images: ["/images/goats.jpg"],
+  images: ["https://media.istockphoto.com/id/1979422478/photo/african-goat.webp?a=1&b=1&s=612x612&w=0&k=20&c=P9VO51yUPadQ8LI9jNDflGA35sgN7IR6o8NmIafwtp4=", "https://media.istockphoto.com/id/1062037786/photo/black-goat-sit.webp?a=1&b=1&s=612x612&w=0&k=20&c=c1Tl6wmBikXyIKfIfqqrlUiB3icfje2cdBNmIVJVsSs="],
         currentMarketPricePerKg: 8.0,
         productTypeId: ruminants.id,
         durationId: sixMonths.id,
