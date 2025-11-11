@@ -17,7 +17,7 @@ export async function PATCH(request: Request, context: RouteParams) {
   try {
     const { id } = await context.params;
     const body = await request.json();
-    const { status, imageUrl, inspectorId, comment } = body;
+    const { status, imageUrl, inspectorId } = body;
 
     // Verify task exists
     const existingTask = await prisma.task.findUnique({

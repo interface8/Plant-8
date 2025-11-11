@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -20,14 +19,10 @@ import {
 import {
   ArrowLeft,
   MapPin,
-  Calendar,
-  TrendingUp,
   CheckCircle2,
   Clock,
   AlertCircle,
   PlayCircle,
-  Package,
-  DollarSign,
   User,
   Upload,
   Save,

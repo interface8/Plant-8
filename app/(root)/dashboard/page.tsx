@@ -132,7 +132,7 @@ export default async function Dashboard({
               <ActiveProjects investments={investmentsWithImages} />
             </div>
             <div className="lg:col-span-1">
-              <ProgressFeed investments={investmentsWithImages} />
+              <ProgressFeed />
             </div>
           </div>
         </div>

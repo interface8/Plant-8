@@ -88,7 +88,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Rice Grain",
         description: "Premium rice",
-  images: ["https://images.unsplash.com/photo-1586201375761-83865001e31c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470"],
+        images: ["https://images.unsplash.com/photo-1586201375761-83865001e31c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1470"],
         currentMarketPricePerKg: 3.0,
         productTypeId: cereals.id,
         durationId: sixMonths.id,
@@ -101,7 +101,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Sorghum Grain",
         description: "Drought-resistant sorghum",
-  images: ["/images/sorghum.jpg"],
+        images: ["/images/sorghum.jpg"],
         currentMarketPricePerKg: 2.8,
         productTypeId: cereals.id,
         durationId: sixMonths.id,
@@ -116,7 +116,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Yam Tuber",
         description: "Starchy yam",
-  images: ["/images/yam.jpg"],
+        images: ["/images/yam.jpg"],
         currentMarketPricePerKg: 2.0,
         productTypeId: tubers.id,
         durationId: sixMonths.id,
@@ -129,7 +129,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Cassava Root",
         description: "Starchy cassava",
-  images: ["https://images.unsplash.com/photo-1757283961570-682154747d9c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=870"],
+        images: ["https://images.unsplash.com/photo-1757283961570-682154747d9c?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=870"],
         currentMarketPricePerKg: 1.8,
         productTypeId: tubers.id,
         durationId: sixMonths.id,
@@ -144,7 +144,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Tomato Fruit",
         description: "Juicy tomatoes",
-  images: ["https://images.unsplash.com/photo-1724128239194-4bde5d240555?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774"],
+        images: ["https://images.unsplash.com/photo-1724128239194-4bde5d240555?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774"],
         currentMarketPricePerKg: 3.5,
         productTypeId: vegetables.id,
         durationId: threeMonths.id,
@@ -157,7 +157,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Carrot Root",
         description: "Fresh carrots",
-  images: ["https://images.unsplash.com/photo-1590868309235-ea34bed7bd7f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=927"],
+        images: ["https://images.unsplash.com/photo-1590868309235-ea34bed7bd7f?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=927"],
         currentMarketPricePerKg: 2.2,
         productTypeId: vegetables.id,
         durationId: threeMonths.id,
@@ -170,7 +170,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Okra Pods",
         description: "Green okra pods",
-  images: ["https://images.unsplash.com/photo-1558408525-1092038389ae?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=880, https://images.unsplash.com/photo-1551207195-70cb13347c1a?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fG9rcmF8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600"],
+        images: ["https://images.unsplash.com/photo-1558408525-1092038389ae?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=880, https://images.unsplash.com/photo-1551207195-70cb13347c1a?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fG9rcmF8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600"],
         currentMarketPricePerKg: 2.7,
         productTypeId: vegetables.id,
         durationId: threeMonths.id,
@@ -185,7 +185,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Cowpea Seeds",
         description: "Black-eyed cowpea",
-  images: ["/images/cowpea.jpg"],
+        images: ["/images/cowpea.jpg"],
         currentMarketPricePerKg: 2.6,
         productTypeId: legumes.id,
         durationId: threeMonths.id,
@@ -198,7 +198,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Soybean Seeds",
         description: "Protein-rich soybeans",
-  images: ["https://images.unsplash.com/photo-1639843606783-b2f9c50a7468?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1373"],
+        images: ["https://images.unsplash.com/photo-1639843606783-b2f9c50a7468?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1373"],
         currentMarketPricePerKg: 3.0,
         productTypeId: legumes.id,
         durationId: sixMonths.id,
@@ -213,7 +213,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Watermelon Fruit",
         description: "Sweet watermelon",
-  images: ["https://images.unsplash.com/photo-1621961048737-a9993789e1ad?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774"],
+        images: ["https://images.unsplash.com/photo-1621961048737-a9993789e1ad?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=774"],
         currentMarketPricePerKg: 1.5,
         productTypeId: fruits.id,
         durationId: threeMonths.id,
@@ -226,7 +226,7 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Pineapple Fruit",
         description: "Juicy pineapple",
-  images: ["/images/pineapple.jpg"],
+        images: ["/images/pineapple.jpg"],
         currentMarketPricePerKg: 2.4,
         productTypeId: fruits.id,
         durationId: sixMonths.id,
