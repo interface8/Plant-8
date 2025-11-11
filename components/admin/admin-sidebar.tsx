@@ -19,6 +19,7 @@ import {
   MapPin,
   TrendingUp,
   Shield,
+  MessageSquareQuote 
 } from "lucide-react";
 
 const navigation = [
@@ -100,6 +101,11 @@ const navigation = [
     name: "Customers",
     href: "/admin/customers",
     icon: Users,
+  },
+   {
+    name: "Testimony",
+    href: "/admin/testimonyManager",
+    icon: MessageSquareQuote ,
   },
   {
     name: "Role Management",
