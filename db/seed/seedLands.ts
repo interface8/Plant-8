@@ -85,66 +85,82 @@ export async function seedLands() {
       {
         name: "Ikeja Farm",
         gpsCoordinates: "6.5244,3.3792",
-        halfPlotPrice: 500000,
-        fullPlotPrice: 1000000,
+        dailyPrice: 1370, // ~500k/365 days
         imageUrl: "/images/ikeja-farm.jpg",
         locationId: locationMap["Ikeja"],
+        fertilizerCostPerPlot: 15000,
+        inspectionDailyFee: 1000,
+        inflationRate: 0.12,
       },
       {
         name: "Ikorodu Green",
         gpsCoordinates: "6.6194,3.5105",
-        halfPlotPrice: 400000,
-        fullPlotPrice: 800000,
+        dailyPrice: 1096, // ~400k/365 days
         imageUrl: "/images/ikorodu-green.jpg",
         locationId: locationMap["Ikorodu"],
+        fertilizerCostPerPlot: 12000,
+        inspectionDailyFee: 900,
+        inflationRate: 0.10,
       },
       {
         name: "Ikorodu Farmland",
         gpsCoordinates: "6.6194,3.5106",
-        halfPlotPrice: 420000,
-        fullPlotPrice: 840000,
+        dailyPrice: 1151, // ~420k/365 days
         imageUrl: "/images/ikorodu-farmland.jpg",
         locationId: locationMap["Ikorodu"],
+        fertilizerCostPerPlot: 12500,
+        inspectionDailyFee: 950,
+        inflationRate: 0.11,
       },
       {
         name: "Agege Fields",
         gpsCoordinates: "6.6156,3.3232",
-        halfPlotPrice: 450000,
-        fullPlotPrice: 900000,
+        dailyPrice: 1233, // ~450k/365 days
         imageUrl: "/images/agege-fields.jpg",
         locationId: locationMap["Agege"],
+        fertilizerCostPerPlot: 16000,
+        inspectionDailyFee: 1100,
+        inflationRate: 0.13,
       },
       {
         name: "Abeokuta Plains",
         gpsCoordinates: "7.1475,3.3619",
-        halfPlotPrice: 350000,
-        fullPlotPrice: 700000,
+        dailyPrice: 959, // ~350k/365 days
         imageUrl: "/images/abeokuta-plains.jpg",
         locationId: locationMap["Abeokuta"],
+        fertilizerCostPerPlot: 11000,
+        inspectionDailyFee: 850,
+        inflationRate: 0.09,
       },
       {
         name: "Ijebu Acres",
         gpsCoordinates: "6.8228,3.9212",
-        halfPlotPrice: 300000,
-        fullPlotPrice: 600000,
+        dailyPrice: 822, // ~300k/365 days
         imageUrl: "/images/ijebu-acres.jpg",
         locationId: locationMap["Ijebu"],
+        fertilizerCostPerPlot: 10000,
+        inspectionDailyFee: 800,
+        inflationRate: 0.08,
       },
       {
         name: "Sagamu Farms",
         gpsCoordinates: "6.8500,3.6500",
-        halfPlotPrice: 320000,
-        fullPlotPrice: 640000,
+        dailyPrice: 877, // ~320k/365 days
         imageUrl: "/images/sagamu-farms.jpg",
         locationId: locationMap["Sagamu"],
+        fertilizerCostPerPlot: 11500,
+        inspectionDailyFee: 870,
+        inflationRate: 0.10,
       },
       {
         name: "Ibadan Agro",
         gpsCoordinates: "7.3775,3.9470",
-        halfPlotPrice: 380000,
-        fullPlotPrice: 760000,
+        dailyPrice: 1041, // ~380k/365 days
         imageUrl: "/images/ibadan-agro.jpg",
         locationId: locationMap["Ibadan"],
+        fertilizerCostPerPlot: 13500,
+        inspectionDailyFee: 980,
+        inflationRate: 0.12,
       },
     ];
 

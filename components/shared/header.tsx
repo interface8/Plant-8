@@ -49,10 +49,13 @@ export default function Header() {
 
   const navigationLinks = [
     { href: "/", label: "Home" },
+    { href: "/how-it-works", label: "How It Works" },
     ...(status === "authenticated"
       ? [{ href: "/dashboard", label: "Dashboard" }]
       : []),
     { href: "/investments", label: "Investments" },
+    { href: "/marketplace", label: "Marketplace" },
+    { href: "/blogs", label: "Blog" },
     { href: "/about", label: "About" },
   ];
 
@@ -132,7 +135,7 @@ export default function Header() {
         }`}
       >
         <div
-          className="absolute inset-0 bg-opacity-30 backdrop-blur-sm"
+          className="absolute inset-0 bg-opacity-30 backdrop-blur-sm cursor-pointer"
           onClick={() => setIsMenuOpen(false)}
         />
 

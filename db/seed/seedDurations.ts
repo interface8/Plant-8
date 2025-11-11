@@ -21,16 +21,22 @@ export async function seedDurations(adminId: string): Promise<DurationCount> {
           description: "Mid-term investment",
           createdBy: adminId,
         },
+          {
+          id: crypto.randomUUID(),
+          name: "9 months",
+          description: "Long-term investment",
+          createdBy: adminId,
+        },
         {
           id: crypto.randomUUID(),
-          name: "1 year",
+          name: "12 months",
           description: "Long-term investment",
           createdBy: adminId,
         },
       ],
       skipDuplicates: true,
     });
-    return durations;
+      return { count: durations.count }; // Adjusted to return the count of created durations
   } catch (error) {
     console.error("Failed to seed durations:", error);
     throw error;

@@ -13,9 +13,13 @@ export async function createProduct(data: z.infer<typeof productSchema>) {
     description,
     productTypeId,
     durationId,
-    imageUrl,
+    images,
     currentMarketPricePerKg,
     farmerMonthlyPayment,
+    roi,
+    estimatedHarvestQuantityPerPlot,
+    daysToHarvestPerPlot,
+    minimumNoOfFarmersPerPlot,
   } = parsed.data;
   return await prisma.product.create({
     data: {
@@ -24,10 +28,17 @@ export async function createProduct(data: z.infer<typeof productSchema>) {
       description,
       productTypeId,
       durationId,
-      imageUrl,
       currentMarketPricePerKg,
       farmerMonthlyPayment,
+      roi,
+      estimatedHarvestQuantityPerPlot,
+      daysToHarvestPerPlot,
+      minimumNoOfFarmersPerPlot,
+      images: {
+        create: images.map((url: string) => ({ url })),
+      },
     },
+    include: { images: true },
   });
 }
 
@@ -45,10 +56,16 @@ export async function updateProduct(
     description,
     productTypeId,
     durationId,
-    imageUrl,
+    images,
     currentMarketPricePerKg,
     farmerMonthlyPayment,
+    roi,
+    estimatedHarvestQuantityPerPlot,
+    daysToHarvestPerPlot,
+    minimumNoOfFarmersPerPlot,
   } = parsed.data;
+  // Remove all old images and add new ones
+  await prisma.productImage.deleteMany({ where: { productId: id } });
   return await prisma.product.update({
     where: { id },
     data: {
@@ -56,10 +73,17 @@ export async function updateProduct(
       description,
       productTypeId,
       durationId,
-      imageUrl,
       currentMarketPricePerKg,
       farmerMonthlyPayment,
+      roi,
+      estimatedHarvestQuantityPerPlot,
+      daysToHarvestPerPlot,
+      minimumNoOfFarmersPerPlot,
+      images: {
+        create: images.map((url: string) => ({ url })),
+      },
     },
+    include: { images: true },
   });
 }
 
@@ -68,21 +92,31 @@ export async function deleteProduct(id: string) {
 }
 export async function getProducts(): Promise<Product[]> {
   try {
-    return await prisma.product.findMany({
+    const products = await prisma.product.findMany({
       select: {
         id: true,
         name: true,
         description: true,
         productTypeId: true,
         durationId: true,
-        imageUrl: true,
+        images: { select: { url: true } },
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
+        roi: true,
+        estimatedHarvestQuantityPerPlot: true,
+        daysToHarvestPerPlot: true,
+        minimumNoOfFarmersPerPlot: true,
+        dailyMaintenanceFee: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
       },
       orderBy: { createdAt: "desc" },
     });
+    return products.map((product) => ({
+      ...product,
+      images: Array.isArray(product.images) ? product.images.map((img) => img.url) : [],
+      roi: product.roi === null ? 10 : product.roi,
+    }));
   } catch (error) {
     console.error("Error fetching products:", error);
     return [];
@@ -109,14 +143,35 @@ export async function getProduct(id: string): Promise<Product | null> {
         description: true,
         productTypeId: true,
         durationId: true,
-        imageUrl: true,
+        images: { select: { url: true } },
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
+        roi: true,
+        estimatedHarvestQuantityPerPlot: true,
+        daysToHarvestPerPlot: true,
+        minimumNoOfFarmersPerPlot: true,
+        dailyMaintenanceFee: true,
         ProductType: { select: { id: true, name: true } },
         duration: { select: { id: true, name: true } },
+        investments: {
+          select: {
+            id: true,
+            expectedReturn: true,
+            amount: true,
+          },
+          where: {
+            status: { in: ["ACTIVE", "COMPLETED", "PENDING"] },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
       },
     });
-    return product;
+    if (!product) return null;
+    return {
+      ...product,
+      images: Array.isArray(product.images) ? product.images.map((img) => img.url) : [],
+    };
   } catch (error) {
     console.error("Error fetching product:", error);
     return null;

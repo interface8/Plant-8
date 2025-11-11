@@ -102,7 +102,10 @@ export default function InvestmentsDropdown({
   if (loading) {
     return (
       <div className="flex items-center px-3 py-2">
-        <span className="text-gray-700 text-sm">Loading...</span>
+        <div className="relative inline-block mr-2">
+          <div className="text-xl animate-bounce">🌱</div>
+        </div>
+        <span className="text-gray-700 text-sm">Loading investments...</span>
       </div>
     );
   }
@@ -132,6 +135,15 @@ export default function InvestmentsDropdown({
         </button>
         {isOpen && (
           <div className="mt-2 pl-4 space-y-2 border-l-2 border-green-200">
+            {/* Browse All Catalog Link */}
+            <Link
+              href="/investments/catalog"
+              className="block mb-3 p-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-semibold text-center text-sm"
+              onClick={handleLinkClick}
+            >
+              Browse All Investments
+            </Link>
+            
             {/* Duration Section */}
             {durations.length > 0 && (
               <div className="space-y-1">
@@ -142,9 +154,7 @@ export default function InvestmentsDropdown({
                 {durations.map((duration) => (
                   <Link
                     key={duration.id}
-                    href={`/investments/duration/${duration.name
-                      .toLowerCase()
-                      .replace(" ", "-")}`}
+                    href={`/investments/catalog?duration=${encodeURIComponent(duration.name)}`}
                     className="block px-6 py-2 text-sm text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors ml-2"
                     onClick={handleLinkClick}
                   >
@@ -182,9 +192,7 @@ export default function InvestmentsDropdown({
                           {parent.children.map((child) => (
                             <Link
                               key={child.id}
-                              href={`/investments/category/${child.name
-                                .toLowerCase()
-                                .replace(" ", "-")}`}
+                              href={`/investments/catalog?type=${encodeURIComponent(child.name)}`}
                               className="block px-3 py-2 text-sm text-gray-500 hover:text-green-600 hover:bg-green-50 rounded-md transition-colors"
                               onClick={handleLinkClick}
                             >
@@ -233,6 +241,19 @@ export default function InvestmentsDropdown({
         role="menu"
       >
         <div className="p-6">
+          {/* Browse All Catalog Link */}
+          <Link
+            href="/investments/catalog"
+            className="block mb-4 p-4 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg font-semibold text-center transition-all duration-300 transform hover:scale-105 shadow-md"
+            onClick={handleLinkClick}
+            role="menuitem"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              <span>Browse All Investments</span>
+            </div>
+          </Link>
+          
           {/* Duration Section */}
           {durations.length > 0 && (
             <div className="mb-6">
@@ -246,9 +267,7 @@ export default function InvestmentsDropdown({
                 {durations.map((duration) => (
                   <Link
                     key={duration.id}
-                    href={`/investments/duration/${duration.name
-                      .toLowerCase()
-                      .replace(" ", "-")}`}
+                    href={`/investments/catalog?duration=${encodeURIComponent(duration.name)}`}
                     className="block px-4 py-2 text-sm text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors group"
                     onClick={handleLinkClick}
                     role="menuitem"
@@ -309,9 +328,7 @@ export default function InvestmentsDropdown({
                             {parent.children.map((child) => (
                               <Link
                                 key={child.id}
-                                href={`/investments/category/${child.name
-                                  .toLowerCase()
-                                  .replace(" ", "-")}`}
+                                href={`/investments/catalog?type=${encodeURIComponent(child.name)}`}
                                 className="block px-4 py-2 text-sm text-gray-700 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors group"
                                 onClick={handleLinkClick}
                                 role="menuitem"

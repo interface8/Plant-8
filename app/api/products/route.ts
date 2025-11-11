@@ -13,7 +13,7 @@ export async function GET() {
         description: true,
         productTypeId: true,
         durationId: true,
-        imageUrl: true,
+  images: { select: { url: true } },
         currentMarketPricePerKg: true,
         ProductType: {
           select: {
@@ -29,7 +29,12 @@ export async function GET() {
         },
       },
     });
-    return NextResponse.json(products, { status: 200 });
+    // Map images from {url: string}[] to string[]
+    const productsWithImages = products.map((product) => ({
+      ...product,
+      images: Array.isArray(product.images) ? product.images.map((img: { url: string }) => img.url) : [],
+    }));
+    return NextResponse.json(productsWithImages, { status: 200 });
   } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json(
@@ -60,7 +65,7 @@ export async function POST(request: Request) {
       description,
       productTypeId,
       durationId,
-      imageUrl,
+      images,
       currentMarketPricePerKg,
       farmerMonthlyPayment,
     } = parsed.data;
@@ -85,6 +90,7 @@ export async function POST(request: Request) {
       );
     }
 
+    // Create product without images first
     const product = await prisma.product.create({
       data: {
         id: crypto.randomUUID(),
@@ -92,12 +98,17 @@ export async function POST(request: Request) {
         description,
         productTypeId,
         durationId,
-        imageUrl,
         currentMarketPricePerKg,
         farmerMonthlyPayment,
         createdBy: session.user.id,
       },
     });
+    // If images are provided, create ProductImage records
+    if (Array.isArray(images) && images.length > 0) {
+      await prisma.productImage.createMany({
+        data: images.map((url: string) => ({ productId: product.id, url })),
+      });
+    }
 
     return NextResponse.json(product, { status: 201 });
   } catch (error) {

@@ -80,7 +80,14 @@ export default function Carousel({ type }: CarouselProps) {
   };
 
   if (isLoading) {
-    return <div className="text-center py-10 text-gray-500">Loading...</div>;
+    return (
+      <div className="text-center py-10">
+        <div className="relative inline-block">
+          <div className="text-4xl animate-bounce">🌱</div>
+          <div className="absolute inset-0 text-4xl animate-pulse opacity-50">🌿</div>
+        </div>
+      </div>
+    );
   }
 
   if (items.length === 0) {

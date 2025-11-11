@@ -14,6 +14,8 @@ export async function seedProductTypes(
     // Categories
     const cropId = crypto.randomUUID();
     const livestockId = crypto.randomUUID();
+    
+    // First, create main categories
     await prisma.productType.createMany({
       data: [
         {
@@ -32,8 +34,8 @@ export async function seedProductTypes(
       skipDuplicates: true,
     });
 
-    // Subcategories
-    const productTypes = await prisma.productType.createMany({
+    // Then create subcategories
+    const result = await prisma.productType.createMany({
       data: [
         {
           id: crypto.randomUUID(),
@@ -95,7 +97,12 @@ export async function seedProductTypes(
       skipDuplicates: true,
     });
 
-    return { ...productTypes, cropId, livestockId };
+    // Return the count plus 2 for the main categories
+    return { 
+      count: result.count + 2, 
+      cropId, 
+      livestockId 
+    };
   } catch (error) {
     console.error("Failed to seed product types:", error);
     throw error;

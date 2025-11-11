@@ -14,7 +14,7 @@ export async function GET(
         description: true,
         productTypeId: true,
         durationId: true,
-        imageUrl: true,
+  images: { select: { url: true } },
         currentMarketPricePerKg: true,
         ProductType: {
           select: {

@@ -12,9 +12,14 @@ export interface Product {
   description: string;
   productTypeId: string;
   durationId: string;
-  imageUrl: string;
+  images: string[];
   currentMarketPricePerKg: number;
   farmerMonthlyPayment: number;
+  roi: number | null;
+  estimatedHarvestQuantityPerPlot: number;
+  daysToHarvestPerPlot: number;
+  minimumNoOfFarmersPerPlot: number;
+  dailyMaintenanceFee: number;
   ProductType: {
     id: string;
     name: string;
@@ -25,12 +30,3 @@ export interface Product {
   };
 }
 
-export interface Investment {
-  id: string;
-  amount: number;
-  expectedReturn: number;
-  progress: number;
-  status: string;
-  createdAt: string;
-  product: { name: string; imageUrl: string };
-}

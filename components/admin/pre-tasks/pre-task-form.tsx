@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 interface PreTaskFormProps {
   products: { id: string; name: string }[];
@@ -24,16 +25,33 @@ export default function AdminPreTaskForm({ products }: PreTaskFormProps) {
     setError(null);
 
     if (!session?.user?.id) {
-      setError("Please sign in to create a pre-task.");
+      const errorMsg = "Please sign in to create a pre-task.";
+      setError(errorMsg);
+      toast.error(errorMsg);
       setIsSubmitting(false);
       return;
     }
 
-    if (!title || !productId) {
-      setError("Title and Product are required.");
+    if (!title.trim()) {
+      const errorMsg = "Title is required.";
+      setError(errorMsg);
+      toast.error(errorMsg);
       setIsSubmitting(false);
       return;
     }
+
+    if (!productId) {
+      const errorMsg = "Product selection is required.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Show loading toast
+    const loadingToast = toast.loading("Creating pre-task...", {
+      description: "Please wait while we save your pre-task.",
+    });
 
     try {
       const response = await fetch("/api/pre-tasks", {
@@ -44,9 +62,7 @@ export default function AdminPreTaskForm({ products }: PreTaskFormProps) {
         body: JSON.stringify({
           title,
           description,
-          estimatedCompletionDate: estimatedCompletionDate
-            ? new Date(estimatedCompletionDate)
-            : undefined,
+          estimatedCompletionDate: estimatedCompletionDate || undefined,
           productId,
         }),
       });
@@ -54,12 +70,38 @@ export default function AdminPreTaskForm({ products }: PreTaskFormProps) {
       const result = await response.json();
 
       if (response.ok && result.preTask) {
+        // Clear form on success
+        setTitle("");
+        setDescription("");
+        setEstimatedCompletionDate("");
+        setProductId("");
+        setError(null);
+        
+        toast.dismiss(loadingToast);
+        toast.success("Pre-task created successfully!", {
+          description: `"${result.preTask.title}" has been added to the system.`,
+        });
+        
         router.refresh();
       } else {
-        setError(result.error || "Failed to create pre-task.");
+        const errorMessage = typeof result.error === 'string' 
+          ? result.error 
+          : JSON.stringify(result.error) || "Failed to create pre-task.";
+        setError(errorMessage);
+        
+        toast.dismiss(loadingToast);
+        toast.error("Failed to create pre-task", {
+          description: errorMessage,
+        });
       }
     } catch {
-      setError("Failed to create pre-task. Please try again.");
+      const errorMsg = "Failed to create pre-task. Please try again.";
+      setError(errorMsg);
+      
+      toast.dismiss(loadingToast);
+      toast.error("Network Error", {
+        description: errorMsg,
+      });
     } finally {
       setIsSubmitting(false);
     }

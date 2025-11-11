@@ -7,7 +7,13 @@ interface RoleCount {
 export async function seedRoles(): Promise<RoleCount> {
   try {
     const roles = await prisma.role.createMany({
-      data: [{ name: "USER" }, { name: "ADMIN" }],
+      data: [
+        { name: "USER" },
+        { name: "ADMIN" },
+        { name: "CUSTOMER" },
+        { name: "FARMER" },
+        { name: "INVESTOR" },
+      ],
       skipDuplicates: true,
     });
     return roles;

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
-  imageUrl: z.string().url("Invalid image URL").min(1, "Image URL is required"),
+  images: z.array(z.string().url("Invalid image URL").min(1, "Image URL is required")).min(1, "At least one image is required"),
   currentMarketPricePerKg: z
     .string()
     .min(1, "Market price is required")
@@ -24,6 +24,28 @@ const formSchema = z.object({
     ),
   productTypeId: z.string().uuid("Product type is required"),
   durationId: z.string().uuid("Duration is required"),
+  roi: z.string().min(1, "ROI is required").refine((val) => !isNaN(Number(val)) && Number(val) >= 0, "ROI must be a non-negative number"),
+  estimatedHarvestQuantityPerPlot: z
+    .string()
+    .min(1, "Estimated harvest quantity is required")
+    .refine(
+      (val) => !isNaN(Number(val)) && Number(val) >= 0,
+      "Estimated harvest quantity must be a non-negative number"
+    ),
+  daysToHarvestPerPlot: z
+    .string()
+    .min(1, "Days to harvest is required")
+    .refine(
+      (val) => !isNaN(Number(val)) && Number(val) >= 0,
+      "Days to harvest must be a non-negative number"
+    ),
+  minimumNoOfFarmersPerPlot: z
+    .string()
+    .min(1, "Minimum number of farmers is required")
+    .refine(
+      (val) => !isNaN(Number(val)) && Number(val) >= 0,
+      "Minimum number of farmers must be a non-negative number"
+    ),
 });
 import type { Product, ProductType as ProductTypeType } from "@/types/product";
 import { useRouter } from "next/navigation";
@@ -42,7 +64,7 @@ export function ProductForm({
   const [form, setForm] = useState({
     name: initialData?.name || "",
     description: initialData?.description || "",
-    imageUrl: initialData?.imageUrl || "",
+    images: Array.isArray(initialData?.images) ? initialData.images : [""],
     currentMarketPricePerKg:
       initialData?.currentMarketPricePerKg !== undefined &&
       initialData?.currentMarketPricePerKg !== null
@@ -55,6 +77,22 @@ export function ProductForm({
         : "",
     productTypeId: initialData?.productTypeId || "",
     durationId: initialData?.durationId || "",
+    roi: initialData?.roi !== undefined && initialData?.roi !== null ? String(initialData.roi) : "",
+    estimatedHarvestQuantityPerPlot:
+      initialData?.estimatedHarvestQuantityPerPlot !== undefined &&
+      initialData?.estimatedHarvestQuantityPerPlot !== null
+        ? String(initialData.estimatedHarvestQuantityPerPlot)
+        : "",
+    daysToHarvestPerPlot:
+      initialData?.daysToHarvestPerPlot !== undefined &&
+      initialData?.daysToHarvestPerPlot !== null
+        ? String(initialData.daysToHarvestPerPlot)
+        : "",
+    minimumNoOfFarmersPerPlot:
+      initialData?.minimumNoOfFarmersPerPlot !== undefined &&
+      initialData?.minimumNoOfFarmersPerPlot !== null
+        ? String(initialData.minimumNoOfFarmersPerPlot)
+        : "",
   });
   const [productTypes, setProductTypes] = useState<ProductTypeType[]>([]);
   const [durations, setDurations] = useState<{ id: string; name: string }[]>(
@@ -86,7 +124,26 @@ export function ProductForm({
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // For handling multiple image URLs
+  const handleImageChange = (idx: number, value: string) => {
+    setForm((prev) => {
+      const images: string[] = [...prev.images];
+      images[idx] = value;
+      return { ...prev, images };
+    });
+  };
+  const addImageField = () => {
+    setForm((prev) => ({ ...prev, images: [...prev.images, ""] }));
+  };
+  const removeImageField = (idx: number) => {
+    setForm((prev) => {
+      const images: string[] = prev.images.filter((_, i) => i !== idx);
+      return { ...prev, images };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -94,7 +151,7 @@ export function ProductForm({
     setError("");
     setFieldErrors({});
     // Client-side validation
-    const result = formSchema.safeParse(form);
+  const result = formSchema.safeParse(form);
     if (!result.success) {
       const fieldErrorsObj = result.error.formErrors.fieldErrors as Record<
         string,
@@ -123,6 +180,10 @@ export function ProductForm({
         ...form,
         currentMarketPricePerKg: Number(form.currentMarketPricePerKg),
         farmerMonthlyPayment: Number(form.farmerMonthlyPayment),
+        roi: Number(form.roi),
+        estimatedHarvestQuantityPerPlot: Number(form.estimatedHarvestQuantityPerPlot),
+        daysToHarvestPerPlot: Number(form.daysToHarvestPerPlot),
+        minimumNoOfFarmersPerPlot: Number(form.minimumNoOfFarmersPerPlot),
       };
       const res = await fetch(url, {
         method,
@@ -130,7 +191,18 @@ export function ProductForm({
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
-        const data = await res.json();
+        let data;
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          try {
+            data = await res.json();
+          } catch {
+            throw new Error(`Failed to save product: ${res.statusText}`);
+          }
+        } else {
+          throw new Error(`Failed to save product: ${res.statusText}`);
+        }
+        
         if (data.error && typeof data.error === "object") {
           const messages = Object.values(data.error)
             .map((v) =>
@@ -227,17 +299,37 @@ export function ProductForm({
         )}
       </div>
       <div>
-        <label className="block font-medium mb-1">Image URL</label>
+        <label className="block font-medium mb-1">Product Images</label>
+        {form.images.map((img: string, idx: number) => (
+          <div key={idx} className="flex items-center gap-2 mb-2">
+            <Input
+              name={`image-${idx}`}
+              value={img}
+              onChange={e => handleImageChange(idx, e.target.value)}
+              placeholder="Image URL"
+              required
+            />
+            {form.images.length > 1 && (
+              <button type="button" onClick={() => removeImageField(idx)} className="text-red-500">Remove</button>
+            )}
+          </div>
+        ))}
+        <button type="button" onClick={addImageField} className="text-blue-600 underline text-sm mt-1">Add another image</button>
+        {fieldErrors.images && (
+          <div className="text-red-600 text-xs mt-1">{fieldErrors.images}</div>
+        )}
+      </div>
+      <div>
+        <label className="block font-medium mb-1">ROI (%)</label>
         <Input
-          name="imageUrl"
-          value={form.imageUrl}
+          name="roi"
+          type="number"
+          value={form.roi}
           onChange={handleChange}
           required
         />
-        {fieldErrors.imageUrl && (
-          <div className="text-red-600 text-xs mt-1">
-            {fieldErrors.imageUrl}
-          </div>
+        {fieldErrors.roi && (
+          <div className="text-red-600 text-xs mt-1">{fieldErrors.roi}</div>
         )}
       </div>
       <div>
@@ -267,6 +359,51 @@ export function ProductForm({
         {fieldErrors.farmerMonthlyPayment && (
           <div className="text-red-600 text-xs mt-1">
             {fieldErrors.farmerMonthlyPayment}
+          </div>
+        )}
+      </div>
+      <div>
+        <label className="block font-medium mb-1">Estimated Harvest Quantity Per Plot (kg)</label>
+        <Input
+          name="estimatedHarvestQuantityPerPlot"
+          type="number"
+          value={form.estimatedHarvestQuantityPerPlot}
+          onChange={handleChange}
+          required
+        />
+        {fieldErrors.estimatedHarvestQuantityPerPlot && (
+          <div className="text-red-600 text-xs mt-1">
+            {fieldErrors.estimatedHarvestQuantityPerPlot}
+          </div>
+        )}
+      </div>
+      <div>
+        <label className="block font-medium mb-1">Days To Harvest Per Plot</label>
+        <Input
+          name="daysToHarvestPerPlot"
+          type="number"
+          value={form.daysToHarvestPerPlot}
+          onChange={handleChange}
+          required
+        />
+        {fieldErrors.daysToHarvestPerPlot && (
+          <div className="text-red-600 text-xs mt-1">
+            {fieldErrors.daysToHarvestPerPlot}
+          </div>
+        )}
+      </div>
+      <div>
+        <label className="block font-medium mb-1">Minimum Number of Farmers Per Plot</label>
+        <Input
+          name="minimumNoOfFarmersPerPlot"
+          type="number"
+          value={form.minimumNoOfFarmersPerPlot}
+          onChange={handleChange}
+          required
+        />
+        {fieldErrors.minimumNoOfFarmersPerPlot && (
+          <div className="text-red-600 text-xs mt-1">
+            {fieldErrors.minimumNoOfFarmersPerPlot}
           </div>
         )}
       </div>

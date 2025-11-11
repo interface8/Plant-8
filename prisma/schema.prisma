@@ -1,6 +1,5 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
@@ -47,6 +46,8 @@ model User {
   createdProducts  Product[] @relation("CreatedByProduct")
   modifiedProducts Product[] @relation("ModifiedByProduct")
 
+  orders Order[] @relation(name: "UserToOrders")
+
   createdProductTypes  ProductType[] @relation("CreatedByProductType")
   modifiedProductTypes ProductType[] @relation("ModifiedByProductType")
 
@@ -78,6 +79,14 @@ model User {
   AccountModifiedByUser Account[] @relation("AccountModifiedByUser")
   accountCreatedByUser  Account[] @relation("AccountCreatedByUser")
   Task                  Task[]
+
+  // Blog Relations
+  authoredBlogs   Blog[] @relation("BlogAuthor")
+  createdBlogs    Blog[] @relation("CreatedByBlog")
+  modifiedBlogs   Blog[] @relation("ModifiedByBlog")
+  
+  // Notification Relations
+  notifications   Notification[] @relation("UserNotifications")
 }
 
 model PaymentMethodDomain {
@@ -194,25 +203,45 @@ model AddressType {
 }
 
 model Product {
-  id                      String    @id @default(uuid()) @db.Uuid
-  name                    String
-  description             String
-  imageUrl                String
-  createdAt               DateTime  @default(now()) @db.Timestamp(6)
-  createdBy               String?   @db.Uuid
-  modifiedAt              DateTime? @db.Timestamp(6)
-  modifiedBy              String?   @db.Uuid
-  productTypeId           String    @db.Uuid
-  durationId              String    @db.Uuid
-  currentMarketPricePerKg Float     @default(0)
-  farmerMonthlyPayment    Float     @default(10000)
+  id                           String    @id @default(uuid()) @db.Uuid
+  name                         String    @unique
+  description                  String
+  createdAt                    DateTime  @default(now()) @db.Timestamp(6)
+  createdBy                    String?   @db.Uuid
+  modifiedAt                   DateTime? @db.Timestamp(6)
+  modifiedBy                   String?   @db.Uuid
+  productTypeId                String    @db.Uuid
+  durationId                   String    @db.Uuid
+  currentMarketPricePerKg      Float     @default(0)
+  farmerMonthlyPayment         Float     @default(10000)
+  roi                          Float?     @default(15)
+  estimatedHarvestQuantityPerPlot Float   @default(0) // kg per plot per term
+  daysToHarvestPerPlot         Int       @default(0) // days per term
+  minimumNoOfFarmersPerPlot    Int       @default(1)
+  dailyMaintenanceFee          Float     @default(0) // ₦ per day - includes labor costs
+
+  // Remove imageUrl, use ProductImage relation instead
+  images         ProductImage[]
 
   ProductType    ProductType  @relation("ProductToType", fields: [productTypeId], references: [id])
   duration       Duration     @relation("ProductToDuration", fields: [durationId], references: [id])
   investments    Investment[] @relation("InvestmentToProduct")
+  marketplaceListings MarketplaceListing[] @relation("ProductToListings")
   createdByUser  User?        @relation("CreatedByProduct", fields: [createdBy], references: [id])
   modifiedByUser User?        @relation("ModifiedByProduct", fields: [modifiedBy], references: [id])
   preTask        PreTask[]
+  blogs          Blog[]       @relation("BlogToProduct")
+}
+
+model ProductImage {
+  id        String   @id @default(uuid()) @db.Uuid
+  url       String
+  productId String   @db.Uuid
+  sortOrder Int     @default(0)
+  createdAt DateTime @default(now())
+
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
 }
 
 model ProductType {
@@ -231,11 +260,13 @@ model ProductType {
   productTypeInvestments Investment[]  @relation("ProductTypeToInvestments")
   createdByUser          User?         @relation("CreatedByProductType", fields: [createdBy], references: [id])
   modifiedByUser         User?         @relation("ModifiedByProductType", fields: [modifiedBy], references: [id])
+  blogs                  Blog[]        @relation("BlogToProductType")
 }
 
 model Duration {
   id          String    @id @default(uuid()) @db.Uuid
   name        String    @unique
+  months      Int?       @default(12)
   description String
   createdAt   DateTime  @default(now()) @db.Timestamp(6)
   createdBy   String?   @db.Uuid
@@ -252,24 +283,36 @@ model Duration {
 }
 
 model Investment {
-  id             String           @id @default(uuid()) @db.Uuid
-  userId         String           @db.Uuid
-  inspectorId    String?          @db.Uuid
-  productId      String           @db.Uuid
-  productTypeId  String           @db.Uuid
-  landId         String?          @db.Uuid
-  plotSize       String?
-  numberOfPlots  Int              @default(1)
-  numberOfTerms  Int              @default(1)
-  amount         Float
-  expectedReturn Float            @default(0)
-  progress       Int              @default(0)
-  status         InvestmentStatus @default(PENDING)
+  id                        String           @id @default(uuid()) @db.Uuid
+  userId                    String           @db.Uuid
+  inspectorId               String?          @db.Uuid
+  productId                 String           @db.Uuid
+  productTypeId             String           @db.Uuid
+  landId                    String?          @db.Uuid
+  plotSize                  String?
+  numberOfPlots             Int              @default(1)
+  numberOfTerms             Int              @default(1)
+  numberOfFarmers           Int              @default(1)
+  amount                    Float
+  expectedReturn            Float            @default(0)
+  progress                  Int              @default(0)
+  status                    InvestmentStatus @default(PENDING)
 
-  createdAt  DateTime  @default(now()) @db.Timestamp(6)
-  createdBy  String?   @db.Uuid
-  modifiedAt DateTime? @db.Timestamp(6)
-  modifiedBy String?   @db.Uuid
+  // Calculation Results
+  totalCost                 Float            @default(0)
+  estimatedRevenue          Float            @default(0)
+  adjustedRevenue           Float            @default(0)
+  netReturn                 Float            @default(0)
+  roiPercent                Float            @default(0)
+  roiPerDay                 Float            @default(0)
+  adjustedYield             Float            @default(0)
+  effectiveDaysToHarvest    Int              @default(0)
+  estimatedHarvestQuantity  Float            @default(0)
+
+  createdAt                 DateTime         @default(now()) @db.Timestamp(6)
+  createdBy                 String?          @db.Uuid
+  modifiedAt                DateTime?        @db.Timestamp(6)
+  modifiedBy                String?          @db.Uuid
 
   user           User        @relation("UserInvestments", fields: [userId], references: [id])
   product        Product     @relation("InvestmentToProduct", fields: [productId], references: [id])
@@ -277,6 +320,8 @@ model Investment {
   land           Land?       @relation(fields: [landId], references: [id])
   createdByUser  User?       @relation("CreatedByInvestment", fields: [createdBy], references: [id])
   modifiedByUser User?       @relation("ModifiedByInvestment", fields: [modifiedBy], references: [id])
+
+  marketplaceListings MarketplaceListing[] @relation("InvestmentToListings")
 
   tasks Task[]
 }
@@ -355,21 +400,23 @@ model Location {
 }
 
 model Land {
-  id             String       @id @default(uuid()) @db.Uuid
-  locationId     String       @db.Uuid
-  name           String
-  gpsCoordinates String? // e.g., "6.5244,3.3792" for map integration
-  halfPlotPrice  Float        @default(0)
-  fullPlotPrice  Float        @default(0)
-  imageUrl       String?
-  createdAt      DateTime     @default(now()) @db.Timestamp(6)
-  createdBy      String?      @db.Uuid
-  modifiedAt     DateTime?    @db.Timestamp(6)
-  modifiedBy     String?      @db.Uuid
-  location       Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
-  investments    Investment[]
-  createdByUser  User?        @relation("CreatedByLand", fields: [createdBy], references: [id])
-  modifiedByUser User?        @relation("ModifiedByLand", fields: [modifiedBy], references: [id])
+  id                      String       @id @default(uuid()) @db.Uuid
+  locationId              String       @db.Uuid
+  name                    String
+  gpsCoordinates          String? // e.g., "6.5244,3.3792" for map integration
+  dailyPrice              Float        @default(0) // ₦ per day per plot
+  imageUrl                String?
+  fertilizerCostPerPlot   Float        @default(0) // ₦ per plot per term
+  inspectionDailyFee      Float        @default(0) // ₦ per day
+  inflationRate           Float        @default(0)
+  createdAt               DateTime     @default(now()) @db.Timestamp(6)
+  createdBy               String?      @db.Uuid
+  modifiedAt              DateTime?    @db.Timestamp(6)
+  modifiedBy              String?      @db.Uuid
+  location                Location     @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  investments             Investment[]
+  createdByUser           User?        @relation("CreatedByLand", fields: [createdBy], references: [id])
+  modifiedByUser          User?        @relation("ModifiedByLand", fields: [modifiedBy], references: [id])
 
   @@unique([name, locationId])
 }
@@ -425,3 +472,125 @@ enum CarouselTypeEnum {
   testimony
   marketplace
 }
+
+model MarketplaceListing {
+  id             String    @id @default(uuid()) @db.Uuid
+  investmentId   String    @unique @db.Uuid
+  productId      String    @db.Uuid
+  quantityKg     Float
+  pricePerKg     Float
+  totalValue     Float
+  status         String    @default("PENDING") // PENDING, ACTIVE, SOLD, CANCELLED
+  isNegotiable   Boolean   @default(true)
+  harvestDate    DateTime
+  expiryDate     DateTime?
+  description    String?
+  marketRating   Float?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  investment  Investment  @relation("InvestmentToListings", fields: [investmentId], references: [id], onDelete: Cascade)
+  product     Product     @relation("ProductToListings", fields: [productId], references: [id])
+  orderItems  OrderItem[] @relation("ListingToOrderItems")
+
+  @@index([investmentId])
+  @@index([productId])
+  @@index([status])
+}
+
+model Order {
+  id               String   @id @default(uuid()) @db.Uuid
+  buyerId          String?  @db.Uuid // Optional - allows anonymous buyers
+  totalAmount      Float
+  status           String   @default("PENDING") // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED
+  paymentStatus    String   @default("PENDING") // PENDING, PAID, FAILED, REFUNDED
+  deliveryAddress  String
+  customerName     String?  // For anonymous buyers
+  customerEmail    String?  // For anonymous buyers
+  customerPhone    String?  // For anonymous buyers
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  buyer      User?       @relation("UserToOrders", fields: [buyerId], references: [id])
+  orderItems OrderItem[] @relation("OrderToOrderItems")
+
+  @@index([buyerId])
+  @@index([status])
+  @@index([paymentStatus])
+}
+
+model OrderItem {
+  id         String   @id @default(uuid()) @db.Uuid
+  orderId    String   @db.Uuid
+  listingId  String   @db.Uuid
+  quantityKg Float
+  pricePerKg Float
+  subtotal   Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  order   Order              @relation("OrderToOrderItems", fields: [orderId], references: [id], onDelete: Cascade)
+  listing MarketplaceListing @relation("ListingToOrderItems", fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([listingId])
+}
+
+model Blog {
+  id             String    @id @default(uuid()) @db.Uuid
+  title          String
+  slug           String    @unique
+  content        String    @db.Text
+  excerpt        String?   @db.Text
+  coverImage     String?
+  category       String    @default("General") // General, Product, Category, Investment Tips, Farming Guide, etc.
+  tags           String[]  @default([])
+  status         String    @default("DRAFT") // DRAFT, PUBLISHED, ARCHIVED
+  views          Int       @default(0)
+  readTime       Int?      // estimated read time in minutes
+  publishedAt    DateTime?
+  
+  // Optional Relations
+  productId      String?   @db.Uuid
+  productTypeId  String?   @db.Uuid
+  authorId       String?   @db.Uuid
+  
+  // Audit
+  createdAt      DateTime  @default(now()) @db.Timestamp(6)
+  createdBy      String?   @db.Uuid
+  modifiedAt     DateTime? @db.Timestamp(6)
+  modifiedBy     String?   @db.Uuid
+
+  // Relations
+  product        Product?     @relation("BlogToProduct", fields: [productId], references: [id], onDelete: SetNull)
+  productType    ProductType? @relation("BlogToProductType", fields: [productTypeId], references: [id], onDelete: SetNull)
+  author         User?        @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  createdByUser  User?        @relation("CreatedByBlog", fields: [createdBy], references: [id])
+  modifiedByUser User?        @relation("ModifiedByBlog", fields: [modifiedBy], references: [id])
+
+  @@index([slug])
+  @@index([status])
+  @@index([category])
+  @@index([productId])
+  @@index([productTypeId])
+  @@index([publishedAt])
+}
+
+model Notification {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  type        String   // "TASK_UPDATE", "INVESTMENT_UPDATE", "PAYMENT", "SYSTEM"
+  title       String
+  message     String
+  read        Boolean  @default(false)
+  link        String?  // Optional link to related resource
+  metadata    Json?    // Additional data (taskId, investmentId, etc.)
+  createdAt   DateTime @default(now()) @db.Timestamp(6)
+  
+  user User @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId, read])
+  @@index([createdAt])
+}
+

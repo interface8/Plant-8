@@ -1,63 +1,45 @@
 import prisma from "@/db/prisma";
-import { Investment } from "@/types/investment";
+import { auth } from "@/auth";
+import NotificationsList from "./notifications-list";
 
-interface ProgressFeedProps {
-  investments: Investment[];
-}
+export default async function ProgressFeed() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return null;
+  }
 
-export default async function ProgressFeed({ investments }: ProgressFeedProps) {
-  const productIds = investments.map((inv) => inv.productId);
-  const updates = await prisma.preTask.findMany({
-    where: { productId: { in: productIds } },
-    select: {
-      id: true,
-      title: true,
-      description: true,
-      createdAt: true,
-      product: { select: { name: true } },
-    },
+  const notifications = await prisma.notification.findMany({
+    where: { userId: session.user.id },
     orderBy: { createdAt: "desc" },
-    take: 5,
+    take: 10,
   });
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
-  };
+  const unreadCount = await prisma.notification.count({
+    where: {
+      userId: session.user.id,
+      read: false,
+    },
+  });
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 md:p-6">
-      <h2 className="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6">
-        Recent Updates
-      </h2>
-      <div className="space-y-3 md:space-y-4">
-        {updates.length === 0 ? (
-          <p className="text-gray-500">No recent updates available.</p>
-        ) : (
-          updates.map((update) => (
-            <div
-              key={update.id}
-              className="border-l-4 border-green-500 pl-3 md:pl-4 py-2"
-            >
-              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-1">
-                <div className="flex-1">
-                  <h3 className="font-medium text-gray-900 text-sm md:text-base">
-                    {update.product?.name ?? "Unknown Product"}
-                  </h3>
-                  <p className="text-gray-600 text-sm md:text-base mt-1">
-                    {update.description || update.title}
-                  </p>
-                </div>
-                <span className="text-xs md:text-sm text-gray-500 whitespace-nowrap">
-                  {formatDate(update.createdAt)}
-                </span>
-              </div>
-            </div>
-          ))
+      <div className="flex items-center justify-between mb-4 md:mb-6">
+        <h2 className="text-lg md:text-xl font-semibold text-gray-900">
+          Notifications
+        </h2>
+        {unreadCount > 0 && (
+          <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+            {unreadCount}
+          </span>
         )}
       </div>
+      <NotificationsList 
+        initialNotifications={notifications.map(n => ({
+          ...n,
+          createdAt: n.createdAt.toISOString(),
+        }))} 
+        unreadCount={unreadCount}
+      />
     </div>
   );
 }

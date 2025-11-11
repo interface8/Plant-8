@@ -7,6 +7,7 @@ import FinancialCharts from "@/components/dashboard/financialCharts";
 import InvestmentSummary from "@/components/dashboard/InvestmentSummary";
 import ProgressFeed from "@/components/dashboard/progressFeed";
 
+export const revalidate = 10;
 export default async function Dashboard({
   searchParams,
 }: {
@@ -26,8 +27,9 @@ export default async function Dashboard({
         select: {
           id: true,
           name: true,
-          imageUrl: true,
+          images: { select: { url: true } },
           farmerMonthlyPayment: true,
+          roi: true,
           duration: { select: { id: true, name: true } },
         },
       },
@@ -37,8 +39,11 @@ export default async function Dashboard({
           id: true,
           name: true,
           gpsCoordinates: true,
-          halfPlotPrice: true,
-          fullPlotPrice: true,
+          dailyPrice: true,
+          imageUrl: true,
+          fertilizerCostPerPlot: true,
+          inspectionDailyFee: true,
+          inflationRate: true,
           location: {
             select: {
               id: true,
@@ -62,6 +67,17 @@ export default async function Dashboard({
     totalInvestment > 0
       ? ((totalInvestment + monthlyReturns) / totalInvestment - 1) * 100
       : 0;
+
+  // Map product.images from {url: string}[] to string[] for type compatibility
+  const investmentsWithImages = investments.map((inv) => ({
+    ...inv,
+    product: {
+      ...inv.product,
+      images: Array.isArray(inv.product?.images)
+        ? inv.product.images.map((img) => img.url)
+        : [],
+    },
+  }));
 
   return (
     <>
@@ -113,10 +129,10 @@ export default async function Dashboard({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
             <div className="lg:col-span-2 space-y-6 md:space-y-8">
               <FinancialCharts />
-              <ActiveProjects investments={investments} />
+              <ActiveProjects investments={investmentsWithImages} />
             </div>
             <div className="lg:col-span-1">
-              <ProgressFeed investments={investments} />
+              <ProgressFeed />
             </div>
           </div>
         </div>

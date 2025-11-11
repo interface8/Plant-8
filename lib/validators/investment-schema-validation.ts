@@ -1,0 +1,26 @@
+import { z } from "zod";
+
+export const investmentSchema = z.object({
+  userId: z.string().uuid("Invalid user ID"),
+  inspectorId: z.string().uuid("Invalid inspector ID").optional().nullable(),
+  productId: z.string().uuid("Invalid product ID"),
+  productTypeId: z.string().uuid("Invalid product type ID"),
+  landId: z.string().uuid("Invalid land ID").optional().nullable(),
+  plotSize: z.string().optional().nullable(),
+  numberOfPlots: z.number().int().min(1),
+  numberOfTerms: z.number().int().min(1),
+  numberOfFarmers: z.number().int().min(1),
+  amount: z.number().min(0),
+  expectedReturn: z.number().min(0),
+  progress: z.number().min(0).max(100),
+  status: z.enum(["PENDING", "ACTIVE", "COMPLETED", "FAILED"]),
+  totalCost: z.number().min(0),
+  estimatedRevenue: z.number().min(0),
+  adjustedRevenue: z.number().min(0),
+  netReturn: z.number().min(0),
+  roiPercent: z.number().min(0),
+  roiPerDay: z.number().min(0),
+  adjustedYield: z.number().min(0),
+  effectiveDaysToHarvest: z.number().int().min(0),
+  estimatedHarvestQuantity: z.number().min(0),
+});

@@ -12,12 +12,14 @@ import {
   FolderTree,
   ShoppingCart,
   Users,
-  ShipWheel,
-  Printer,
   ChevronLeft,
   ChevronRight,
   Store,
   ImagePlus,
+  MapPin,
+  TrendingUp,
+  Shield,
+  MessageSquareQuote 
 } from "lucide-react";
 
 const navigation = [
@@ -25,6 +27,10 @@ const navigation = [
     name: "Dashboard",
     href: "/admin",
     icon: LayoutDashboard,
+    children: [
+      { name: "Overview", href: "/admin" },
+      { name: "Analytics", href: "/admin/analytics" },
+    ],
   },
   {
     name: "Products",
@@ -33,28 +39,57 @@ const navigation = [
     children: [
       { name: "All Products", href: "/admin/products" },
       { name: "Add Product", href: "/admin/products/new" },
-      // { name: "Import Products", href: "/admin/products/import" },
-      // { name: "Export Products", href: "/admin/products/export" },
     ],
   },
   {
-    name: "Categories",
-    href: "/admin/categories",
+    name: "Product Types",
+    href: "/admin/product-types",
     icon: FolderTree,
     children: [
-      { name: "All Categories", href: "/admin/categories" },
-      { name: "Add Category", href: "/admin/categories/new" },
+      { name: "All Product Types", href: "/admin/product-types" },
+      { name: "Add Product Type", href: "/admin/product-types/new" },
     ],
   },
   {
-    name: "Orders",
-    href: "/admin/orders",
+    name: "Pre Tasks",
+    href: "/admin/pre-tasks",
     icon: ShoppingCart,
     children: [
-      { name: "All Orders", href: "/admin/orders" },
-      { name: "Pending Orders", href: "/admin/orders?status=pending" },
-      { name: "Processing", href: "/admin/orders?status=processing" },
-      { name: "Shipped", href: "/admin/orders?status=shipped" },
+      { name: "All Pre Tasks", href: "/admin/pre-tasks" },
+      { name: "Pending Pre Tasks", href: "/admin/pre-tasks?status=pending" },
+      { name: "Completed Pre Tasks", href: "/admin/pre-tasks?status=completed" },
+    ],
+  },
+  {
+    name: "Lands",
+    href: "/admin/lands",
+    icon: MapPin,
+    children: [
+      { name: "All Lands", href: "/admin/lands" },
+      { name: "Add Land", href: "/admin/lands/new" },
+    ],
+  },
+  {
+    name: "States & Locations",
+    href: "/admin/locations",
+    icon: Store,
+    children: [
+      { name: "All States", href: "/admin/states" },
+      { name: "Add State", href: "/admin/states/new" },
+      { name: "All Locations", href: "/admin/locations" },
+      { name: "Add Location", href: "/admin/locations/new" },
+    ],
+  },
+  {
+    name: "Investments",
+    href: "/admin/investments",
+    icon: TrendingUp,
+    children: [
+      { name: "All Investments", href: "/admin/investments" },
+      { name: "Active Investments", href: "/admin/investments?status=ACTIVE" },
+      { name: "Pending Investments", href: "/admin/investments?status=PENDING" },
+      { name: "Completed Investments", href: "/admin/investments?status=COMPLETED" },
+      { name: "Investment Analytics", href: "/admin/investments/analytics" },
     ],
     
   },
@@ -64,52 +99,25 @@ const navigation = [
     icon: ImagePlus,
   },
   {
-    name: "Printers",
-    href: "/admin/printers",
-    icon: Printer,
-  },
-  {
-    name: "Shipping-fee",
-    href: "/admin/shipping-fee",
-    icon: ShipWheel,
-  },
-  {
     name: "Customers",
     href: "/admin/customers",
     icon: Users,
   },
+   {
+    name: "Testimony",
+    href: "/admin/testimonyManager",
+    icon: MessageSquareQuote ,
+  },
+  {
+    name: "Role Management",
+    href: "/admin/roles",
+    icon: Shield,
+    children: [
+      { name: "All Roles", href: "/admin/roles" },
+      { name: "Audit Log", href: "/admin/roles/audit" },
+    ],
+  },
 
-  // {
-  //   name: "Analytics",
-  //   href: "/admin/analytics",
-  //   icon: BarChart3,
-  //   children: [
-  //     { name: "Sales Report", href: "/admin/analytics/sales" },
-  //     { name: "Product Performance", href: "/admin/analytics/products" },
-  //     { name: "Customer Insights", href: "/admin/analytics/customers" },
-  //   ],
-  // },
-  // {
-  //   name: "Reports",
-  //   href: "/admin/reports",
-  //   icon: FileText,
-  //   children: [
-  //     { name: "Sales Reports", href: "/admin/reports/sales" },
-  //     { name: "Inventory Reports", href: "/admin/reports/inventory" },
-  //     { name: "Customer Reports", href: "/admin/reports/customers" },
-  //   ],
-  // },
-  // {
-  //   name: "Settings",
-  //   href: "/admin/settings",
-  //   icon: Settings,
-  //   children: [
-  //     { name: "General", href: "/admin/settings" },
-  //     { name: "Payment", href: "/admin/settings/payment" },
-  //     { name: "Shipping", href: "/admin/settings/shipping" },
-  //     { name: "Email", href: "/admin/settings/email" },
-  //   ],
-  // },
 ];
 
 export function AdminSidebar() {
@@ -128,27 +136,27 @@ export function AdminSidebar() {
   return (
     <div
       className={cn(
-        "bg-background border-r transition-all duration-300",
+        "bg-white dark:bg-gray-950 border-r border-green-200 dark:border-gray-800 transition-all duration-300",
         collapsed ? "w-16" : "w-64"
       )}
     >
-      <div className="flex h-16 items-center justify-between px-4 border-b">
+      <div className="flex h-16 items-center justify-between px-4 border-b border-green-200 dark:border-gray-800 bg-white/50 dark:bg-gray-950/50">
         {!collapsed && (
           <Link href="/admin" className="flex items-center space-x-2">
-            <Store className="h-6 w-6 text-primary" />
-            <span className="font-bold text-lg">Admin Panel</span>
+            <Store className="h-6 w-6 text-green-600 dark:text-gray-300" />
+            <span className="font-bold text-lg text-green-800 dark:text-gray-200">Admin Panel</span>
           </Link>
         )}
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className="h-8 w-8"
+          className="h-8 w-8 hover:bg-green-100 dark:hover:bg-gray-800"
         >
           {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4 dark:text-gray-300" />
           ) : (
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4 dark:text-gray-300" />
           )}
         </Button>
       </div>
@@ -162,8 +170,8 @@ export function AdminSidebar() {
                   <Button
                     variant="ghost"
                     className={cn(
-                      "w-full justify-start",
-                      pathname.startsWith(item.href) && "bg-muted"
+                      "w-full justify-start hover:bg-green-100 dark:hover:bg-gray-800 dark:text-gray-300",
+                      pathname.startsWith(item.href) && "bg-green-100 dark:bg-gray-800 text-green-700 dark:text-gray-100"
                     )}
                     onClick={() => !collapsed && toggleExpanded(item.name)}
                   >
@@ -188,8 +196,8 @@ export function AdminSidebar() {
                           variant="ghost"
                           size="sm"
                           className={cn(
-                            "w-full justify-start text-sm",
-                            pathname === child.href && "bg-muted"
+                            "w-full justify-start text-sm hover:bg-green-50 dark:hover:bg-gray-800 dark:text-gray-400",
+                            pathname === child.href && "bg-green-100 dark:bg-gray-800 text-green-700 dark:text-gray-100"
                           )}
                           asChild
                         >
@@ -203,8 +211,8 @@ export function AdminSidebar() {
                 <Button
                   variant="ghost"
                   className={cn(
-                    "w-full justify-start",
-                    pathname === item.href && "bg-muted"
+                    "w-full justify-start hover:bg-green-100 dark:hover:bg-gray-800 dark:text-gray-300",
+                    pathname === item.href && "bg-green-100 dark:bg-gray-800 text-green-700 dark:text-gray-100"
                   )}
                   asChild
                 >
@@ -219,8 +227,8 @@ export function AdminSidebar() {
         </nav>
       </ScrollArea>
 
-      <div className="border-t p-4">
-        <Button variant="outline" className="w-full" asChild>
+      <div className="border-t border-green-200 dark:border-gray-800 p-4 bg-white/50 dark:bg-gray-950/50">
+        <Button variant="outline" className="w-full border-green-300 dark:border-gray-700 text-green-700 dark:text-gray-300 hover:bg-green-100 dark:hover:bg-gray-800 hover:text-green-800 dark:hover:text-gray-100" asChild>
           <Link href="/">
             <Store className="h-4 w-4" />
             {!collapsed && <span className="ml-2">View Store</span>}

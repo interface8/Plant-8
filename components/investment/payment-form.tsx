@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/store/store";
+import type { InvestmentState } from "@/store/slices/investmentSlice";
 import { setError } from "@/store/slices/investmentSlice";
 import { useSession } from "next-auth/react";
 
@@ -15,7 +15,7 @@ export default function PaymentForm({ onSuccess }: PaymentFormProps) {
   const router = useRouter();
   const dispatch = useDispatch();
   const { data: session } = useSession();
-  const investmentData = useSelector((state: RootState) => state.investment);
+  const investmentData = useSelector((state: { investment: InvestmentState }) => state.investment);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
 
@@ -66,7 +66,8 @@ export default function PaymentForm({ onSuccess }: PaymentFormProps) {
         dispatch(setError(null));
         onSuccess?.();
         setIsNavigating(true);
-        router.push("/dashboard?payment=success");
+        // Redirect to the investment detail page
+        router.push(`/dashboard/investments/${result.investment.id}?payment=success`);
       } else {
         dispatch(setError(result.error || "Failed to create investment."));
       }
@@ -87,11 +88,7 @@ export default function PaymentForm({ onSuccess }: PaymentFormProps) {
       <div className="space-y-6">
         <div>
           <p className="text-sm font-medium text-gray-700">
-            Investment Amount: ₦{investmentData.amount.toLocaleString()}
-          </p>
-          <p className="text-sm font-medium text-gray-700">
-            Farmer Monthly Payout: ₦
-            {investmentData.farmerMonthlyPayment?.toLocaleString() || "N/A"}
+            Total Investment: ₦{investmentData.totalInvestment?.toLocaleString()}
           </p>
         </div>
         {investmentData.error && (

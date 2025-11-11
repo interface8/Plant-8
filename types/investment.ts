@@ -5,8 +5,9 @@ export interface InvestmentFormData {
   landId: string;
   plotSize: "HALF" | "FULL";
   numberOfPlots: number;
-  farmerMonthlyPayment: number;
   numberOfTerms: number;
+  numberOfFarmers: number;
+  farmerMonthlyPayment: number;
   durationId: string;
   amount: number;
 }
@@ -32,8 +33,9 @@ export interface Investment {
   product: {
     id: string;
     name: string;
-    imageUrl: string | null;
+    images: string[];
     farmerMonthlyPayment: number;
+    roi: number | null;
     duration: { id: string; name: string };
   };
   productType: { id: string; name: string };
@@ -41,8 +43,11 @@ export interface Investment {
     id: string;
     name: string;
     gpsCoordinates: string | null;
-    halfPlotPrice: number;
-    fullPlotPrice: number;
+    dailyPrice: number;
+    imageUrl?: string | null;
+    fertilizerCostPerPlot?: number;
+    inspectionDailyFee?: number;
+    inflationRate?: number;
     location: {
       id: string;
       name: string;
@@ -50,21 +55,3 @@ export interface Investment {
     };
   } | null;
 }
-
-// export interface Investment {
-//   id: string;
-//   userId: string;
-//   inspectorId: string | null;
-//   productId: string;
-//   productTypeId: string;
-//   amount: number;
-//   expectedReturn: number;
-//   progress: number;
-//   status: "PENDING" | "ACTIVE" | "COMPLETED" | "FAILED";
-//   createdAt: Date;
-//   createdBy: string | null;
-//   modifiedAt: Date | null;
-//   modifiedBy: string | null;
-//   product: { id: string; name: string; imageUrl: string | null };
-//   productType: { id: string; name: string };
-// }

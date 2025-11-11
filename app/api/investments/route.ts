@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import prisma from "@/db/prisma";
 import { investmentSchema } from "@/lib/validators/investment-schema-validators";
+import { calculateInvestmentROI } from "@/lib/utils/investmentCalculator";
 
 export async function GET() {
   const session = await auth();
@@ -34,7 +35,7 @@ export async function GET() {
           select: {
             id: true,
             name: true,
-            imageUrl: true,
+            images: { select: { url: true } },
             farmerMonthlyPayment: true,
             duration: { select: { id: true, name: true } },
           },
@@ -45,8 +46,10 @@ export async function GET() {
             id: true,
             name: true,
             gpsCoordinates: true,
-            halfPlotPrice: true,
-            fullPlotPrice: true,
+            dailyPrice: true,
+            fertilizerCostPerPlot: true,
+            inspectionDailyFee: true,
+            inflationRate: true,
             location: {
               select: {
                 id: true,
@@ -60,7 +63,15 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json(investments, { status: 200 });
+    // Map product.images from {url: string}[] to string[]
+    const investmentsWithImages = investments.map((inv) => ({
+      ...inv,
+      product: {
+        ...inv.product,
+        images: Array.isArray(inv.product.images) ? inv.product.images.map((img) => img.url) : [],
+      },
+    }));
+    return NextResponse.json(investmentsWithImages, { status: 200 });
   } catch (error) {
     console.error("Error fetching investments:", error);
     return NextResponse.json(
@@ -108,16 +119,32 @@ export async function POST(request: Request) {
       select: {
         id: true,
         name: true,
+        description: true,
         productTypeId: true,
+        durationId: true,
         currentMarketPricePerKg: true,
         farmerMonthlyPayment: true,
-        duration: { select: { name: true } },
+        roi: true,
+        estimatedHarvestQuantityPerPlot: true,
+        daysToHarvestPerPlot: true,
+        minimumNoOfFarmersPerPlot: true,
+        dailyMaintenanceFee: true,
+        images: { select: { url: true } },
+        ProductType: { select: { id: true, name: true } },
+        duration: { select: { id: true, name: true } },
       },
     });
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
-    if (product.productTypeId !== productTypeId) {
+    
+    // Map product images to string array
+    const productWithImages = {
+      ...product,
+      images: Array.isArray(product.images) ? product.images.map((img) => img.url) : [],
+    };
+    
+    if (productWithImages.productTypeId !== productTypeId) {
       return NextResponse.json(
         { error: "Invalid product type" },
         { status: 400 }
@@ -126,51 +153,147 @@ export async function POST(request: Request) {
 
     const land = await prisma.land.findUnique({
       where: { id: landId },
-      select: { id: true, halfPlotPrice: true, fullPlotPrice: true },
+      select: { 
+        id: true,
+        name: true,
+        gpsCoordinates: true,
+        imageUrl: true,
+        locationId: true,
+        dailyPrice: true,
+        fertilizerCostPerPlot: true,
+        inspectionDailyFee: true,
+        inflationRate: true,
+        location: {
+          select: {
+            id: true,
+            name: true,
+            state: { select: { id: true, name: true } },
+          },
+        },
+      },
     });
     if (!land) {
       return NextResponse.json({ error: "Land not found" }, { status: 404 });
     }
 
-    const plotPrice =
-      plotSize === "HALF" ? land.halfPlotPrice : land.fullPlotPrice;
-    const farmerMonthlyPayment = product.farmerMonthlyPayment;
-    const monthsMatch = product.duration.name.match(/(\d+)\s*month/i);
-    const durationMonths = monthsMatch ? parseInt(monthsMatch[1]) : 1;
-    const plotCost = plotPrice * numberOfPlots * numberOfTerms;
-    const farmerCost = farmerMonthlyPayment * durationMonths * numberOfTerms;
-    const amount = plotCost + farmerCost;
-    const expectedReturn = plotCost * 1.2;
+    // Calculate investment amount using the calculator
+    // Use minimum number of farmers if not provided
+    const numberOfFarmers = productWithImages.minimumNoOfFarmersPerPlot;
+    
+    // First calculate to get total cost
+    const initialCalc = calculateInvestmentROI(
+      1, // Temporary value to avoid division by zero
+      productWithImages,
+      land,
+      numberOfPlots,
+      numberOfFarmers,
+      numberOfTerms
+    );
+    
+    // Now recalculate with actual total cost as investment amount
+    const calculationResult = calculateInvestmentROI(
+      initialCalc.totalCost,
+      productWithImages,
+      land,
+      numberOfPlots,
+      numberOfFarmers,
+      numberOfTerms
+    );
+    
+    const amount = calculationResult.totalCost;
+    const expectedReturn = calculationResult.estimatedRevenue;
 
-    const investment = await prisma.investment.create({
-      data: {
-        userId,
-        productId,
-        productTypeId,
-        landId,
-        plotSize,
-        numberOfPlots,
-        numberOfTerms,
-        amount,
-        expectedReturn,
-        progress: 0,
-        status: "PENDING",
-        createdBy: session.user.id,
-      },
-      include: {
-        product: { select: { name: true } },
-        land: { select: { name: true } },
-      },
+    // Validate calculation results to prevent invalid float values
+    const safeFloat = (value: number, defaultValue: number = 0): number => {
+      if (!isFinite(value) || isNaN(value)) {
+        console.warn(`Invalid float value detected: ${value}, using default: ${defaultValue}`);
+        return defaultValue;
+      }
+      return value;
+    };
+
+    // Get all pre-tasks for this product
+    const preTasks = await prisma.preTask.findMany({
+      where: { productId: productId },
+      orderBy: { estimatedCompletionDate: 'asc' },
+      select: {
+        title: true,
+        description: true,
+      }
     });
+    
+    console.log(`📋 Found ${preTasks.length} pre-tasks for product ${productId}`);
 
-    await prisma.preTask.create({
-      data: {
-        title: `Land Clearing for Investment ${investment.id} on Product ${product.name}`,
-        description:
-          "Clear and prepare the land for the new investment, including initial setup and inspections.",
-        estimatedCompletionDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-        productId: productId,
-      },
+    // Create investment and associated tasks in a transaction with timeout
+    const investment = await prisma.$transaction(async (tx) => {
+      // Create the investment
+      const newInvestment = await tx.investment.create({
+        data: {
+          user: {
+            connect: { id: userId }
+          },
+          product: {
+            connect: { id: productId }
+          },
+          productType: {
+            connect: { id: productTypeId }
+          },
+          land: landId ? {
+            connect: { id: landId }
+          } : undefined,
+          createdByUser: {
+            connect: { id: session.user.id }
+          },
+          plotSize,
+          numberOfPlots,
+          numberOfTerms,
+          numberOfFarmers,
+          amount,
+          expectedReturn,
+          totalCost: safeFloat(calculationResult.totalCost),
+          estimatedRevenue: safeFloat(calculationResult.estimatedRevenue),
+          adjustedRevenue: safeFloat(calculationResult.adjustedRevenue),
+          netReturn: safeFloat(calculationResult.netReturn),
+          roiPercent: safeFloat(calculationResult.roiPercent),
+          roiPerDay: safeFloat(calculationResult.roiPerDay),
+          adjustedYield: safeFloat(calculationResult.adjustedYield),
+          effectiveDaysToHarvest: Math.max(1, calculationResult.effectiveDaysToHarvest),
+          estimatedHarvestQuantity: safeFloat(calculationResult.estimatedHarvestQuantity),
+          progress: 0,
+          status: "PENDING",
+        },
+        select: {
+          id: true,
+          amount: true,
+          expectedReturn: true,
+          status: true,
+          numberOfPlots: true,
+          numberOfTerms: true,
+          product: { select: { name: true, images: { select: { url: true }, take: 1 } } },
+          land: { select: { name: true } },
+        },
+      });
+
+      // Copy all pre-tasks to tasks for this investment
+      if (preTasks.length > 0) {
+        await tx.task.createMany({
+          data: preTasks.map((preTask) => ({
+            investmentId: newInvestment.id,
+            userId: userId,
+            name: preTask.title,
+            description: preTask.description || '',
+            status: 'PENDING',
+          })),
+        });
+        console.log(`✅ Created ${preTasks.length} tasks for investment ${newInvestment.id}`);
+      } else {
+        console.warn(`⚠️ No pre-tasks found for product ${productId}. Tasks will not be created.`);
+      }
+
+      return newInvestment;
+    }, {
+      maxWait: 10000, // 10 seconds max wait to start transaction
+      timeout: 15000, // 15 seconds max transaction time
     });
 
     return NextResponse.json(
@@ -179,12 +302,14 @@ export async function POST(request: Request) {
         investment: {
           id: investment.id,
           productName: investment.product.name,
+          productImages: Array.isArray(investment.product.images) ? investment.product.images.map((img) => img.url) : [],
           landName: investment.land?.name,
           numberOfPlots: investment.numberOfPlots,
           numberOfTerms: investment.numberOfTerms,
           amount: investment.amount,
           expectedReturn: investment.expectedReturn,
           status: investment.status,
+          tasksCreated: preTasks.length,
         },
       },
       { status: 201 }

@@ -74,8 +74,7 @@ export default function LandSelectionForm({
               </p>
             )}
             <p className="text-sm text-gray-500">
-              Half Plot: ₦{land.halfPlotPrice.toLocaleString()} | Full Plot: ₦
-              {land.fullPlotPrice.toLocaleString()}
+              Daily Price: ₦{(land.dailyPrice || 0).toLocaleString()} per plot per day
             </p>
             <button
               onClick={() => onLandSelect?.(land.id)}

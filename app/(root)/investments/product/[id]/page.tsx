@@ -1,15 +1,15 @@
 import { notFound } from "next/navigation";
 import Head from "next/head";
-import Image from "next/image";
-import {
-  getProduct,
-  getProductStaticParams,
-} from "@/lib/services/product-service";
 
-import Link from "next/link";
+import InvestmentDetail from "@/components/investment/InvestmentDetail";
+import { getProduct, getProductStaticParams } from "@/lib/services/product-service";
+import { getLands, getStates } from "@/lib/services/investment-service";
+import { BlogService } from "@/lib/services/blogService";
+import RelatedBlogs from "@/components/blog/related-blogs";
 
 export const generateStaticParams = getProductStaticParams;
 
+export const revalidate = 10;
 export default async function ProductDetailPage({
   params,
 }: {
@@ -29,6 +29,19 @@ export default async function ProductDetailPage({
     return notFound();
   }
 
+  // Fetch all lands and states for modal land selection
+  const [lands, states] = await Promise.all([
+    getLands(),
+    getStates(),
+  ]);
+
+  // Fetch related blogs for this product
+  const relatedBlogs = await BlogService.getBlogs(
+    { productId: product.id, status: "PUBLISHED" },
+    1,
+    3
+  );
+
   return (
     <>
       <Head>
@@ -46,204 +59,18 @@ export default async function ProductDetailPage({
         <meta property="og:description" content={product.description} />
         <meta
           property="og:image"
-          content={product.imageUrl || "/placeholder-image.jpg"}
+          content={(product.images && product.images[0]) || "/placeholder-image.jpg"}
         />
         <meta property="og:type" content="website" />
       </Head>
-      <div className="p-6 max-w-4xl mx-auto">
-        <h1
-          className="text-3xl font-bold mb-4"
-          aria-label={`Investment: ${product.name}`}
-        >
-          {product.name}
-        </h1>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div>
-            <Image
-              src={product.imageUrl || "/placeholder-image.jpg"}
-              alt={`${product.name} investment`}
-              width={640}
-              height={256}
-              className="w-full h-64 object-cover rounded-md"
-              priority
-              placeholder="blur"
-              blurDataURL="/placeholder-image-blur.jpg"
-            />
+      <div>
+        <InvestmentDetail product={product} lands={lands} states={states} />
+        {relatedBlogs.blogs.length > 0 && (
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <RelatedBlogs blogs={relatedBlogs.blogs} title={`Articles about ${product.name}`} />
           </div>
-          <div>
-            <h2 className="text-xl font-semibold mb-2">Investment Details</h2>
-            <p className="text-gray-600 mb-4">{product.description}</p>
-            <dl className="space-y-2">
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Category</dt>
-                <dd className="text-gray-900">{product.ProductType.name}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Duration</dt>
-                <dd className="text-gray-900">{product.duration.name}</dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">
-                  Market Price
-                </dt>
-                <dd className="text-gray-900">
-                  ₦{product.currentMarketPricePerKg.toLocaleString()}/kg
-                </dd>
-              </div>
-            </dl>
-            <Link
-              href={`/investments?productId=${product.id}&productTypeId=${product.productTypeId}`}
-              className="inline-block mt-6 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-              aria-label={`Select land for ${product.name} investment`}
-            >
-              Proceed with Investment
-            </Link>
-          </div>
-        </div>
+        )}
       </div>
     </>
   );
 }
-
-//....................................................................................................................................
-// import { Suspense } from "react";
-// import { notFound } from "next/navigation";
-// import { InvestmentForm } from "@/components/investment/investment-form";
-// import { Badge } from "@/components/ui/badge";
-// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Clock, TrendingUp, DollarSign, Leaf } from "lucide-react";
-// import Image from "next/image";
-
-// interface ProductPageProps {
-//   params: Promise<{ id: string }>;
-// }
-
-// async function getProduct(id: string) {
-//   try {
-//     const response = await fetch(
-//       `${
-//         process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
-//       }/api/products/${id}`,
-//       {
-//         cache: "no-store",
-//       }
-//     );
-
-//     if (!response.ok) return null;
-//     return await response.json();
-//   } catch (error) {
-//     console.error("Error fetching product:", error);
-//     return null;
-//   }
-// }
-
-// export default async function ProductPage({ params }: ProductPageProps) {
-//   const { id } = await params;
-//   const product = await getProduct(id);
-
-//   if (!product) {
-//     notFound();
-//   }
-
-//   const formatCurrency = (amount: number) => {
-//     return new Intl.NumberFormat("en-US", {
-//       style: "currency",
-//       currency: "USD",
-//     }).format(amount);
-//   };
-
-//   return (
-//     <div className="container mx-auto px-4 py-8">
-//       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-//         <div className="space-y-6">
-//           <div className="aspect-video relative rounded-lg overflow-hidden bg-gray-100">
-//             <Image
-//               src={product.imageUrl || "/placeholder.svg"}
-//               alt={product.name}
-//               width={600}
-//               height={400}
-//               className="w-full h-full object-cover rounded-md"
-//               onError={(e) => {
-//                 const target = e.target as HTMLImageElement;
-//                 target.src = "/placeholder.svg";
-//               }}
-//             />
-//           </div>
-
-//           <div>
-//             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-//               {product.name}
-//             </h1>
-//             <p className="text-gray-600 text-lg mb-4">{product.description}</p>
-
-//             {product.type && (
-//               <div className="flex items-center space-x-2 mb-4">
-//                 <Leaf className="h-5 w-5 text-green-600" />
-//                 <span className="text-sm text-gray-600">Category:</span>
-//                 <Badge variant="outline">{product.type.name}</Badge>
-//               </div>
-//             )}
-//           </div>
-
-//           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//             <Card>
-//               <CardHeader className="pb-3">
-//                 <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-//                   <DollarSign className="h-4 w-4 mr-2" />
-//                   Market Price
-//                 </CardTitle>
-//               </CardHeader>
-//               <CardContent>
-//                 <p className="text-2xl font-bold text-gray-900">
-//                   {formatCurrency(product.currentMarketPricePerKg)}
-//                   <span className="text-sm font-normal text-gray-600">/kg</span>
-//                 </p>
-//               </CardContent>
-//             </Card>
-
-//             {product.type?.growthDuration && (
-//               <Card>
-//                 <CardHeader className="pb-3">
-//                   <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-//                     <Clock className="h-4 w-4 mr-2" />
-//                     Growth Duration
-//                   </CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                   <p className="text-2xl font-bold text-gray-900">
-//                     {product.type.growthDuration}
-//                   </p>
-//                 </CardContent>
-//               </Card>
-//             )}
-
-//             {product.type?.expectedReturnRate && (
-//               <Card className="md:col-span-2">
-//                 <CardHeader className="pb-3">
-//                   <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
-//                     <TrendingUp className="h-4 w-4 mr-2" />
-//                     Expected Return Rate
-//                   </CardTitle>
-//                 </CardHeader>
-//                 <CardContent>
-//                   <p className="text-2xl font-bold text-green-600">
-//                     {(product.type.expectedReturnRate * 100).toFixed(1)}%
-//                   </p>
-//                   <p className="text-sm text-gray-600 mt-1">
-//                     Estimated return on investment over the growth period
-//                   </p>
-//                 </CardContent>
-//               </Card>
-//             )}
-//           </div>
-//         </div>
-
-//         <div className="lg:sticky lg:top-8">
-//           <Suspense fallback={<div>Loading investment form...</div>}>
-//             <InvestmentForm product={product} />
-//           </Suspense>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
