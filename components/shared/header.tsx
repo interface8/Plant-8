@@ -48,7 +48,6 @@ export default function Header() {
   };
 
   const navigationLinks = [
-    { href: "/", label: "Home" },
     { href: "/how-it-works", label: "How It Works" },
     ...(status === "authenticated"
       ? [{ href: "/dashboard", label: "Dashboard" }]
@@ -141,30 +140,30 @@ export default function Header() {
 
         <div
           ref={menuRef}
-          className={`absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col justify-between transform transition-transform duration-300 ease-in-out ${
+          className={`absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl flex flex-col justify-between transform transition-transform duration-300 ease-in-out border-l border-green-200 ${
             isMenuOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-green-600 to-green-700">
+          <div className="flex items-center justify-between p-4 border-b border-green-200 bg-white/50">
             <Link
               href="/"
-              className="text-xl font-bold text-white"
+              className="text-xl font-bold text-green-600 transition-transform hover:scale-105 duration-200"
               onClick={handleLinkClick}
             >
               FAM 8
             </Link>
             <button
               onClick={() => setIsMenuOpen(false)}
-              className="p-2 rounded-md text-white hover:text-green-100 hover:bg-green-700 hover:bg-opacity-50 focus:outline-none focus:ring-2 focus:ring-green-300 transition-colors"
+              className="p-2 rounded-md text-gray-700 hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-200 transition-all duration-200"
             >
               <X className="h-6 w-6" />
             </button>
           </div>
 
-          <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
             {navigationLinks.map((link, index) =>
               link.label === "Investments" ? (
-                <div key={link.href} className="py-2">
+                <div key={link.href}>
                   <InvestmentsDropdown
                     isMobile={true}
                     onClose={handleLinkClick}
@@ -175,31 +174,35 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   onClick={handleLinkClick}
-                  className="flex items-center px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all duration-200 border border-transparent hover:border-green-200"
+                  className={`flex items-center px-4 py-2.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                    pathname === link.href
+                      ? "bg-green-100 text-green-700"
+                      : "text-gray-700 hover:bg-green-100 hover:text-green-700"
+                  }`}
                   style={{
                     animationDelay: `${index * 100}ms`,
                   }}
                 >
-                  <span className="ml-3">{link.label}</span>
+                  {link.label}
                 </Link>
               )
             )}
           </nav>
 
           {status !== "authenticated" && (
-            <div className="border-t border-gray-200 p-4 bg-gray-50">
-              <div className="space-y-3">
+            <div className="border-t border-green-200 p-4 bg-white/50">
+              <div className="space-y-2">
                 <Link
                   href="/sign-in"
                   onClick={handleLinkClick}
-                  className="block w-full text-center px-4 py-3 rounded-lg text-base font-medium text-gray-700 hover:text-green-600 hover:bg-white transition-colors border border-gray-300 hover:border-green-300"
+                  className="block w-full text-center px-4 py-2.5 rounded-md text-sm font-medium text-green-700 hover:bg-green-100 transition-all duration-200 border border-green-300"
                 >
                   Sign in
                 </Link>
                 <Link
                   href="/sign-up"
                   onClick={handleLinkClick}
-                  className="block w-full text-center px-4 py-3 rounded-lg text-base font-medium text-white bg-green-600 hover:bg-green-700 transition-colors shadow-lg hover:shadow-xl"
+                  className="block w-full text-center px-4 py-2.5 rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700 transition-all duration-200"
                 >
                   Sign up
                 </Link>

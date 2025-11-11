@@ -1,13 +1,21 @@
 import { NextResponse } from "next/server";
 import prisma from "@/db/prisma";
 import { auth } from "@/auth";
-import { testimonySchema } from "@/lib/validators/testimony-schema-validators";
 import { z } from "zod";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const session = await auth();
+    const { searchParams } = new URL(request.url);
+    const adminView = searchParams.get("admin") === "true";
+
+    // If admin is viewing, show all testimonials, otherwise show only approved
+    const whereClause = adminView && session?.user?.roles?.includes("ADMIN")
+      ? {} // No filter - show all
+      : { isApproved: true }; // Show only approved
+
     const testimonies = await prisma.testimony.findMany({
-      where: { isApproved: true },
+      where: whereClause,
       orderBy: { createdAt: "desc" },
       include: {
         createdByUser: { select: { name: true } },
@@ -32,11 +40,35 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const validatedData = testimonySchema.parse(body);
+    
+    // Simple validation for user-submitted testimonials
+    if (!body.content || typeof body.content !== "string" || body.content.trim().length < 20) {
+      return NextResponse.json(
+        { error: "Testimonial must be at least 20 characters long" },
+        { status: 400 }
+      );
+    }
+
+    if (!body.rating || body.rating < 1 || body.rating > 5) {
+      return NextResponse.json(
+        { error: "Rating must be between 1 and 5" },
+        { status: 400 }
+      );
+    }
+
+    // Get user info for the testimony
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { name: true },
+    });
 
     const testimony = await prisma.testimony.create({
       data: {
-        ...validatedData,
+        investorName: user?.name || "Anonymous",
+        comment: body.content.trim(),
+        rating: body.rating,
+        location: body.location || "Nigeria",
+        isApproved: false, // Requires admin approval
         createdBy: session.user.id,
         modifiedBy: session.user.id,
       },
@@ -46,6 +78,7 @@ export async function POST(request: Request) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.errors }, { status: 400 });
     }
+    console.error("Error creating testimony:", error);
     return NextResponse.json(
       { error: "Failed to create testimony" },
       { status: 500 }
