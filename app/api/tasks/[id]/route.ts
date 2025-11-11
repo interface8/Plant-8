@@ -95,7 +95,7 @@ export async function PATCH(request: Request, context: RouteParams) {
                       status === "IN_PROGRESS" ? "is in progress" :
                       status === "OVERDUE" ? "is overdue" : "updated";
     
-    await prisma.notification.create({
+    const notification = await prisma.notification.create({
       data: {
         userId: existingTask.investment.userId,
         type: "TASK_UPDATE",
@@ -111,6 +111,17 @@ export async function PATCH(request: Request, context: RouteParams) {
         },
       },
     });
+
+    // Emit real-time notification via socket
+    try {
+      const io = (global as any).io;
+      if (io) {
+        io.to(`notifications:${existingTask.investment.userId}`).emit('notification:new', notification);
+      }
+    } catch (socketError) {
+      console.error("Failed to emit socket event:", socketError);
+      // Don't fail the request if socket emission fails
+    }
 
     return NextResponse.json({
       message: "Task updated successfully",

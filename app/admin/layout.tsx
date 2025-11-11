@@ -15,7 +15,7 @@ export default async function AdminLayout({
     redirect("/sign-in");
   }
   return (
-    <div className="flex h-screen bg-muted/10">
+    <div className="flex h-screen bg-gradient-to-br from-green-50 to-emerald-50 dark:from-black dark:to-gray-900">
       <AdminSidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <AdminHeader />

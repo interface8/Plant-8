@@ -20,18 +20,18 @@ export default function AdminHeader() {
   };
 
   return (
-    <header className="h-16 border-b bg-background flex items-center justify-between px-6 shadow-sm">
+    <header className="h-16 border-b border-green-200 dark:border-gray-800 bg-white/70 dark:bg-gray-950/70 backdrop-blur-sm flex items-center justify-between px-6 shadow-sm">
       <div className="flex items-center gap-3">
-        <span className="font-bold text-xl tracking-tight text-primary">
+        <span className="font-bold text-xl tracking-tight text-green-700 dark:text-gray-200">
           Admin
         </span>
-        <span className="text-muted-foreground text-sm hidden sm:inline">
+        <span className="text-green-600 dark:text-gray-400 text-sm hidden sm:inline">
           Dashboard
         </span>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" aria-label="Notifications">
-          <Bell className="h-5 w-5" />
+        <Button variant="ghost" size="icon" aria-label="Notifications" className="hover:bg-green-100 dark:hover:bg-gray-800">
+          <Bell className="h-5 w-5 text-green-600 dark:text-gray-300" />
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

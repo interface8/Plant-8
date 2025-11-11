@@ -124,24 +124,24 @@ export default async function AdminPage() {
         title: "Total Users",
         value: totalUsers,
         icon: Users,
-        color: "text-blue-600",
-        bgColor: "bg-blue-50",
+        color: "text-green-600",
+        bgColor: "bg-green-100",
         href: "/admin/customers",
       },
       {
         title: "Total Investments",
         value: totalInvestments,
         icon: TrendingUp,
-        color: "text-green-600",
-        bgColor: "bg-green-50",
+        color: "text-green-700",
+        bgColor: "bg-green-200",
         href: "/admin/investments",
       },
       {
         title: "Investment Value",
         value: formatCurrency(totalInvestmentValue._sum.amount || 0),
         icon: DollarSign,
-        color: "text-purple-600",
-        bgColor: "bg-purple-50",
+        color: "text-emerald-600",
+        bgColor: "bg-emerald-100",
         href: "/admin/investments",
         isAmount: true,
       },
@@ -149,32 +149,32 @@ export default async function AdminPage() {
         title: "Products",
         value: totalProducts,
         icon: Package,
-        color: "text-orange-600",
-        bgColor: "bg-orange-50",
+        color: "text-green-800",
+        bgColor: "bg-green-50",
         href: "/admin/products",
       },
       {
         title: "States",
         value: totalStates,
         icon: MapPin,
-        color: "text-indigo-600",
-        bgColor: "bg-indigo-50",
+        color: "text-teal-600",
+        bgColor: "bg-teal-100",
         href: "/admin/states",
       },
       {
         title: "Locations",
         value: totalLocations,
         icon: Building,
-        color: "text-teal-600",
-        bgColor: "bg-teal-50",
+        color: "text-emerald-700",
+        bgColor: "bg-emerald-50",
         href: "/admin/locations",
       },
       {
         title: "Land Properties",
         value: totalLands,
         icon: Building,
-        color: "text-pink-600",
-        bgColor: "bg-pink-50",
+        color: "text-green-600",
+        bgColor: "bg-green-50",
         href: "/admin/lands",
       },
     ];
@@ -184,14 +184,14 @@ export default async function AdminPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-3xl font-bold text-green-800 dark:text-gray-200">Admin Dashboard</h1>
+            <p className="text-green-700 dark:text-gray-400 mt-1">
               Welcome back! Here&apos;s an overview of your platform.
             </p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-gray-500">Last updated</p>
-            <p className="text-sm font-medium text-gray-900">
+            <p className="text-sm text-green-600 dark:text-gray-400">Last updated</p>
+            <p className="text-sm font-medium text-green-800 dark:text-gray-200">
               {formatDate(new Date())}
             </p>
           </div>
@@ -200,20 +200,20 @@ export default async function AdminPage() {
         {/* Overview Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {overviewStats.map((stat, index) => (
-            <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer border-green-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
               <Link href={stat.href}>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-600 mb-1">
+                      <p className="text-sm font-medium text-green-700 dark:text-gray-400 mb-1">
                         {stat.title}
                       </p>
-                      <p className="text-2xl font-bold text-gray-900">
+                      <p className="text-2xl font-bold text-green-900 dark:text-gray-200">
                         {stat.isAmount ? stat.value : stat.value.toLocaleString()}
                       </p>
                     </div>
-                    <div className={`${stat.bgColor} p-3 rounded-lg`}>
-                      <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                    <div className={`${stat.bgColor} dark:bg-gray-800 p-3 rounded-lg`}>
+                      <stat.icon className={`h-6 w-6 ${stat.color} dark:text-gray-300`} />
                     </div>
                   </div>
                 </CardContent>
@@ -224,10 +224,10 @@ export default async function AdminPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Investment Status Breakdown */}
-          <Card>
+          <Card className="border-green-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <BarChart3 className="h-5 w-5 mr-2" />
+              <CardTitle className="flex items-center text-green-800 dark:text-gray-200">
+                <BarChart3 className="h-5 w-5 mr-2 text-green-600 dark:text-gray-400" />
                 Investment Status Overview
               </CardTitle>
             </CardHeader>
@@ -263,15 +263,15 @@ export default async function AdminPage() {
           </Card>
 
           {/* Recent Investments */}
-          <Card>
+          <Card className="border-green-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
             <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="flex items-center">
-                <Activity className="h-5 w-5 mr-2" />
+              <CardTitle className="flex items-center text-green-800 dark:text-gray-200">
+                <Activity className="h-5 w-5 mr-2 text-green-600 dark:text-gray-400" />
                 Recent Investments
               </CardTitle>
               <Link
                 href="/admin/investments"
-                className="text-sm text-blue-600 hover:text-blue-700 flex items-center"
+                className="text-sm text-green-600 dark:text-gray-400 hover:text-green-700 dark:hover:text-gray-300 flex items-center"
               >
                 View All <Eye className="h-4 w-4 ml-1" />
               </Link>
@@ -317,10 +317,10 @@ export default async function AdminPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Top Products */}
-          <Card>
+          <Card className="border-green-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Package className="h-5 w-5 mr-2" />
+              <CardTitle className="flex items-center text-green-800 dark:text-gray-200">
+                <Package className="h-5 w-5 mr-2 text-green-600 dark:text-gray-400" />
                 Top Products by Investments
               </CardTitle>
             </CardHeader>
@@ -350,10 +350,10 @@ export default async function AdminPage() {
           </Card>
 
           {/* Quick Actions */}
-          <Card>
+          <Card className="border-green-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <Plus className="h-5 w-5 mr-2" />
+              <CardTitle className="flex items-center text-green-800 dark:text-gray-200">
+                <Plus className="h-5 w-5 mr-2 text-green-600 dark:text-gray-400" />
                 Quick Actions
               </CardTitle>
             </CardHeader>
@@ -361,34 +361,34 @@ export default async function AdminPage() {
               <div className="grid grid-cols-2 gap-4">
                 <Link
                   href="/admin/products/new"
-                  className="flex flex-col items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors text-center"
+                  className="flex flex-col items-center p-4 bg-green-100 dark:bg-gray-800 rounded-lg hover:bg-green-200 dark:hover:bg-gray-700 transition-colors text-center"
                 >
-                  <Package className="h-8 w-8 text-blue-600 mb-2" />
-                  <span className="text-sm font-medium text-gray-900">Add Product</span>
+                  <Package className="h-8 w-8 text-green-700 dark:text-gray-300 mb-2" />
+                  <span className="text-sm font-medium text-green-900 dark:text-gray-200">Add Product</span>
                 </Link>
                 
                 <Link
                   href="/admin/states/new"
-                  className="flex flex-col items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors text-center"
+                  className="flex flex-col items-center p-4 bg-emerald-100 dark:bg-gray-800 rounded-lg hover:bg-emerald-200 dark:hover:bg-gray-700 transition-colors text-center"
                 >
-                  <MapPin className="h-8 w-8 text-green-600 mb-2" />
-                  <span className="text-sm font-medium text-gray-900">Add State</span>
+                  <MapPin className="h-8 w-8 text-emerald-700 dark:text-gray-300 mb-2" />
+                  <span className="text-sm font-medium text-emerald-900 dark:text-gray-200">Add State</span>
                 </Link>
                 
                 <Link
                   href="/admin/lands/new"
-                  className="flex flex-col items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors text-center"
+                  className="flex flex-col items-center p-4 bg-teal-100 dark:bg-gray-800 rounded-lg hover:bg-teal-200 dark:hover:bg-gray-700 transition-colors text-center"
                 >
-                  <Building className="h-8 w-8 text-purple-600 mb-2" />
-                  <span className="text-sm font-medium text-gray-900">Add Land</span>
+                  <Building className="h-8 w-8 text-teal-700 dark:text-gray-300 mb-2" />
+                  <span className="text-sm font-medium text-teal-900 dark:text-gray-200">Add Land</span>
                 </Link>
                 
                 <Link
                   href="/admin/investments?status=PENDING"
-                  className="flex flex-col items-center p-4 bg-yellow-50 rounded-lg hover:bg-yellow-100 transition-colors text-center"
+                  className="flex flex-col items-center p-4 bg-green-50 dark:bg-gray-800 rounded-lg hover:bg-green-100 dark:hover:bg-gray-700 transition-colors text-center"
                 >
-                  <Clock className="h-8 w-8 text-yellow-600 mb-2" />
-                  <span className="text-sm font-medium text-gray-900">Pending Reviews</span>
+                  <Clock className="h-8 w-8 text-green-600 dark:text-gray-300 mb-2" />
+                  <span className="text-sm font-medium text-green-900 dark:text-gray-200">Pending Reviews</span>
                 </Link>
               </div>
             </CardContent>

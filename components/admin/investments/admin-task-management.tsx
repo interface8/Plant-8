@@ -149,16 +149,16 @@ export default function AdminTaskManagement({ investment, adminId }: AdminTaskMa
       // Upload image if provided
       if (taskImage) {
         const formData = new FormData();
-        formData.append("file", taskImage);
-        formData.append("folder", "task-images");
+        formData.append("image", taskImage);
 
-        const uploadRes = await fetch("/api/upload", {
+        const uploadRes = await fetch("/api/tasks/upload-image", {
           method: "POST",
           body: formData,
         });
 
         if (!uploadRes.ok) {
-          throw new Error("Failed to upload image");
+          const errorData = await uploadRes.json();
+          throw new Error(errorData.error || "Failed to upload image");
         }
 
         const uploadData = await uploadRes.json();
@@ -178,7 +178,8 @@ export default function AdminTaskManagement({ investment, adminId }: AdminTaskMa
       });
 
       if (!res.ok) {
-        throw new Error("Failed to update task");
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to update task");
       }
 
       toast.success("Task updated successfully");
@@ -189,7 +190,7 @@ export default function AdminTaskManagement({ investment, adminId }: AdminTaskMa
       setImagePreview("");
     } catch (error) {
       console.error("Error updating task:", error);
-      toast.error("Failed to update task");
+      toast.error(error instanceof Error ? error.message : "Failed to update task");
     } finally {
       setIsUpdating(false);
     }

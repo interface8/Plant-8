@@ -129,27 +129,27 @@ export function AdminSidebar() {
   return (
     <div
       className={cn(
-        "bg-background border-r transition-all duration-300",
+        "bg-white dark:bg-gray-950 border-r border-green-200 dark:border-gray-800 transition-all duration-300",
         collapsed ? "w-16" : "w-64"
       )}
     >
-      <div className="flex h-16 items-center justify-between px-4 border-b">
+      <div className="flex h-16 items-center justify-between px-4 border-b border-green-200 dark:border-gray-800 bg-white/50 dark:bg-gray-950/50">
         {!collapsed && (
           <Link href="/admin" className="flex items-center space-x-2">
-            <Store className="h-6 w-6 text-primary" />
-            <span className="font-bold text-lg">Admin Panel</span>
+            <Store className="h-6 w-6 text-green-600 dark:text-gray-300" />
+            <span className="font-bold text-lg text-green-800 dark:text-gray-200">Admin Panel</span>
           </Link>
         )}
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className="h-8 w-8"
+          className="h-8 w-8 hover:bg-green-100 dark:hover:bg-gray-800"
         >
           {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4 dark:text-gray-300" />
           ) : (
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4 dark:text-gray-300" />
           )}
         </Button>
       </div>
@@ -163,8 +163,8 @@ export function AdminSidebar() {
                   <Button
                     variant="ghost"
                     className={cn(
-                      "w-full justify-start",
-                      pathname.startsWith(item.href) && "bg-muted"
+                      "w-full justify-start hover:bg-green-100 dark:hover:bg-gray-800 dark:text-gray-300",
+                      pathname.startsWith(item.href) && "bg-green-100 dark:bg-gray-800 text-green-700 dark:text-gray-100"
                     )}
                     onClick={() => !collapsed && toggleExpanded(item.name)}
                   >
@@ -189,8 +189,8 @@ export function AdminSidebar() {
                           variant="ghost"
                           size="sm"
                           className={cn(
-                            "w-full justify-start text-sm",
-                            pathname === child.href && "bg-muted"
+                            "w-full justify-start text-sm hover:bg-green-50 dark:hover:bg-gray-800 dark:text-gray-400",
+                            pathname === child.href && "bg-green-100 dark:bg-gray-800 text-green-700 dark:text-gray-100"
                           )}
                           asChild
                         >
@@ -204,8 +204,8 @@ export function AdminSidebar() {
                 <Button
                   variant="ghost"
                   className={cn(
-                    "w-full justify-start",
-                    pathname === item.href && "bg-muted"
+                    "w-full justify-start hover:bg-green-100 dark:hover:bg-gray-800 dark:text-gray-300",
+                    pathname === item.href && "bg-green-100 dark:bg-gray-800 text-green-700 dark:text-gray-100"
                   )}
                   asChild
                 >
@@ -220,8 +220,8 @@ export function AdminSidebar() {
         </nav>
       </ScrollArea>
 
-      <div className="border-t p-4">
-        <Button variant="outline" className="w-full" asChild>
+      <div className="border-t border-green-200 dark:border-gray-800 p-4 bg-white/50 dark:bg-gray-950/50">
+        <Button variant="outline" className="w-full border-green-300 dark:border-gray-700 text-green-700 dark:text-gray-300 hover:bg-green-100 dark:hover:bg-gray-800 hover:text-green-800 dark:hover:text-gray-100" asChild>
           <Link href="/">
             <Store className="h-4 w-4" />
             {!collapsed && <span className="ml-2">View Store</span>}

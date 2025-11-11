@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { formatDistanceToNow } from "date-fns";
 import { Bell, CheckCircle2, Clock, DollarSign, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useNotificationsSocket } from "@/hooks/use-notifications-socket";
 
 interface Notification {
   id: string;
@@ -23,8 +25,38 @@ interface NotificationsListProps {
 }
 
 export default function NotificationsList({ initialNotifications, unreadCount: initialUnreadCount }: NotificationsListProps) {
+  const { data: session } = useSession();
   const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
   const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
+  
+  // Connect to real-time notifications
+  const { notification: newNotification, clearNotification } = useNotificationsSocket(session?.user?.id);
+
+  // Handle new notifications from socket
+  useEffect(() => {
+    if (newNotification) {
+      setNotifications(prev => [
+        {
+          id: newNotification.id,
+          type: newNotification.type,
+          title: newNotification.title,
+          message: newNotification.message,
+          read: newNotification.read,
+          link: newNotification.link,
+          createdAt: new Date(newNotification.createdAt).toISOString(),
+        },
+        ...prev
+      ]);
+      setUnreadCount(prev => prev + 1);
+      
+      // Show toast notification
+      toast.success(newNotification.title, {
+        description: newNotification.message,
+      });
+      
+      clearNotification();
+    }
+  }, [newNotification, clearNotification]);
 
   const getIcon = (type: string) => {
     switch (type) {
