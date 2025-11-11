@@ -25,6 +25,27 @@ const formSchema = z.object({
   productTypeId: z.string().uuid("Product type is required"),
   durationId: z.string().uuid("Duration is required"),
   roi: z.string().min(1, "ROI is required").refine((val) => !isNaN(Number(val)) && Number(val) >= 0, "ROI must be a non-negative number"),
+  estimatedHarvestQuantityPerPlot: z
+    .string()
+    .min(1, "Estimated harvest quantity is required")
+    .refine(
+      (val) => !isNaN(Number(val)) && Number(val) >= 0,
+      "Estimated harvest quantity must be a non-negative number"
+    ),
+  daysToHarvestPerPlot: z
+    .string()
+    .min(1, "Days to harvest is required")
+    .refine(
+      (val) => !isNaN(Number(val)) && Number(val) >= 0,
+      "Days to harvest must be a non-negative number"
+    ),
+  minimumNoOfFarmersPerPlot: z
+    .string()
+    .min(1, "Minimum number of farmers is required")
+    .refine(
+      (val) => !isNaN(Number(val)) && Number(val) >= 0,
+      "Minimum number of farmers must be a non-negative number"
+    ),
 });
 import type { Product, ProductType as ProductTypeType } from "@/types/product";
 import { useRouter } from "next/navigation";
@@ -57,6 +78,21 @@ export function ProductForm({
     productTypeId: initialData?.productTypeId || "",
     durationId: initialData?.durationId || "",
     roi: initialData?.roi !== undefined && initialData?.roi !== null ? String(initialData.roi) : "",
+    estimatedHarvestQuantityPerPlot:
+      initialData?.estimatedHarvestQuantityPerPlot !== undefined &&
+      initialData?.estimatedHarvestQuantityPerPlot !== null
+        ? String(initialData.estimatedHarvestQuantityPerPlot)
+        : "",
+    daysToHarvestPerPlot:
+      initialData?.daysToHarvestPerPlot !== undefined &&
+      initialData?.daysToHarvestPerPlot !== null
+        ? String(initialData.daysToHarvestPerPlot)
+        : "",
+    minimumNoOfFarmersPerPlot:
+      initialData?.minimumNoOfFarmersPerPlot !== undefined &&
+      initialData?.minimumNoOfFarmersPerPlot !== null
+        ? String(initialData.minimumNoOfFarmersPerPlot)
+        : "",
   });
   const [productTypes, setProductTypes] = useState<ProductTypeType[]>([]);
   const [durations, setDurations] = useState<{ id: string; name: string }[]>(
@@ -145,6 +181,9 @@ export function ProductForm({
         currentMarketPricePerKg: Number(form.currentMarketPricePerKg),
         farmerMonthlyPayment: Number(form.farmerMonthlyPayment),
         roi: Number(form.roi),
+        estimatedHarvestQuantityPerPlot: Number(form.estimatedHarvestQuantityPerPlot),
+        daysToHarvestPerPlot: Number(form.daysToHarvestPerPlot),
+        minimumNoOfFarmersPerPlot: Number(form.minimumNoOfFarmersPerPlot),
       };
       const res = await fetch(url, {
         method,
@@ -152,7 +191,18 @@ export function ProductForm({
         body: JSON.stringify(payload),
       });
       if (!res.ok) {
-        const data = await res.json();
+        let data;
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          try {
+            data = await res.json();
+          } catch {
+            throw new Error(`Failed to save product: ${res.statusText}`);
+          }
+        } else {
+          throw new Error(`Failed to save product: ${res.statusText}`);
+        }
+        
         if (data.error && typeof data.error === "object") {
           const messages = Object.values(data.error)
             .map((v) =>
@@ -309,6 +359,51 @@ export function ProductForm({
         {fieldErrors.farmerMonthlyPayment && (
           <div className="text-red-600 text-xs mt-1">
             {fieldErrors.farmerMonthlyPayment}
+          </div>
+        )}
+      </div>
+      <div>
+        <label className="block font-medium mb-1">Estimated Harvest Quantity Per Plot (kg)</label>
+        <Input
+          name="estimatedHarvestQuantityPerPlot"
+          type="number"
+          value={form.estimatedHarvestQuantityPerPlot}
+          onChange={handleChange}
+          required
+        />
+        {fieldErrors.estimatedHarvestQuantityPerPlot && (
+          <div className="text-red-600 text-xs mt-1">
+            {fieldErrors.estimatedHarvestQuantityPerPlot}
+          </div>
+        )}
+      </div>
+      <div>
+        <label className="block font-medium mb-1">Days To Harvest Per Plot</label>
+        <Input
+          name="daysToHarvestPerPlot"
+          type="number"
+          value={form.daysToHarvestPerPlot}
+          onChange={handleChange}
+          required
+        />
+        {fieldErrors.daysToHarvestPerPlot && (
+          <div className="text-red-600 text-xs mt-1">
+            {fieldErrors.daysToHarvestPerPlot}
+          </div>
+        )}
+      </div>
+      <div>
+        <label className="block font-medium mb-1">Minimum Number of Farmers Per Plot</label>
+        <Input
+          name="minimumNoOfFarmersPerPlot"
+          type="number"
+          value={form.minimumNoOfFarmersPerPlot}
+          onChange={handleChange}
+          required
+        />
+        {fieldErrors.minimumNoOfFarmersPerPlot && (
+          <div className="text-red-600 text-xs mt-1">
+            {fieldErrors.minimumNoOfFarmersPerPlot}
           </div>
         )}
       </div>

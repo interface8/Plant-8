@@ -170,7 +170,10 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
       {
         name: "Okra Pods",
         description: "Green okra pods",
-        images: ["https://images.unsplash.com/photo-1558408525-1092038389ae?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=880, https://images.unsplash.com/photo-1551207195-70cb13347c1a?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fG9rcmF8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600"],
+        images: [
+          "https://images.unsplash.com/photo-1558408525-1092038389ae?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=880",
+          "https://images.unsplash.com/photo-1551207195-70cb13347c1a?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fG9rcmF8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&q=60&w=600"
+        ],
         currentMarketPricePerKg: 2.7,
         productTypeId: vegetables.id,
         durationId: threeMonths.id,

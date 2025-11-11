@@ -19,9 +19,23 @@ export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const data = await req.json();
-  const updated = await updateProduct((await params).id, data);
-  return NextResponse.json(updated);
+  try {
+    const data = await req.json();
+    const updated = await updateProduct((await params).id, data);
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error("Error updating product:", error);
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 400 }
+      );
+    }
+    return NextResponse.json(
+      { error: "Failed to update product" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function DELETE(
