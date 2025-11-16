@@ -65,6 +65,57 @@ export async function PUT(
   }
 }
 
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Check if user is admin
+    if (!session.user.roles?.includes("ADMIN")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const { id } = await params;
+
+    if (typeof body.isApproved !== "boolean") {
+      return NextResponse.json(
+        { error: "isApproved must be a boolean" },
+        { status: 400 }
+      );
+    }
+
+    const testimony = await prisma.testimony.update({
+      where: { id },
+      data: {
+        isApproved: body.isApproved,
+        modifiedBy: session.user.id,
+      },
+      include: {
+        createdByUser: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(testimony);
+  } catch (error) {
+    console.error("Error updating testimony:", error);
+    return NextResponse.json(
+      { error: "Failed to update testimony" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -74,6 +125,12 @@ export async function DELETE(
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    // Check if user is admin
+    if (!session.user.roles?.includes("ADMIN")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const { id } = await params;
     await prisma.testimony.delete({
       where: { id: id },

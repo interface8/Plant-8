@@ -23,7 +23,7 @@ export default function CarouselSlide({ item, isActive }: CarouselSlideProps) {
           {item.link && (
             <Link
               href={item.link}
-              className="mt-3 inline-block bg-blue-600 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-md hover:bg-blue-700 transition text-sm sm:text-base"
+              className="mt-3 inline-block bg-[#1E7B47] text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg hover:bg-[#145C33] transition-all duration-200 text-sm sm:text-base font-medium shadow-lg hover:shadow-xl transform hover:scale-105"
             >
               Learn More
             </Link>

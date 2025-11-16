@@ -91,6 +91,7 @@ const navigation = [
       { name: "Completed Investments", href: "/admin/investments?status=COMPLETED" },
       { name: "Investment Analytics", href: "/admin/investments/analytics" },
     ],
+    
   },
   {
     name: "Carousel",

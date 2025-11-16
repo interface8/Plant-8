@@ -55,10 +55,14 @@ export default function CarouselForm({
             Link (optional)
           </label>
           <input
-            type="url"
+            type="text"
             {...register("link")}
+            placeholder="/dashboard or https://example.com"
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
           />
+          <p className="text-xs text-gray-500 mt-1">
+            Use internal path (e.g., /dashboard, /investments) or full URL
+          </p>
           {errors.link && (
             <p className="text-red-500 text-sm mt-1">{errors.link.message}</p>
           )}

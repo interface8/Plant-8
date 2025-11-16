@@ -45,7 +45,7 @@ export default function TestimonyManager() {
 
   const fetchItems = async () => {
     try {
-      const response = await axios.get("/api/testimonials");
+      const response = await axios.get("/api/testimonials?admin=true");
       setItems(response.data);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (err) {
@@ -100,9 +100,28 @@ export default function TestimonyManager() {
     setEditingId(null);
   };
 
+  const handleToggleApproval = async (id: string, currentStatus: boolean) => {
+    try {
+      await axios.patch(`/api/testimonials/${id}`, {
+        isApproved: !currentStatus,
+      });
+      fetchItems();
+      setError(null);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (err) {
+      setError("Failed to update approval status");
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
       <h1 className="text-2xl font-bold mb-6">Testimony Manager</h1>
+      <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <p className="text-sm text-blue-800">
+          <strong>Tip:</strong> User-submitted testimonials appear here with "Pending" status. 
+          Review and approve testimonials to display them on the testimonials page.
+        </p>
+      </div>
       <TestimonyForm
         register={register}
         errors={errors}
@@ -115,6 +134,7 @@ export default function TestimonyManager() {
         items={items}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onToggleApproval={handleToggleApproval}
       />
     </div>
   );

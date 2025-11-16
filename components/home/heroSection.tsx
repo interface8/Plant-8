@@ -13,12 +13,6 @@ export default function HeroSection() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Link
-            href="/sign-in"
-            className="bg-primary-foreground text-primary px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-opacity"
-          >
-            Get Started
-          </Link>
-          <Link
             href="/how-it-works"
             className="bg-primary-foreground/10 backdrop-blur-sm border-2 border-primary-foreground text-primary-foreground px-6 py-3 rounded-lg font-semibold hover:bg-primary-foreground/20 transition-colors"
           >

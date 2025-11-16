@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { 
   TrendingUp, 
   Shield, 
@@ -306,86 +307,98 @@ export default function InvestmentCatalog({
             filteredProducts.map((product) => (
               <div
                 key={product.id}
-                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 p-6"
+                className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100 overflow-hidden"
               >
-                {/* Crop Type Badge */}
-                <div className="mb-4">
-                  <span className="inline-block bg-[#E9F6EE] text-[#1E7B47] text-sm font-medium px-3 py-1 rounded-full">
-                    {product.category}
-                  </span>
-                </div>
-
-                {/* Title + Description */}
-                <h3 className="text-lg font-semibold text-gray-800 mb-1">
-                  {product.name}
-                </h3>
-                <p className="text-sm text-gray-600 mb-4 line-clamp-2">
-                  {product.description}
-                </p>
-
-                {/* Details Section - Side by Side Layout */}
-                <div className="mb-4">
-                  {/* Duration and Min Investment - Side by Side */}
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Duration Column */}
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2 text-gray-600 mb-2">
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
-                        <span className="text-sm">Duration</span>
-                      </div>
-                      <span className="text-[#1E7B47] font-semibold text-base">
-                        {product.duration}
-                      </span>
-                    </div>
-
-                    {/* Min Investment Column */}
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2 text-gray-600 mb-2">
-                        <span className="text-sm font-medium">₦</span>
-                        <span className="text-sm">Min. Investment</span>
-                      </div>
-                      <span className="text-[#1E7B47] font-bold text-base">
-                        {formatCurrency(product.minInvestment)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Expected Return Box */}
-                <div className="bg-[#E9F6EE] rounded-xl p-4 mb-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="w-4 h-4 text-[#1E7B47]" />
-                    <span className="text-sm text-gray-700 font-medium">
-                      Expected Return
+                {/* Product Image */}
+                <div className="relative h-48 w-full overflow-hidden bg-gray-100">
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    className="object-cover transition-transform duration-300 hover:scale-110"
+                  />
+                  {/* Crop Type Badge - Overlay on Image */}
+                  <div className="absolute top-3 left-3 z-10">
+                    <span className="inline-block bg-white/95 backdrop-blur-sm text-[#1E7B47] text-sm font-medium px-3 py-1.5 rounded-full shadow-md">
+                      {product.category}
                     </span>
                   </div>
-                  <div className="text-3xl font-bold text-[#1E7B47] mb-1">
-                    {product.expectedReturn.toFixed(1)}%
-                  </div>
-                  <div className="text-xs text-gray-600">Annual yield</div>
                 </div>
 
-                {/* Action Buttons */}
-                <div className="space-y-2">
-                  <Link
-                    href={`/investments/product/${product.id}`}
-                    className="w-full block bg-[#1E7B47] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:bg-[#145C33] text-center"
-                    aria-label={`View details for ${product.name} investment`}
-                  >
-                    View Details
-                  </Link>
+                {/* Card Content */}
+                <div className="p-6">
+                  {/* Title + Description */}
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                    {product.name}
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                    {product.description}
+                  </p>
+
+                  {/* Details Section - Side by Side Layout */}
+                  <div className="mb-4">
+                    {/* Duration and Min Investment - Side by Side */}
+                    <div className="grid grid-cols-2 gap-4">
+                      {/* Duration Column */}
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2 text-gray-600 mb-2">
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                          <span className="text-sm">Duration</span>
+                        </div>
+                        <span className="text-[#1E7B47] font-semibold text-base">
+                          {product.duration}
+                        </span>
+                      </div>
+
+                      {/* Min Investment Column */}
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2 text-gray-600 mb-2">
+                          <span className="text-sm font-medium">₦</span>
+                          <span className="text-sm">Min. Investment</span>
+                        </div>
+                        <span className="text-[#1E7B47] font-bold text-base">
+                          {formatCurrency(product.minInvestment)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expected Return Box */}
+                  <div className="bg-[#E9F6EE] rounded-xl p-4 mb-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="w-4 h-4 text-[#1E7B47]" />
+                      <span className="text-sm text-gray-700 font-medium">
+                        Expected Return
+                      </span>
+                    </div>
+                    <div className="text-3xl font-bold text-[#1E7B47] mb-1">
+                      {product.expectedReturn.toFixed(1)}%
+                    </div>
+                    <div className="text-xs text-gray-600">Annual yield</div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="space-y-2">
+                    <Link
+                      href={`/investments/product/${product.id}`}
+                      className="w-full block bg-[#1E7B47] text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 hover:bg-[#145C33] text-center"
+                      aria-label={`View details for ${product.name} investment`}
+                    >
+                      View Details
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))

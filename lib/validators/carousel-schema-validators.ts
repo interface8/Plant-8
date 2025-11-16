@@ -4,7 +4,25 @@ export const carouselSchema = z
   .object({
     title: z.string().min(1, "Title is required"),
     imageUrl: z.string().url("Must be a valid URL"),
-    link: z.string().url("Must be a valid URL").optional().or(z.literal("")),
+    link: z
+      .string()
+      .refine(
+        (val) => {
+          if (!val || val === "") return true;
+          // Allow internal paths starting with /
+          if (val.startsWith("/")) return true;
+          // Allow full URLs
+          try {
+            new URL(val);
+            return true;
+          } catch {
+            return false;
+          }
+        },
+        "Must be a valid URL or internal path (e.g., /dashboard)"
+      )
+      .optional()
+      .or(z.literal("")),
     description: z.string().min(1, "Description is required"),
     startDate: z
       .string()
