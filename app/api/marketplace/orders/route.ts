@@ -10,6 +10,7 @@ const orderSchema = z.object({
     quantityKg: z.number().positive(),
     pricePerKg: z.number().positive(),
   })).min(1, "At least one item is required"),
+  orderId: z.string().uuid().optional(),
   deliveryAddress: z.string().min(1),
   customerName: z.string().optional(),
   customerEmail: z.string().email().optional(),
@@ -60,7 +61,67 @@ export async function POST(request: Request) {
     // Calculate total amount
     const totalAmount = items.reduce((sum, item) => sum + (item.quantityKg * item.pricePerKg), 0);
 
-    // Create order with order items in a transaction
+    // If an existing orderId was provided (e.g. created by /api/monnify/init for guest checkout),
+    // attach order items to that order after verifying payment status.
+    if (validation.data.orderId) {
+      const providedOrderId = validation.data.orderId;
+
+      const existingOrder = await prisma.order.findUnique({ where: { id: providedOrderId } });
+      if (!existingOrder) {
+        return NextResponse.json({ error: 'Provided order not found' }, { status: 400 });
+      }
+
+      if (existingOrder.paymentStatus !== 'PAID') {
+        return NextResponse.json({ error: 'Order payment not completed' }, { status: 400 });
+      }
+
+      // Attach items to the existing paid order and update order details
+      const newOrder = await prisma.$transaction(async (tx) => {
+        await tx.orderItem.createMany({
+          data: items.map(item => ({
+            orderId: providedOrderId,
+            listingId: item.listingId,
+            quantityKg: item.quantityKg,
+            pricePerKg: item.pricePerKg,
+            subtotal: item.quantityKg * item.pricePerKg,
+          })),
+        });
+
+        await tx.order.update({
+          where: { id: providedOrderId },
+          data: {
+            deliveryAddress,
+            customerName: customerName || existingOrder.customerName || null,
+            customerEmail: customerEmail || existingOrder.customerEmail || null,
+            customerPhone: customerPhone || existingOrder.customerPhone || null,
+            notes,
+            status: 'CONFIRMED',
+          },
+        });
+
+        return await tx.order.findUnique({
+          where: { id: providedOrderId },
+          include: {
+            orderItems: {
+              include: {
+                listing: {
+                  include: {
+                    product: { include: { ProductType: true } },
+                    investment: { include: { user: { select: { name: true, image: true } } } },
+                  }
+                }
+              }
+            },
+            buyer: { select: { name: true, image: true } }
+          }
+        });
+      });
+
+      emitEvent('order:created', newOrder, 'marketplace:orders');
+      return NextResponse.json(newOrder, { status: 201 });
+    }
+
+    // Create order with order items in a transaction (regular authenticated checkout)
     const newOrder = await prisma.$transaction(async (tx) => {
       const order = await tx.order.create({
         data: {

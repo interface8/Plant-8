@@ -96,6 +96,7 @@ export default function InvestmentCatalog({
   const [selectedDuration, setSelectedDuration] = useState<string>(
     durationOptions[0] || ""
   );
+  const [searchText, setSearchText] = useState<string>("");
 
   // Apply URL params on mount only once
   useEffect(() => {
@@ -156,7 +157,13 @@ export default function InvestmentCatalog({
       const matchesCategory =
         selectedCategory === "All" || product.category === selectedCategory;
       const matchesDuration = product.duration === selectedDuration;
-      return matchesCategory && matchesDuration;
+      const q = searchText.trim().toLowerCase();
+      const matchesSearch =
+        q === "" ||
+        product.name.toLowerCase().includes(q) ||
+        product.description.toLowerCase().includes(q) ||
+        product.location.toLowerCase().includes(q);
+      return matchesCategory && matchesDuration && matchesSearch;
     });
   }, [transformedProducts, selectedCategory, selectedDuration]);
 
@@ -263,6 +270,16 @@ export default function InvestmentCatalog({
 
         {/* Duration Filter - Full Width Horizontal */}
         <div className="mb-8">
+          {/* Search box */}
+          <div className="mb-4">
+            <input
+              type="text"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              placeholder="Search investments, crops, locations..."
+              className="w-full border border-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-green-300"
+            />
+          </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Select Duration
           </h3>

@@ -82,13 +82,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   try {
     const body = await request.json();
+    const session = await auth();
     const parsed = investmentSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
@@ -97,7 +93,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const {
+    let {
       userId,
       productId,
       productTypeId,
@@ -107,11 +103,41 @@ export async function POST(request: Request) {
       numberOfTerms,
     } = parsed.data;
 
-    if (userId !== session.user.id) {
-      return NextResponse.json(
-        { error: "Forbidden: Invalid user ID" },
-        { status: 403 }
-      );
+    // Support guest flow when an orderId is provided and payment is completed
+    const bodyJson = body as any;
+    let guestUserId: string | null = null;
+    if (!session?.user?.id) {
+      // If no authenticated session, require an orderId in the body
+      const orderId = bodyJson.orderId as string | undefined;
+      if (!orderId) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+      // Verify order is paid
+      const order = await prisma.order.findUnique({ where: { id: orderId } });
+      if (!order || order.paymentStatus !== 'PAID') {
+        return NextResponse.json({ error: 'Order not paid or not found' }, { status: 400 });
+      }
+      // Find or create a guest user based on order email
+      const email = order.customerEmail;
+      if (!email) {
+        return NextResponse.json({ error: 'Order missing customer email' }, { status: 400 });
+      }
+      let user = await prisma.user.findUnique({ where: { email } });
+      if (!user) {
+        user = await prisma.user.create({
+          data: { name: order.customerName || 'Guest', email, createdBy: null },
+        });
+      }
+      guestUserId = user.id;
+      userId = guestUserId;
+    } else {
+      // Authenticated flow
+      if (userId !== session.user.id) {
+        return NextResponse.json(
+          { error: "Forbidden: Invalid user ID" },
+          { status: 403 }
+        );
+      }
     }
 
     const product = await prisma.product.findUnique({
@@ -242,7 +268,7 @@ export async function POST(request: Request) {
             connect: { id: landId }
           } : undefined,
           createdByUser: {
-            connect: { id: session.user.id }
+            connect: { id: session?.user?.id as string }
           },
           plotSize,
           numberOfPlots,

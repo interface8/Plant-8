@@ -23,8 +23,15 @@ export default function PaymentForm({ onSuccess }: PaymentFormProps) {
     setIsSubmitting(true);
     dispatch(setError(null));
 
-    if (!session?.user?.id) {
-      dispatch(setError("Please sign in to complete the payment."));
+    // Allow guest checkout: collect guest info when no authenticated session
+    const buyerId = session?.user?.id || null;
+
+    if (
+      !investmentData.productId ||
+      !investmentData.productTypeId ||
+      !investmentData.durationId
+    ) {
+      dispatch(setError("Invalid investment data."));
       setIsSubmitting(false);
       return;
     }
@@ -41,39 +48,114 @@ export default function PaymentForm({ onSuccess }: PaymentFormProps) {
     }
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      const response = await fetch("/api/investments", {
+      // Create an order + initialize Monnify transaction on the server
+      const initResp = await fetch("/api/monnify/init", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userId: session.user.id,
-          productId: investmentData.productId,
-          productTypeId: investmentData.productTypeId,
-          landId: investmentData.landId,
-          plotSize: investmentData.plotSize,
-          numberOfPlots: investmentData.numberOfPlots,
-          numberOfTerms: investmentData.numberOfTerms,
-          durationId: investmentData.durationId,
+          amount: investmentData.amount || investmentData.totalInvestment || 0,
+          customerName: session?.user?.name || "Guest",
+          customerEmail: session?.user?.email || "guest@example.com",
+          customerPhone: session?.user?.phoneNo || undefined,
+          meta: {
+            type: "investment",
+            productId: investmentData.productId,
+            durationId: investmentData.durationId,
+            numberOfPlots: investmentData.numberOfPlots,
+            numberOfTerms: investmentData.numberOfTerms,
+          },
         }),
       });
 
-      const result = await response.json();
-
-      if (response.ok && result.investment) {
-        dispatch(setError(null));
-        onSuccess?.();
-        setIsNavigating(true);
-        // Redirect to the investment detail page
-        router.push(`/dashboard/investments/${result.investment.id}?payment=success`);
-      } else {
-        dispatch(setError(result.error || "Failed to create investment."));
+      const initJson = await initResp.json();
+      if (!initResp.ok) {
+        dispatch(setError(initJson.error || "Failed to initialize payment."));
+        setIsSubmitting(false);
+        return;
       }
+
+      const { publicKey, paymentReference, amount, orderId, contractCode } = initJson;
+
+      // Load Monnify SDK dynamically
+      await new Promise<void>((resolve) => {
+        if ((window as any).Monnify) return resolve();
+        const s = document.createElement("script");
+        s.src = "https://sdk.monnify.com/plugin/monnify.js";
+        s.onload = () => resolve();
+        document.body.appendChild(s);
+      });
+
+      // @ts-ignore - Monnify SDK global
+      const Monnify = (window as any).Monnify || (window as any).MonnifySDK;
+      if (!Monnify) {
+        dispatch(setError("Payment SDK failed to load."));
+        setIsSubmitting(false);
+        return;
+      }
+
+      Monnify.initialize({
+        amount: amount,
+        currency: "NGN",
+        reference: paymentReference,
+        customerName: initJson.customerName,
+        customerEmail: initJson.customerEmail,
+        apiKey: publicKey,
+        contractCode: contractCode,
+        onComplete: async (response: any) => {
+          // Verify transaction on server
+          try {
+            const verifyResp = await fetch("/api/monnify/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                paymentReference: response.paymentReference || paymentReference,
+                orderId,
+              }),
+            });
+            const verifyJson = await verifyResp.json();
+            if (verifyResp.ok && verifyJson.status === "PAID") {
+              // Create investment record pointing to order/buyer
+              const createInv = await fetch("/api/investments", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  userId: buyerId,
+                  orderId,
+                  productId: investmentData.productId,
+                  productTypeId: investmentData.productTypeId,
+                  landId: investmentData.landId,
+                  plotSize: investmentData.plotSize,
+                  numberOfPlots: investmentData.numberOfPlots,
+                  numberOfTerms: investmentData.numberOfTerms,
+                  durationId: investmentData.durationId,
+                  amount: amount,
+                }),
+              });
+              const invJson = await createInv.json();
+              if (createInv.ok) {
+                onSuccess?.();
+                setIsNavigating(true);
+                router.push(`/investments/summary?status=success&order=${orderId}`);
+              } else {
+                dispatch(setError(invJson.error || "Failed to create investment."));
+              }
+            } else {
+              dispatch(setError("Payment verification failed."));
+            }
+          } catch (err) {
+            dispatch(setError("Verification error."));
+          } finally {
+            setIsSubmitting(false);
+          }
+        },
+        onClose: () => {
+          // optional cleanup
+        },
+      });
     } catch {
       dispatch(setError("Payment failed. Please try again."));
     } finally {
+      // setIsSubmitting is handled in callbacks; ensure false in case of early exit
       setIsSubmitting(false);
     }
   };

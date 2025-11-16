@@ -50,6 +50,8 @@ const orderSchema = z.object({
   location: z.string().min(1, "Location is required"),
   phoneNumber: z.string().regex(/^\+?[\d\s-()]{10,}$/, "Invalid phone number format"),
   notes: z.string().optional(),
+  customerName: z.string().optional(),
+  customerEmail: z.string().email().optional(),
 });
 
 type OrderFormData = z.infer<typeof orderSchema>;
@@ -147,26 +149,124 @@ export default function ListingDetailPage() {
 
     try {
       setSubmitting(true);
-      await axios.post("/api/marketplace/orders", {
-        items: [
-          {
+
+      const totalAmount = data.quantityKg * listing.pricePerKg;
+
+      // determine customer info (session preferred)
+      const customerName = _session?.user?.name || data.customerName || "Guest";
+      const customerEmail = _session?.user?.email || data.customerEmail || "guest@example.com";
+
+      // Initialize Monnify + create an order on server
+      const initResp = await fetch('/api/monnify/init', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: totalAmount,
+          customerName,
+          customerEmail,
+          customerPhone: data.phoneNumber,
+          meta: {
+            type: 'marketplace',
             listingId: listing.id,
             quantityKg: data.quantityKg,
-            pricePerKg: listing.pricePerKg,
           }
-        ],
-        deliveryAddress: data.deliveryAddress,
-        state: data.state,
-        location: data.location,
-        phoneNumber: data.phoneNumber,
-        notes: data.notes,
+        })
       });
-      toast.success("Order placed successfully!");
-      router.push("/marketplace/orders");
+
+      const initJson = await initResp.json();
+      if (!initResp.ok) {
+        toast.error(initJson.error || 'Failed to initialize payment');
+        setSubmitting(false);
+        return;
+      }
+
+      const { publicKey, paymentReference, amount, orderId, contractCode } = initJson;
+
+      // Try to load Monnify SDK
+      await new Promise<void>((resolve) => {
+        if ((window as any).Monnify) return resolve();
+        const s = document.createElement('script');
+        s.src = 'https://sdk.monnify.com/plugin/monnify.js';
+        s.onload = () => resolve();
+        document.body.appendChild(s);
+      });
+
+      // @ts-ignore
+      const Monnify = (window as any).Monnify || (window as any).MonnifySDK;
+
+      const finalizeOrder = async () => {
+        // After successful payment verification, attach items to existing orderId
+        const resp = await axios.post('/api/marketplace/orders', {
+          orderId,
+          items: [
+            { listingId: listing.id, quantityKg: data.quantityKg, pricePerKg: listing.pricePerKg }
+          ],
+          deliveryAddress: data.deliveryAddress,
+          state: data.state,
+          location: data.location,
+          phoneNumber: data.phoneNumber,
+          notes: data.notes,
+        });
+
+        if (resp.status === 201) {
+          toast.success('Order placed successfully!');
+          router.push('/marketplace/orders');
+        } else {
+          toast.error('Failed to create order after payment');
+        }
+      };
+
+      if (Monnify) {
+        Monnify.initialize({
+          amount: amount,
+          currency: 'NGN',
+          reference: paymentReference,
+          customerName: initJson.customerName,
+          customerEmail: initJson.customerEmail,
+          apiKey: publicKey,
+          contractCode: contractCode,
+          onComplete: async (response: any) => {
+            try {
+              const verifyResp = await fetch('/api/monnify/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ paymentReference: response.paymentReference || paymentReference, orderId }),
+              });
+              const verifyJson = await verifyResp.json();
+              if (verifyResp.ok && verifyJson.status === 'PAID') {
+                await finalizeOrder();
+              } else {
+                toast.error('Payment verification failed');
+              }
+            } catch (err) {
+              toast.error('Verification error');
+            } finally {
+              setSubmitting(false);
+            }
+          },
+          onClose: () => {
+            setSubmitting(false);
+          }
+        });
+      } else {
+        // SDK not available - try server-side verify (dev fallback)
+        const verifyResp = await fetch('/api/monnify/verify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentReference, orderId }),
+        });
+        const verifyJson = await verifyResp.json();
+        if (verifyResp.ok && verifyJson.status === 'PAID') {
+          await finalizeOrder();
+        } else {
+          toast.error('Payment verification failed');
+        }
+        setSubmitting(false);
+      }
     } catch (error: any) {
       toast.error(error.response?.data?.error || "Failed to place order");
     } finally {
-      setSubmitting(false);
+      // setSubmitting is toggled in callbacks
     }
   };
 
@@ -392,6 +492,32 @@ export default function ListingDetailPage() {
                   </div>
 
                   <div>
+                    {!_session?.user?.id && (
+                      <>
+                        <Label htmlFor="customerName" className="text-gray-700 font-medium">Your Name</Label>
+                        <Input
+                          id="customerName"
+                          {...register("customerName")}
+                          placeholder="Enter your full name"
+                          className="mt-2 border-gray-300 focus:border-[#1E7B47] focus:ring-[#1E7B47]"
+                        />
+                        {errors.customerName && (
+                          <p className="text-sm text-red-600 mt-1">{errors.customerName.message}</p>
+                        )}
+
+                        <Label htmlFor="customerEmail" className="text-gray-700 font-medium mt-3">Email</Label>
+                        <Input
+                          id="customerEmail"
+                          {...register("customerEmail")}
+                          placeholder="Enter your email"
+                          type="email"
+                          className="mt-2 border-gray-300 focus:border-[#1E7B47] focus:ring-[#1E7B47]"
+                        />
+                        {errors.customerEmail && (
+                          <p className="text-sm text-red-600 mt-1">{errors.customerEmail.message}</p>
+                        )}
+                      </>
+                    )}
                     <Label htmlFor="phoneNumber" className="text-gray-700 font-medium">Phone Number</Label>
                     <Input
                       id="phoneNumber"
