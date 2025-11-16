@@ -42,7 +42,7 @@ export default function BlogsPage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="bg-primary text-primary-foreground py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">FAM 8 Insights</h1>
           <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto">
             Expert insights, farming guides, and success stories to help you make informed
@@ -52,7 +52,7 @@ export default function BlogsPage() {
       </div>
 
       {/* Category Filter */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-wrap gap-2 justify-center">
           {categories.map((category) => (
             <Badge
@@ -90,7 +90,7 @@ export default function BlogsPage() {
         <>
           {/* Featured Post (First Post) */}
           {filteredPosts.length > 0 && (
-            <div className="max-w-7xl mx-auto px-4 pb-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
               <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handlePostClick(filteredPosts[0])}>
                 <div className="grid grid-cols-1 lg:grid-cols-2">
                   <div className="aspect-video lg:aspect-auto relative">
@@ -143,7 +143,7 @@ export default function BlogsPage() {
           )}
 
           {/* Blog Posts Grid */}
-          <div className="max-w-7xl mx-auto px-4 pb-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
             <h3 className="text-2xl font-bold mb-6">
               {selectedCategory === "All" ? "All Articles" : selectedCategory}
             </h3>

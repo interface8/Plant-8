@@ -219,6 +219,7 @@ model Product {
   daysToHarvestPerPlot         Int       @default(0) // days per term
   minimumNoOfFarmersPerPlot    Int       @default(1)
   dailyMaintenanceFee          Float     @default(0) // ₦ per day - includes labor costs
+  cssThemeProperty             Json?      // Custom theme colors: {primary, secondary, accent, gradient}
 
   // Remove imageUrl, use ProductImage relation instead
   images         ProductImage[]
@@ -303,6 +304,7 @@ model Investment {
   estimatedRevenue          Float            @default(0)
   adjustedRevenue           Float            @default(0)
   netReturn                 Float            @default(0)
+  cssThemeProperty          Json?            // Custom theme colors inherited from product
   roiPercent                Float            @default(0)
   roiPerDay                 Float            @default(0)
   adjustedYield             Float            @default(0)
@@ -550,6 +552,7 @@ model Blog {
   views          Int       @default(0)
   readTime       Int?      // estimated read time in minutes
   publishedAt    DateTime?
+  cssThemeProperty Json?    // Custom theme colors: {primary, secondary, accent, gradient}
   
   // Optional Relations
   productId      String?   @db.Uuid

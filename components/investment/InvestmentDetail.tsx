@@ -23,6 +23,7 @@ import {
   Clock,
 } from "lucide-react";
 import type { Product } from "@/types/product";
+import { getThemeGradient, getThemePrimary, getThemeSecondary } from "@/lib/utils/theme";
 
 import type { Land } from "@/types/land";
 import type { State } from "@/types/state";
@@ -52,6 +53,11 @@ export default function InvestmentDetail({ product, lands = [], states = [], onB
   ];
   const minInvestment = product.currentMarketPricePerKg * 100;
   const expectedReturn = typeof product.roi === 'number' ? product.roi : 15;
+  
+  // Get theme colors from product
+  const themeGradient = getThemeGradient(product.cssThemeProperty);
+  const themePrimary = getThemePrimary(product.cssThemeProperty);
+  const themeSecondary = getThemeSecondary(product.cssThemeProperty);
 
   // Redux
   const dispatch = useDispatch();
@@ -151,8 +157,7 @@ export default function InvestmentDetail({ product, lands = [], states = [], onB
       </Modal>
       {/* Header */}
       <div
-        className="py-6 px-4"
-        style={{ background: "linear-gradient(90deg, #1E7B47 0%, #145C33 100%)" }}
+        className={`py-6 px-4 bg-gradient-to-r ${themeGradient}`}
       >
         <div className="max-w-7xl mx-auto">
           <Button
@@ -170,13 +175,21 @@ export default function InvestmentDetail({ product, lands = [], states = [], onB
                 <Badge variant="outline" className="bg-white/10 text-white border-white/20">
                   {product.ProductType.name}
                 </Badge>
-                <Badge className="bg-[#E9F6EE] text-[#145C33]">Low Risk</Badge>
+                <Badge 
+                  className="border-0" 
+                  style={{ 
+                    backgroundColor: `${themePrimary}20`,
+                    color: themePrimary
+                  }}
+                >
+                  Low Risk
+                </Badge>
               </div>
             </div>
-            <div className="rounded-lg p-4 bg-[#E9F6EE]">
-              <p className="text-sm text-[#145C33]/80">Expected Return</p>
-              <p className="text-3xl text-[#1E7B47] font-semibold">{expectedReturn}%</p>
-              <div className="text-xs text-[#145C33]">Annual yield</div>
+            <div className="rounded-lg p-4" style={{ backgroundColor: `${themePrimary}15` }}>
+              <p className="text-sm" style={{ color: `${themeSecondary}CC` }}>Expected Return</p>
+              <p className="text-3xl font-semibold" style={{ color: themePrimary }}>{expectedReturn}%</p>
+              <div className="text-xs" style={{ color: themeSecondary }}>Annual yield</div>
             </div>
           </div>
         </div>

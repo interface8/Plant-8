@@ -84,6 +84,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 90,
         minimumNoOfFarmersPerPlot: 2,
         dailyMaintenanceFee: 4000, // 2 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#FFD700",
+          secondary: "#228B22",
+          accent: "#FFA500",
+          gradient: "from-yellow-400 to-green-600"
+        },
       },
       {
         name: "Rice Grain",
@@ -97,6 +103,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 120,
         minimumNoOfFarmersPerPlot: 2,
         dailyMaintenanceFee: 4000, // 2 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#F5DEB3",
+          secondary: "#228B22",
+          accent: "#DAA520",
+          gradient: "from-amber-100 to-green-600"
+        },
       },
       {
         name: "Sorghum Grain",
@@ -110,6 +122,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 80,
         minimumNoOfFarmersPerPlot: 1,
         dailyMaintenanceFee: 2000, // 1 farmer × ₦2000/day
+        cssThemeProperty: {
+          primary: "#8B4513",
+          secondary: "#DAA520",
+          accent: "#DEB887",
+          gradient: "from-amber-700 to-yellow-600"
+        },
       },
 
       // Tubers
@@ -125,6 +143,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 100,
         minimumNoOfFarmersPerPlot: 2,
         dailyMaintenanceFee: 4000, // 2 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#8B4513",
+          secondary: "#D2691E",
+          accent: "#CD853F",
+          gradient: "from-amber-800 to-orange-700"
+        },
       },
       {
         name: "Cassava Root",
@@ -138,6 +162,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 70,
         minimumNoOfFarmersPerPlot: 1,
         dailyMaintenanceFee: 2000, // 1 farmer × ₦2000/day
+        cssThemeProperty: {
+          primary: "#DEB887",
+          secondary: "#8B4513",
+          accent: "#F5DEB3",
+          gradient: "from-yellow-200 to-amber-700"
+        },
       },
 
       // Vegetables
@@ -153,6 +183,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 85,
         minimumNoOfFarmersPerPlot: 1,
         dailyMaintenanceFee: 2000, // 1 farmer × ₦2000/day
+        cssThemeProperty: {
+          primary: "#DC143C",
+          secondary: "#228B22",
+          accent: "#FF6347",
+          gradient: "from-red-500 to-green-600"
+        },
       },
       {
         name: "Carrot Root",
@@ -166,6 +202,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 95,
         minimumNoOfFarmersPerPlot: 2,
         dailyMaintenanceFee: 4000, // 2 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#FF8C00",
+          secondary: "#228B22",
+          accent: "#FFA500",
+          gradient: "from-orange-500 to-green-600"
+        },
       },
       {
         name: "Okra Pods",
@@ -182,6 +224,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 110,
         minimumNoOfFarmersPerPlot: 3,
         dailyMaintenanceFee: 6000, // 3 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#228B22",
+          secondary: "#90EE90",
+          accent: "#32CD32",
+          gradient: "from-green-600 to-lime-400"
+        },
       },
 
       // Legumes
@@ -197,6 +245,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 115,
         minimumNoOfFarmersPerPlot: 3,
         dailyMaintenanceFee: 6000, // 3 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#DEB887",
+          secondary: "#8B4513",
+          accent: "#D2691E",
+          gradient: "from-amber-300 to-orange-700"
+        },
       },
       {
         name: "Soybean Seeds",
@@ -210,6 +264,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 120,
         minimumNoOfFarmersPerPlot: 3,
         dailyMaintenanceFee: 6000, // 3 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#F5DEB3",
+          secondary: "#8B7355",
+          accent: "#DEB887",
+          gradient: "from-yellow-100 to-amber-600"
+        },
       },
 
       // Fruits
@@ -225,6 +285,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 130,
         minimumNoOfFarmersPerPlot: 4,
         dailyMaintenanceFee: 8000, // 4 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#FF6B9D",
+          secondary: "#228B22",
+          accent: "#FFB3BA",
+          gradient: "from-pink-500 to-green-600"
+        },
       },
       {
         name: "Pineapple Fruit",
@@ -238,6 +304,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 140,
         minimumNoOfFarmersPerPlot: 4,
         dailyMaintenanceFee: 8000, // 4 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#FFD700",
+          secondary: "#228B22",
+          accent: "#FFA500",
+          gradient: "from-yellow-300 to-green-600"
+        },
       },
       {
         name: "Mango Fruit",
@@ -251,6 +323,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 150,
         minimumNoOfFarmersPerPlot: 5,
         dailyMaintenanceFee: 10000, // 5 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#FF8C00",
+          secondary: "#FFD700",
+          accent: "#FFA500",
+          gradient: "from-orange-400 to-yellow-500"
+        },
       },
 
       // Spices
@@ -266,6 +344,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 160,
         minimumNoOfFarmersPerPlot: 5,
         dailyMaintenanceFee: 10000, // 5 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#D2691E",
+          secondary: "#8B4513",
+          accent: "#CD853F",
+          gradient: "from-orange-600 to-amber-800"
+        },
       },
       {
         name: "Garlic Bulbs",
@@ -279,6 +363,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 170,
         minimumNoOfFarmersPerPlot: 6,
         dailyMaintenanceFee: 12000, // 6 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#F5F5DC",
+          secondary: "#8B7D6B",
+          accent: "#DEB887",
+          gradient: "from-slate-100 to-amber-700"
+        },
       },
 
       // Poultry
@@ -294,6 +384,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 180,
         minimumNoOfFarmersPerPlot: 6,
         dailyMaintenanceFee: 12000, // 6 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#FFD700",
+          secondary: "#FFA500",
+          accent: "#FF8C00",
+          gradient: "from-yellow-300 to-orange-400"
+        },
       },
       {
         name: "Turkey Meat",
@@ -307,6 +403,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 190,
         minimumNoOfFarmersPerPlot: 7,
         dailyMaintenanceFee: 14000, // 7 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#8B4513",
+          secondary: "#D2691E",
+          accent: "#CD853F",
+          gradient: "from-amber-800 to-orange-600"
+        },
       },
 
       // Ruminants
@@ -322,6 +424,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 200,
         minimumNoOfFarmersPerPlot: 7,
         dailyMaintenanceFee: 14000, // 7 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#FFFFFF",
+          secondary: "#000000",
+          accent: "#8B4513",
+          gradient: "from-gray-100 to-gray-300"
+        },
       },
       {
         name: "Goat Meat",
@@ -335,6 +443,12 @@ export async function seedProducts(adminId: string): Promise<Product[]> {
         daysToHarvestPerPlot: 210,
         minimumNoOfFarmersPerPlot: 8,
         dailyMaintenanceFee: 16000, // 8 farmers × ₦2000/day
+        cssThemeProperty: {
+          primary: "#8B7355",
+          secondary: "#A0522D",
+          accent: "#D2691E",
+          gradient: "from-stone-600 to-orange-700"
+        },
       },
     ];
 

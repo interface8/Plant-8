@@ -48,11 +48,7 @@ export default function Header() {
   };
 
   const navigationLinks = [
-    { href: "/", label: "Home" },
     { href: "/how-it-works", label: "How It Works" },
-    ...(status === "authenticated"
-      ? [{ href: "/dashboard", label: "Dashboard" }]
-      : []),
     { href: "/investments", label: "Investments" },
     { href: "/marketplace", label: "Marketplace" },
     { href: "/blogs", label: "Blog" },
@@ -70,30 +66,28 @@ export default function Header() {
               </Link>
             </div>
 
-            {isHomePage && (
-              <nav className="hidden md:flex ml-8 space-x-8 items-center">
-                {navigationLinks.map((link) =>
-                  link.label === "Investments" ? (
-                    <InvestmentsDropdown key={link.href} />
-                  ) : (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  )
-                )}
-              </nav>
-            )}
+            <nav className="hidden md:flex ml-8 space-x-8 items-center">
+              {navigationLinks.map((link) =>
+                link.label === "Investments" ? (
+                  <InvestmentsDropdown key={link.href} />
+                ) : (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                )
+              )}
+            </nav>
 
             <div className="flex items-center space-x-4">
               {status === "loading" ? (
                 <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse" />
               ) : status === "authenticated" && session?.user ? (
                 <UserDropdown />
-              ) : isHomePage ? (
+              ) : (
                 <div className="hidden md:flex space-x-4">
                   <Link
                     href="/sign-in"
@@ -108,13 +102,11 @@ export default function Header() {
                     Sign up
                   </Link>
                 </div>
-              ) : null}
+              )}
 
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-green-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500 transition-colors ${
-                  isHomePage ? "md:hidden" : ""
-                }`}
+                className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-green-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500 transition-colors"
                 aria-expanded={isMenuOpen}
                 aria-label="Main menu"
               >

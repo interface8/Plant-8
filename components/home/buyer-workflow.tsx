@@ -115,7 +115,7 @@ export function BuyerWorkflow({ onGetStarted }: BuyerWorkflowProps) {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="bg-primary text-primary-foreground py-16 px-4">
-        <div className="max-w-7xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">Your Investment Journey</h1>
           <p className="text-xl text-primary-foreground/90 max-w-3xl mx-auto mb-8">
             From browsing opportunities to receiving returns, we've made agricultural investing
@@ -133,7 +133,7 @@ export function BuyerWorkflow({ onGetStarted }: BuyerWorkflowProps) {
       </div>
 
       {/* Benefits Section */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 -mt-20 relative z-10">
           {benefits.map((benefit, index) => (
             <Card key={index} className="bg-card">
@@ -150,7 +150,7 @@ export function BuyerWorkflow({ onGetStarted }: BuyerWorkflowProps) {
       </div>
 
       {/* Workflow Steps */}
-      <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h2 className="text-2xl sm:text-3xl font-bold mb-3">5 Simple Steps to Start Investing</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
