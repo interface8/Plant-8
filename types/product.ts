@@ -28,5 +28,12 @@ export interface Product {
     id: string;
     name: string;
   };
+  // Optional theme properties stored as JSON in the database
+  cssThemeProperty?: {
+    primary?: string | null;
+    secondary?: string | null;
+    accent?: string | null;
+    gradient?: string | null;
+  } | null;
 }
 
