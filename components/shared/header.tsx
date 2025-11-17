@@ -13,7 +13,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  const isHomePage = pathname === "/";
+  
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

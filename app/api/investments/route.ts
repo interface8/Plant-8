@@ -93,8 +93,7 @@ export async function POST(request: Request) {
       );
     }
 
-    let {
-      userId,
+    const {
       productId,
       productTypeId,
       landId,
@@ -102,6 +101,8 @@ export async function POST(request: Request) {
       numberOfPlots,
       numberOfTerms,
     } = parsed.data;
+
+    let userId = parsed.data.userId;
 
     // Support guest flow when an orderId is provided and payment is completed
     const bodyJson = body as any;

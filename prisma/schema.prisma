@@ -84,6 +84,7 @@ model User {
   authoredBlogs   Blog[] @relation("BlogAuthor")
   createdBlogs    Blog[] @relation("CreatedByBlog")
   modifiedBlogs   Blog[] @relation("ModifiedByBlog")
+  approvedBlogs   Blog[] @relation("BlogApprovedBy")
   
   // Notification Relations
   notifications   Notification[] @relation("UserNotifications")
@@ -554,6 +555,12 @@ model Blog {
   publishedAt    DateTime?
   cssThemeProperty Json?    // Custom theme colors: {primary, secondary, accent, gradient}
   
+  // Approval Workflow
+  approvalStatus String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  approvedBy     String?   @db.Uuid
+  approvedAt     DateTime?
+  rejectionReason String?  @db.Text
+  
   // Optional Relations
   productId      String?   @db.Uuid
   productTypeId  String?   @db.Uuid
@@ -571,6 +578,7 @@ model Blog {
   author         User?        @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: SetNull)
   createdByUser  User?        @relation("CreatedByBlog", fields: [createdBy], references: [id])
   modifiedByUser User?        @relation("ModifiedByBlog", fields: [modifiedBy], references: [id])
+  approvedByUser User?        @relation("BlogApprovedBy", fields: [approvedBy], references: [id])
 
   @@index([slug])
   @@index([status])
@@ -578,6 +586,7 @@ model Blog {
   @@index([productId])
   @@index([productTypeId])
   @@index([publishedAt])
+  @@index([approvalStatus])
 }
 
 model Notification {

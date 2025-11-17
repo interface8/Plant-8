@@ -191,7 +191,6 @@ export default function ListingDetailPage() {
         document.body.appendChild(s);
       });
 
-      // @ts-ignore
       const Monnify = (window as any).Monnify || (window as any).MonnifySDK;
 
       const finalizeOrder = async () => {
@@ -238,7 +237,7 @@ export default function ListingDetailPage() {
               } else {
                 toast.error('Payment verification failed');
               }
-            } catch (err) {
+            } catch (_err) {
               toast.error('Verification error');
             } finally {
               setSubmitting(false);

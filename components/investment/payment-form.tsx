@@ -85,7 +85,6 @@ export default function PaymentForm({ onSuccess }: PaymentFormProps) {
         document.body.appendChild(s);
       });
 
-      // @ts-ignore - Monnify SDK global
       const Monnify = (window as any).Monnify || (window as any).MonnifySDK;
       if (!Monnify) {
         dispatch(setError("Payment SDK failed to load."));
@@ -142,7 +141,7 @@ export default function PaymentForm({ onSuccess }: PaymentFormProps) {
             } else {
               dispatch(setError("Payment verification failed."));
             }
-          } catch (err) {
+          } catch (_err) {
             dispatch(setError("Verification error."));
           } finally {
             setIsSubmitting(false);
