@@ -237,7 +237,6 @@ export function MarketplaceGrid({
               size="lg"
               onClick={onViewCart}
               className="relative bg-primary-foreground text-primary hover:bg-primary-foreground/90">
-            >
               <ShoppingCart className="h-5 w-5 mr-2" />
               Cart
               {cartItemCount > 0 && (
