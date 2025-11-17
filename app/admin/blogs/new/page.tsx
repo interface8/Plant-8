@@ -20,10 +20,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { ArrowLeft, Save } from "lucide-react";
-import dynamic from "next/dynamic";
-import "react-quill/dist/quill.snow.css";
-
-const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
+import { RichTextEditor } from "@/components/ui/rich-text-editor";
 
 const blogSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -141,17 +138,6 @@ export default function BlogFormPage() {
     "News",
   ];
 
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline", "strike"],
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ color: [] }, { background: [] }],
-      ["link", "image"],
-      ["clean"],
-    ],
-  };
-
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="mb-6">
@@ -211,15 +197,11 @@ export default function BlogFormPage() {
 
                 <div>
                   <Label htmlFor="content">Content *</Label>
-                  <div className="border rounded-lg overflow-hidden">
-                    <ReactQuill
-                      theme="snow"
-                      value={content}
-                      onChange={setContent}
-                      modules={modules}
-                      className="h-96"
-                    />
-                  </div>
+                  <RichTextEditor
+                    content={content}
+                    onChange={setContent}
+                    placeholder="Write your blog content here..."
+                  />
                   {errors.content && (
                     <p className="text-sm text-red-600 mt-1">
                       {errors.content.message}
