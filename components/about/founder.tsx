@@ -3,7 +3,7 @@ import { MapPin, Calendar, Award } from "lucide-react";
 
 export default function Founder() {
   return (
-    <section className="bg-gradient-to-br from-green-50 to-teal-50 rounded-2xl shadow-lg p-8 lg:p-12">
+    <section className="text-primary-foreground from-green-50 to-teal-50 rounded-2xl shadow-lg p-8 lg:p-12">
       <div className="text-center mb-12">
         <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
           Meet Our Founder

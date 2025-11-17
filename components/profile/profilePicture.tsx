@@ -92,7 +92,7 @@ export function ProfilePicture({ user, onImageUpload }: ProfilePictureProps) {
             className="rounded-full object-cover ring-4 ring-green-200 shadow-lg"
           />
         ) : (
-          <div className="w-36 h-36 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 text-white flex items-center justify-center text-4xl font-bold ring-4 ring-green-200 shadow-lg">
+          <div className="w-36 h-36 rounded-full text-primary-foreground from-green-500 to-emerald-600 text-white flex items-center justify-center text-4xl font-bold ring-4 ring-green-200 shadow-lg">
             {getUserInitials(user.name)}
           </div>
         )}
@@ -129,7 +129,7 @@ export function ProfilePicture({ user, onImageUpload }: ProfilePictureProps) {
             <button
               onClick={handleUpload}
               disabled={isUploading}
-              className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 bg-gradient-to-br from-green-600 via-emerald-600 to-green-700 text-white rounded-2xl font-semibold backdrop-blur-sm shadow-xl hover:shadow-2xl hover:scale-[1.015] transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center gap-2 w-full px-6 py-3 text-primary-foreground from-green-600 via-emerald-600 to-green-700 text-white rounded-2xl font-semibold backdrop-blur-sm shadow-xl hover:shadow-2xl hover:scale-[1.015] transition-all duration-300 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
               aria-label={isUploading ? "Uploading photo" : "Upload photo"}
             >
               <Upload className="w-5 h-5" />

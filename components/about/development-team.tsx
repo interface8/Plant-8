@@ -37,7 +37,7 @@ export default function DevelopmentTeam() {
         {teamMembers.map((member, index) => (
           <div
             key={index}
-            className="group bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-6 hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105"
+            className="group text-primary-foreground from-green-50 to-teal-50 rounded-xl p-6 hover:shadow-xl transition-all duration-300 hover:transform hover:scale-105"
           >
             <div className="text-center">
               <div className="relative w-24 h-24 mx-auto mb-4">

@@ -24,7 +24,7 @@ export function AuthLayout({
 }: AuthLayoutProps) {
   return (
     <div className="min-h-screen flex">
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 text-primary-foreground from-emerald-400 via-emerald-500 to-emerald-600 relative overflow-hidden">
         <div className="absolute inset-0 bg-black/20" />
         <Image
           src="/images/farm.jpg"

@@ -150,14 +150,14 @@ export default function InvestmentDetail({ product, lands = [], states = [], onB
   } 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#E9F6EE] via-white to-[#E9F6EE]">
+    <div className="min-h-screen text-primary-foreground from-[#E9F6EE] via-white to-[#E9F6EE]">
       {/* Land Selection Modal */}
       <Modal isOpen={isLandModalOpen} onClose={() => setLandModalOpen(false)} title="Select Land">
         <LandSelectionForm lands={lands} states={states} onLandSelect={handleLandSelect} />
       </Modal>
       {/* Header */}
       <div
-        className={`py-6 px-4 bg-gradient-to-r ${themeGradient}`}
+        className={`py-6 px-4 text-primary-foreground ${themeGradient}`}
       >
         <div className="max-w-7xl mx-auto">
           <Button

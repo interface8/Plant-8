@@ -10,7 +10,7 @@ export function LoadingSpinner({
   fullScreen = true 
 }: LoadingSpinnerProps) {
   const containerClass = fullScreen 
-    ? "min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center"
+    ? "min-h-screen text-primary-foreground from-green-50 to-emerald-50 flex items-center justify-center"
     : "flex items-center justify-center py-12";
 
   return (

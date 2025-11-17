@@ -140,7 +140,7 @@ export default function InvestmentDetailView({ investment }: InvestmentDetailVie
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#E9F6EE] via-white to-[#E9F6EE]">
+    <div className="min-h-screen text-primary-foreground from-[#E9F6EE] via-white to-[#E9F6EE]">
       {/* Header */}
       <div
         className="py-6 px-4"

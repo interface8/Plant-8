@@ -71,7 +71,7 @@ export default function Testimonials() {
           </p>
           <a
             href="/testimonials"
-            className="inline-block text-green-600 font-semibold hover:text-green-700 transition-colors duration-300"
+            className="inline-block text-primary font-semibold hover:text-primary/90 transition-colors duration-300"
           >
             Read More Success Stories →
           </a>

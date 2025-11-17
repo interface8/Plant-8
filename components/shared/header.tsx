@@ -66,21 +66,23 @@ export default function Header() {
               </Link>
             </div>
 
-            <nav className="hidden md:flex ml-8 space-x-8 items-center">
-              {navigationLinks.map((link) =>
-                link.label === "Investments" ? (
-                  <InvestmentsDropdown key={link.href} />
-                ) : (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                )
-              )}
-            </nav>
+            {status !== "authenticated" && (
+              <nav className="hidden md:flex ml-8 space-x-8 items-center">
+                {navigationLinks.map((link) =>
+                  link.label === "Investments" ? (
+                    <InvestmentsDropdown key={link.href} />
+                  ) : (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  )
+                )}
+              </nav>
+            )}
 
             <div className="flex items-center space-x-4">
               {status === "loading" ? (
@@ -153,34 +155,36 @@ export default function Header() {
             </button>
           </div>
 
-          <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-            {navigationLinks.map((link, index) =>
-              link.label === "Investments" ? (
-                <div key={link.href}>
-                  <InvestmentsDropdown
-                    isMobile={true}
-                    onClose={handleLinkClick}
-                  />
-                </div>
-              ) : (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={handleLinkClick}
-                  className={`flex items-center px-4 py-2.5 rounded-md text-sm font-medium transition-all duration-200 ${
-                    pathname === link.href
-                      ? "bg-green-100 text-green-700"
-                      : "text-gray-700 hover:bg-green-100 hover:text-green-700"
-                  }`}
-                  style={{
-                    animationDelay: `${index * 100}ms`,
-                  }}
-                >
-                  {link.label}
-                </Link>
-              )
-            )}
-          </nav>
+          {status !== "authenticated" && (
+            <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+              {navigationLinks.map((link, index) =>
+                link.label === "Investments" ? (
+                  <div key={link.href}>
+                    <InvestmentsDropdown
+                      isMobile={true}
+                      onClose={handleLinkClick}
+                    />
+                  </div>
+                ) : (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={handleLinkClick}
+                    className={`flex items-center px-4 py-2.5 rounded-md text-sm font-medium transition-all duration-200 ${
+                      pathname === link.href
+                        ? "bg-green-100 text-green-700"
+                        : "text-gray-700 hover:bg-green-100 hover:text-green-700"
+                    }`}
+                    style={{
+                      animationDelay: `${index * 100}ms`,
+                    }}
+                  >
+                    {link.label}
+                  </Link>
+                )
+              )}
+            </nav>
+          )}
 
           {status !== "authenticated" && (
             <div className="border-t border-green-200 p-4 bg-white/50">

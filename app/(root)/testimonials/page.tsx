@@ -26,7 +26,7 @@ export default async function TestimonialsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50">
+    <div className="min-h-screen text-primary-foreground from-green-50 via-white to-green-50">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-[#1E7B47] via-[#145C33] to-[#1E7B47] text-white py-16 lg:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">

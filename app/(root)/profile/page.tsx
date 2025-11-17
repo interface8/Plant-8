@@ -31,7 +31,7 @@ export default function ProfilePage() {
 
   if (!session?.user || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-50 flex items-center justify-center">
+      <div className="min-h-screen text-primary-foreground from-green-50 to-emerald-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">🌱</div>
           <h2 className="text-2xl font-semibold text-gray-800">Unauthorized</h2>
@@ -44,7 +44,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50">
+    <div className="min-h-screen text-primary-foreground from-green-50 via-emerald-50 to-teal-50">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ProfileHeader user={user} />
 

@@ -219,16 +219,16 @@ export function MarketplaceGrid({
     : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50">
+    <div className="min-h-screen text-primary-foreground from-primary/5 via-white to-primary/5">
       {/* Header Section with Stats */}
-      <section className="bg-gradient-to-r from-green-600 via-green-700 to-green-800 text-white py-12 lg:py-16">
+      <section className="bg-primary text-primary-foreground py-12 lg:py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="flex items-center justify-between mb-8">
             <div className="text-left">
               <h1 className="text-2xl sm:text-3xl lg:text-4xl mb-3">
                 Farm Fresh Marketplace
               </h1>
-              <p className="text-base sm:text-lg text-green-100 max-w-2xl">
+              <p className="text-base sm:text-lg text-primary-foreground/80 max-w-2xl">
                 Buy fresh produce directly from verified farmers and investors
               </p>
             </div>
@@ -236,7 +236,7 @@ export function MarketplaceGrid({
               variant="secondary"
               size="lg"
               onClick={onViewCart}
-              className="relative bg-white text-green-700 hover:bg-green-50"
+              className="relative bg-primary-foreground text-primary hover:bg-primary-foreground/90">
             >
               <ShoppingCart className="h-5 w-5 mr-2" />
               Cart
@@ -252,11 +252,11 @@ export function MarketplaceGrid({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-500 rounded-xl">
-                  <Package className="w-6 h-6 text-white" />
+                <div className="p-3 bg-primary-foreground/20 rounded-xl">
+                  <Package className="w-6 h-6 text-primary-foreground" />
                 </div>
                 <div>
-                  <p className="text-green-100 text-sm font-medium">
+                  <p className="text-primary-foreground/80 text-sm font-medium">
                     Active Listings
                   </p>
                   <p className="text-3xl font-bold">{activeListings}</p>
@@ -266,11 +266,11 @@ export function MarketplaceGrid({
 
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-500 rounded-xl">
-                  <Users className="w-6 h-6 text-white" />
+                <div className="p-3 bg-primary-foreground/20 rounded-xl">
+                  <Users className="w-6 h-6 text-primary-foreground" />
                 </div>
                 <div>
-                  <p className="text-green-100 text-sm font-medium">
+                  <p className="text-primary-foreground/80 text-sm font-medium">
                     Verified Sellers
                   </p>
                   <p className="text-3xl font-bold">{totalSellers}</p>
@@ -280,11 +280,11 @@ export function MarketplaceGrid({
 
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-green-500 rounded-xl">
-                  <TrendingUp className="w-6 h-6 text-white" />
+                <div className="p-3 bg-primary-foreground/20 rounded-xl">
+                  <TrendingUp className="w-6 h-6 text-primary-foreground" />
                 </div>
                 <div>
-                  <p className="text-green-100 text-sm font-medium">
+                  <p className="text-primary-foreground/80 text-sm font-medium">
                     Avg. Price/kg
                   </p>
                   <p className="text-3xl font-bold">₦{avgPrice.toFixed(0)}</p>
