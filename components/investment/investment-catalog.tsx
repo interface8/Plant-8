@@ -179,7 +179,7 @@ export default function InvestmentCatalog({
   return (
     <div className="min-h-screen text-primary-foreground from-primary/5 via-white to-primary/5">
       {/* Header Section with Stats */}
-      <section className="bg-primary text-primary-foreground py-12 lg:py-16">
+      <section className="bg-gradient-to-r from-green-600 via-green-700 to-green-800 text-white py-12 lg:py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="text-left mb-8">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl mb-3">
@@ -194,11 +194,11 @@ export default function InvestmentCatalog({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-primary-foreground/20 rounded-xl">
-                  <TrendingUp className="w-6 h-6 text-primary-foreground" />
+                <div className="p-3 bg-white/20 rounded-xl">
+                  <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-primary-foreground/80 text-sm font-medium">
+                  <p className="text-white/80 text-sm font-medium">
                     Avg. Returns
                   </p>
                   <p className="text-3xl font-bold">
@@ -210,11 +210,11 @@ export default function InvestmentCatalog({
 
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-primary-foreground/20 rounded-xl">
-                  <Shield className="w-6 h-6 text-primary-foreground" />
+                <div className="p-3 bg-white/20 rounded-xl">
+                  <Shield className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-primary-foreground/80 text-sm font-medium">
+                  <p className="text-white/80 text-sm font-medium">
                     Insured Farms
                   </p>
                   <p className="text-3xl font-bold">
@@ -226,11 +226,11 @@ export default function InvestmentCatalog({
 
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-primary-foreground/20 rounded-xl">
-                  <Package className="w-6 h-6 text-primary-foreground" />
+                <div className="p-3 bg-white/20 rounded-xl">
+                  <Package className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <p className="text-primary-foreground/80 text-sm font-medium">
+                  <p className="text-white/80 text-sm font-medium">
                     Investment Options
                   </p>
                   <p className="text-3xl font-bold">{stats.totalOptions}</p>

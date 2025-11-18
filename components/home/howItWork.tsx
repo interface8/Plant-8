@@ -44,10 +44,10 @@ export default function HowItWorks() {
           {steps.map((step, index) => (
             <div key={index} className="text-center group">
               <div className="bg-white rounded-xl p-6 sm:p-8 shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 mb-4">
-                <div className="bg-primary/10 text-primary rounded-full w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mx-auto mb-4 sm:mb-6 text-2xl sm:text-3xl group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                <div className="bg-green-100 text-green-600 rounded-full w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center mx-auto mb-4 sm:mb-6 text-2xl sm:text-3xl group-hover:bg-green-500 group-hover:text-white transition-colors duration-300">
                   {step.icon}
                 </div>
-                <div className="bg-primary text-primary-foreground rounded-full w-8 h-8 flex items-center justify-center mx-auto mb-3 text-sm font-bold">
+                <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center mx-auto mb-3 text-sm font-bold">
                   {index + 1}
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-900">
@@ -74,7 +74,7 @@ export default function HowItWorks() {
         <div className="text-center mt-8 sm:mt-12">
           <Link
             href="/how-it-works"
-            className="inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 text-base font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
           >
             Learn More About Our Process
           </Link>

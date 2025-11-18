@@ -144,7 +144,7 @@ export default async function FeaturedInvestments() {
                   height={224}
                   className="w-full h-48 sm:h-56 object-cover transition-transform duration-300 hover:scale-105"
                 />
-                <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+                <div className="absolute top-4 right-4 bg-green-600 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
                   {investment.roi}
                 </div>
                 {investment.investorCount > 0 && (
@@ -176,7 +176,7 @@ export default async function FeaturedInvestments() {
                 </div>
                 <a
                   href={`/investments/product/${investment.id}`}
-                  className="inline-block text-primary font-semibold hover:underline mt-4"
+                  className="inline-block text-green-600 font-semibold hover:underline mt-4"
                 >
                   Learn More →
                 </a>

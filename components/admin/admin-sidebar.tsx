@@ -136,27 +136,27 @@ export function AdminSidebar() {
   return (
     <div
       className={cn(
-        "bg-white dark:bg-gray-950 border-r border-green-200 dark:border-gray-800 transition-all duration-300",
+        "bg-gradient-to-b from-green-600 to-green-700 border-r border-green-800 transition-all duration-300 shadow-lg",
         collapsed ? "w-16" : "w-64"
       )}
     >
-      <div className="flex h-16 items-center justify-between px-4 border-b border-green-200 dark:border-gray-800 bg-white/50 dark:bg-gray-950/50">
+      <div className="flex h-16 items-center justify-between px-4 border-b border-green-800 bg-green-700/50">
         {!collapsed && (
           <Link href="/admin" className="flex items-center space-x-2">
-            <Store className="h-6 w-6 text-green-600 dark:text-gray-300" />
-            <span className="font-bold text-lg text-green-800 dark:text-gray-200">Admin Panel</span>
+            <Store className="h-6 w-6 text-white" />
+            <span className="font-bold text-lg text-white">Admin Panel</span>
           </Link>
         )}
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className="h-8 w-8 hover:bg-green-100 dark:hover:bg-gray-800"
+          className="h-8 w-8 hover:bg-green-800 text-white"
         >
           {collapsed ? (
-            <ChevronRight className="h-4 w-4 dark:text-gray-300" />
+            <ChevronRight className="h-4 w-4 text-white" />
           ) : (
-            <ChevronLeft className="h-4 w-4 dark:text-gray-300" />
+            <ChevronLeft className="h-4 w-4 text-white" />
           )}
         </Button>
       </div>
@@ -170,8 +170,8 @@ export function AdminSidebar() {
                   <Button
                     variant="ghost"
                     className={cn(
-                      "w-full justify-start hover:bg-green-100 dark:hover:bg-gray-800 dark:text-gray-300",
-                      pathname.startsWith(item.href) && "bg-green-100 dark:bg-gray-800 text-green-700 dark:text-gray-100"
+                      "w-full justify-start text-white hover:bg-green-800 hover:text-white",
+                      pathname.startsWith(item.href) && "bg-green-800 text-white font-semibold"
                     )}
                     onClick={() => !collapsed && toggleExpanded(item.name)}
                   >
@@ -196,8 +196,8 @@ export function AdminSidebar() {
                           variant="ghost"
                           size="sm"
                           className={cn(
-                            "w-full justify-start text-sm hover:bg-green-50 dark:hover:bg-gray-800 dark:text-gray-400",
-                            pathname === child.href && "bg-green-100 dark:bg-gray-800 text-green-700 dark:text-gray-100"
+                            "w-full justify-start text-sm text-green-100 hover:bg-green-800 hover:text-white",
+                            pathname === child.href && "bg-green-800 text-white font-semibold"
                           )}
                           asChild
                         >
@@ -211,8 +211,8 @@ export function AdminSidebar() {
                 <Button
                   variant="ghost"
                   className={cn(
-                    "w-full justify-start hover:bg-green-100 dark:hover:bg-gray-800 dark:text-gray-300",
-                    pathname === item.href && "bg-green-100 dark:bg-gray-800 text-green-700 dark:text-gray-100"
+                    "w-full justify-start text-white hover:bg-green-800 hover:text-white",
+                    pathname === item.href && "bg-green-800 text-white font-semibold"
                   )}
                   asChild
                 >
@@ -227,8 +227,8 @@ export function AdminSidebar() {
         </nav>
       </ScrollArea>
 
-      <div className="border-t border-green-200 dark:border-gray-800 p-4 bg-white/50 dark:bg-gray-950/50">
-        <Button variant="outline" className="w-full border-green-300 dark:border-gray-700 text-green-700 dark:text-gray-300 hover:bg-green-100 dark:hover:bg-gray-800 hover:text-green-800 dark:hover:text-gray-100" asChild>
+      <div className="border-t border-green-800 p-4 bg-green-700/50">
+        <Button variant="outline" className="w-full border-white/30 text-white hover:bg-green-800 hover:text-white hover:border-white" asChild>
           <Link href="/">
             <Store className="h-4 w-4" />
             {!collapsed && <span className="ml-2">View Store</span>}
