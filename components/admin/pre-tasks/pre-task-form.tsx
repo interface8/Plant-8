@@ -7,9 +7,10 @@ import { toast } from "sonner";
 
 interface PreTaskFormProps {
   products: { id: string; name: string }[];
+  onSuccess?: (newPreTask: any) => void;
 }
 
-export default function AdminPreTaskForm({ products }: PreTaskFormProps) {
+export default function AdminPreTaskForm({ products, onSuccess }: PreTaskFormProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const [title, setTitle] = useState("");
@@ -81,7 +82,15 @@ export default function AdminPreTaskForm({ products }: PreTaskFormProps) {
         toast.success("Pre-task created successfully!", {
           description: `"${result.preTask.title}" has been added to the system.`,
         });
-        
+        // If parent provided an onSuccess handler, call it so caller can update local state
+        if (typeof onSuccess === "function") {
+          try {
+            onSuccess(result.preTask);
+          } catch (err) {
+            // ignore errors from parent handler
+          }
+        }
+
         router.refresh();
       } else {
         const errorMessage = typeof result.error === 'string' 
