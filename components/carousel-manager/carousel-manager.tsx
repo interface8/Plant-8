@@ -9,6 +9,9 @@ import CarouselForm from "./carousel-form";
 import CarouselTable from "./carousel-table";
 import { CarouselItem } from "../../types/carousel";
 import { carouselSchema } from "@/lib/validators/carousel-schema-validators";
+import { GlobalModal } from "@/components/admin/global-modal";
+import { Plus, Package, CheckCircle, XCircle } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 type FormData = z.infer<typeof carouselSchema>;
 
@@ -100,22 +103,133 @@ export default function CarouselManager() {
     setEditingId(null);
   };
 
+  const [showModal, setShowModal] = useState(false);
+
+  const handleEditWithModal = (item: CarouselItem) => {
+    handleEdit(item);
+    setShowModal(true);
+  };
+
+  const handleModalClose = () => {
+    handleCancel();
+    setShowModal(false);
+  };
+
+  const handleSubmitWithModal = async (data: FormData) => {
+    await onSubmit(data);
+    setShowModal(false);
+  };
+
+  // Filter stats
+  const activeCount = items.filter(i => i.isActive).length;
+  const inactiveCount = items.filter(i => !i.isActive).length;
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+
+  const filteredItems = statusFilter === "active"
+    ? items.filter(i => i.isActive)
+    : statusFilter === "inactive"
+    ? items.filter(i => !i.isActive)
+    : items;
+
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6">
-      <h1 className="text-2xl font-bold mb-6">Carousel Manager</h1>
-      <CarouselForm
-        register={register}
-        errors={errors}
-        onSubmit={handleSubmit(onSubmit)}
-        onCancel={handleCancel}
-        isEditing={!!editingId}
-      />
-      {error && <p className="text-red-500 text-sm mt-4">{error}</p>}
+    <div className="p-6 max-w-7xl mx-auto space-y-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-green-800 mb-2">Carousel Manager</h1>
+          <p className="text-green-700">Manage homepage and page carousels.</p>
+        </div>
+        
+        <button
+          onClick={() => setShowModal(true)}
+          className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+        >
+          <Plus className="h-5 w-5 mr-2" />
+          Add Carousel Item
+        </button>
+      </div>
+
+      {/* Filter Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card
+          className={`cursor-pointer border-2 transition-all ${
+            statusFilter === null ? 'border-green-500 shadow-lg' : 'border-gray-200 hover:border-green-300'
+          }`}
+          onClick={() => setStatusFilter(null)}
+        >
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">All Items</p>
+                <p className="text-3xl font-bold text-gray-900">{items.length}</p>
+              </div>
+              <div className="bg-green-100 p-3 rounded-lg">
+                <Package className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card
+          className={`cursor-pointer border-2 transition-all ${
+            statusFilter === "active" ? 'border-blue-500 shadow-lg' : 'border-gray-200 hover:border-blue-300'
+          }`}
+          onClick={() => setStatusFilter("active")}
+        >
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Active</p>
+                <p className="text-3xl font-bold text-gray-900">{activeCount}</p>
+              </div>
+              <div className="bg-blue-100 p-3 rounded-lg">
+                <CheckCircle className="h-6 w-6 text-blue-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card
+          className={`cursor-pointer border-2 transition-all ${
+            statusFilter === "inactive" ? 'border-gray-500 shadow-lg' : 'border-gray-200 hover:border-gray-300'
+          }`}
+          onClick={() => setStatusFilter("inactive")}
+        >
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">Inactive</p>
+                <p className="text-3xl font-bold text-gray-900">{inactiveCount}</p>
+              </div>
+              <div className="bg-gray-100 p-3 rounded-lg">
+                <XCircle className="h-6 w-6 text-gray-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {error && <p className="text-red-500 text-sm mt-4 p-4 bg-red-50 rounded-lg">{error}</p>}
+      
       <CarouselTable
-        items={items}
-        onEdit={handleEdit}
+        items={filteredItems}
+        onEdit={handleEditWithModal}
         onDelete={handleDelete}
       />
+
+      <GlobalModal
+        isOpen={showModal}
+        onClose={handleModalClose}
+        title={editingId ? "Edit Carousel Item" : "Add Carousel Item"}
+        size="lg"
+      >
+        <CarouselForm
+          register={register}
+          errors={errors}
+          onSubmit={handleSubmit(handleSubmitWithModal)}
+          onCancel={handleModalClose}
+          isEditing={!!editingId}
+        />
+      </GlobalModal>
     </div>
   );
 }

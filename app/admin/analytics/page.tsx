@@ -17,8 +17,11 @@ import {
   LineChart,
   Eye,
   Download,
-  RefreshCw,
 } from "lucide-react";
+import { AnalyticsRefreshButton } from "@/components/admin/analytics-refresh-button";
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function AdminAnalyticsPage() {
   const session = await auth();
@@ -198,21 +201,18 @@ export default async function AdminAnalyticsPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Link href="/admin" className="p-2 hover:bg-gray-100 rounded-lg">
-              <ArrowLeft className="h-5 w-5" />
+            <Link href="/admin" className="p-2 hover:bg-green-100 rounded-lg">
+              <ArrowLeft className="h-5 w-5 text-green-700" />
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Advanced Analytics</h1>
-              <p className="text-gray-600 mt-1">
+              <h1 className="text-3xl font-bold text-green-800">Advanced Analytics</h1>
+              <p className="text-green-700 mt-1">
                 Comprehensive insights and performance metrics
               </p>
             </div>
           </div>
           <div className="flex space-x-2">
-            <Button variant="outline" size="sm">
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
+            <AnalyticsRefreshButton />
             <Button variant="outline" size="sm">
               <Download className="h-4 w-4 mr-2" />
               Export
@@ -222,86 +222,86 @@ export default async function AdminAnalyticsPage() {
 
         {/* Key Performance Indicators */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-          <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white">
+          <Card className="border-green-200 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-blue-100 text-sm font-medium mb-1">Total Revenue</p>
-                  <p className="text-2xl font-bold">{formatCurrency(totalRevenue)}</p>
-                  <p className="text-blue-100 text-xs mt-1">
+                  <p className="text-green-700 text-sm font-medium mb-1">Total Revenue</p>
+                  <p className="text-2xl font-bold text-green-900">{formatCurrency(totalRevenue)}</p>
+                  <p className="text-green-600 text-xs mt-1">
                     Average: {formatCurrency(averageInvestment)}
                   </p>
                 </div>
-                <div className="bg-blue-400 bg-opacity-50 p-3 rounded-lg">
-                  <DollarSign className="h-6 w-6" />
+                <div className="bg-green-100 p-3 rounded-lg">
+                  <DollarSign className="h-6 w-6 text-green-700" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white">
+          <Card className="border-green-200 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-100 text-sm font-medium mb-1">Monthly Growth</p>
-                  <p className="text-2xl font-bold">{formatPercentage(growthRate)}</p>
-                  <p className="text-green-100 text-xs mt-1">
+                  <p className="text-green-700 text-sm font-medium mb-1">Monthly Growth</p>
+                  <p className="text-2xl font-bold text-green-900">{formatPercentage(growthRate)}</p>
+                  <p className="text-green-600 text-xs mt-1">
                     {newInvestmentsThisMonth} new this month
                   </p>
                 </div>
-                <div className="bg-green-400 bg-opacity-50 p-3 rounded-lg">
-                  <TrendingUp className="h-6 w-6" />
+                <div className="bg-green-200 p-3 rounded-lg">
+                  <TrendingUp className="h-6 w-6 text-green-800" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white">
+          <Card className="border-green-200 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-100 text-sm font-medium mb-1">Active Users</p>
-                  <p className="text-2xl font-bold">{activeInvestors}</p>
-                  <p className="text-purple-100 text-xs mt-1">
+                  <p className="text-green-700 text-sm font-medium mb-1">Active Users</p>
+                  <p className="text-2xl font-bold text-green-900">{activeInvestors}</p>
+                  <p className="text-green-600 text-xs mt-1">
                     {newUsersThisWeek} joined this week
                   </p>
                 </div>
-                <div className="bg-purple-400 bg-opacity-50 p-3 rounded-lg">
-                  <Users className="h-6 w-6" />
+                <div className="bg-emerald-100 p-3 rounded-lg">
+                  <Users className="h-6 w-6 text-emerald-700" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white">
+          <Card className="border-green-200 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-indigo-100 text-sm font-medium mb-1">Total Products</p>
-                  <p className="text-2xl font-bold">{totalProducts}</p>
-                  <p className="text-indigo-100 text-xs mt-1">
+                  <p className="text-green-700 text-sm font-medium mb-1">Total Products</p>
+                  <p className="text-2xl font-bold text-green-900">{totalProducts}</p>
+                  <p className="text-green-600 text-xs mt-1">
                     Available offerings
                   </p>
                 </div>
-                <div className="bg-indigo-400 bg-opacity-50 p-3 rounded-lg">
-                  <BarChart3 className="h-6 w-6" />
+                <div className="bg-green-50 p-3 rounded-lg">
+                  <BarChart3 className="h-6 w-6 text-green-800" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white">
+          <Card className="border-green-200 bg-white/80 backdrop-blur-sm hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-orange-100 text-sm font-medium mb-1">Avg Progress</p>
-                  <p className="text-2xl font-bold">{averageProgress.toFixed(1)}%</p>
-                  <p className="text-orange-100 text-xs mt-1">
+                  <p className="text-green-700 text-sm font-medium mb-1">Avg Progress</p>
+                  <p className="text-2xl font-bold text-green-900">{averageProgress.toFixed(1)}%</p>
+                  <p className="text-green-600 text-xs mt-1">
                     {pendingTasks} pending tasks
                   </p>
                 </div>
-                <div className="bg-orange-400 bg-opacity-50 p-3 rounded-lg">
-                  <Activity className="h-6 w-6" />
+                <div className="bg-teal-100 p-3 rounded-lg">
+                  <Activity className="h-6 w-6 text-teal-700" />
                 </div>
               </div>
             </CardContent>
@@ -311,10 +311,10 @@ export default async function AdminAnalyticsPage() {
         {/* Charts and Analytics */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Investment Status Breakdown */}
-          <Card>
+          <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <PieChart className="h-5 w-5 mr-2" />
+              <CardTitle className="flex items-center text-green-800">
+                <PieChart className="h-5 w-5 mr-2 text-green-600" />
                 Investment Status Distribution
               </CardTitle>
             </CardHeader>
@@ -358,10 +358,10 @@ export default async function AdminAnalyticsPage() {
           </Card>
 
           {/* Revenue Trends */}
-          <Card>
+          <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <LineChart className="h-5 w-5 mr-2" />
+              <CardTitle className="flex items-center text-green-800">
+                <LineChart className="h-5 w-5 mr-2 text-green-600" />
                 Monthly Revenue Trend
               </CardTitle>
             </CardHeader>
@@ -404,11 +404,11 @@ export default async function AdminAnalyticsPage() {
         {/* Top Performers */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Top Investors */}
-          <Card>
+          <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+              <CardTitle className="flex items-center justify-between text-green-800">
                 <div className="flex items-center">
-                  <Users className="h-5 w-5 mr-2" />
+                  <Users className="h-5 w-5 mr-2 text-green-600" />
                   Top Investors
                 </div>
                 <Button asChild variant="outline" size="sm">
@@ -452,11 +452,11 @@ export default async function AdminAnalyticsPage() {
           </Card>
 
           {/* Top Products */}
-          <Card>
+          <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+              <CardTitle className="flex items-center justify-between text-green-800">
                 <div className="flex items-center">
-                  <BarChart3 className="h-5 w-5 mr-2" />
+                  <BarChart3 className="h-5 w-5 mr-2 text-green-600" />
                   Top Products
                 </div>
                 <Button asChild variant="outline" size="sm">
@@ -503,10 +503,10 @@ export default async function AdminAnalyticsPage() {
         </div>
 
         {/* System Health */}
-        <Card>
+        <Card className="border-green-200 bg-white/80 backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="flex items-center">
-              <Activity className="h-5 w-5 mr-2" />
+            <CardTitle className="flex items-center text-green-800">
+              <Activity className="h-5 w-5 mr-2 text-green-600" />
               System Health & Alerts
             </CardTitle>
           </CardHeader>

@@ -3,6 +3,7 @@ import Head from "next/head";
 import { auth } from "@/auth";
 import LandForm from "@/components/admin/land-form";
 import { getLocations } from "@/lib/services/investment-service";
+import { BackToListButton } from "@/components/admin/back-to-list-button";
 
 export default async function NewLandPage() {
   const session = await auth();
@@ -36,9 +37,10 @@ export default async function NewLandPage() {
         />
         <meta property="og:type" content="website" />
       </Head>
-      <div className="p-6 max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-4" aria-label="Create New Land">
-          Create New Land
+      <div className="p-6 max-w-2xl mx-auto">
+        <BackToListButton href="/admin/lands" />
+        <h1 className="text-2xl font-bold text-green-800 mb-4" aria-label="Create New Land">
+          Add New Land
         </h1>
         <LandForm locations={locations} />
       </div>

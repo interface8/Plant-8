@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { ProductType } from "@/types/product";
 import ProductTypeForm from "./product-type-form";
-import { Edit2, Trash2, AlertCircle } from "lucide-react";
+import { Edit2, Trash2, AlertCircle, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { GlobalModal } from "@/components/admin/global-modal";
+import { ProductTypeStats } from "./product-type-stats";
 
 export default function AdminProductTypes() {
   const { data: session, status } = useSession();
@@ -134,84 +136,88 @@ export default function AdminProductTypes() {
   if (!isAdmin) return <div>Access denied. Admin privileges required.</div>;
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Manage Product Types</h1>
-      <div className="mb-4 flex justify-end">
+    <div className="p-6 max-w-7xl mx-auto space-y-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-green-800 mb-2">Product Types Management</h1>
+          <p className="text-green-700">Manage product categories and subcategories.</p>
+        </div>
+        
         <button
           onClick={handleAdd}
-          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+          className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
         >
+          <Plus className="h-5 w-5 mr-2" />
           Add Product Type
         </button>
       </div>
+      
+      <ProductTypeStats productTypes={productTypes} />
       {/* List of Product Types */}
-      <div>
-        <h2 className="text-xl font-semibold mb-2">Product Types</h2>
-        <ul className="space-y-2">
-          {productTypes.map((pt) => (
-            <li key={pt.id} className="border p-4 rounded-md">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h3 className="font-medium">{pt.name}</h3>
-                  <p className="text-sm text-gray-600">{pt.description}</p>
-                  <p className="text-sm text-gray-500">
-                    Parent: {" "}
-                    {pt.prevId
-                      ? productTypes.find((p) => p.id === pt.prevId)?.name || "None"
-                      : "None"}
-                  </p>
-                  {pt.children?.length > 0 && (
-                    <p className="text-sm text-gray-500">
-                      Subcategories: {pt.children.map((c) => c.name).join(", ")}
+      <div className="bg-white rounded-lg shadow-sm border border-green-200">
+        <div className="p-6">
+          <h2 className="text-xl font-semibold text-green-800 mb-4">All Product Types</h2>
+          <ul className="space-y-3">
+            {productTypes.map((pt) => (
+              <li key={pt.id} className="border border-gray-200 p-4 rounded-lg hover:shadow-md transition-shadow bg-white">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{pt.name}</h3>
+                    <p className="text-sm text-gray-600 mt-1">{pt.description}</p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Parent: {" "}
+                      {pt.prevId
+                        ? productTypes.find((p) => p.id === pt.prevId)?.name || "None"
+                        : "None"}
                     </p>
-                  )}
+                    {pt.children?.length > 0 && (
+                      <p className="text-sm text-green-600 mt-1">
+                        Subcategories: {pt.children.map((c) => c.name).join(", ")}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-x-2 flex items-center">
+                    <button
+                      onClick={() => handleEdit(pt)}
+                      className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50"
+                      title="Edit"
+                    >
+                      <Edit2 className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(pt.id, pt.name)}
+                      className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50"
+                      title="Delete"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
                 </div>
-                <div className="space-x-2 flex items-center">
-                  <button
-                    onClick={() => handleEdit(pt)}
-                    className="text-blue-600 hover:text-blue-800 p-2 rounded-full hover:bg-blue-50"
-                    title="Edit"
-                  >
-                    <Edit2 className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(pt.id, pt.name)}
-                    className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      </div>
-      {/* Modal for Add/Edit */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white rounded shadow-lg p-6 w-full max-w-lg relative">
-            <ProductTypeForm
-              initial={editing ? {
-                id: editing.id,
-                name: editing.name,
-                description: editing.description || "",
-                prevId: editing.prevId ?? null,
-              } : undefined}
-              productTypes={productTypes}
-              onSuccess={handleFormSuccess}
-              onCancel={() => { setShowForm(false); setEditing(null); }}
-            />
-            <button
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-              onClick={() => { setShowForm(false); setEditing(null); }}
-              aria-label="Close"
-            >
-              ×
-            </button>
-          </div>
+              </li>
+            ))}
+          </ul>
         </div>
-      )}
+      </div>
+      
+      {/* Global Modal for Add/Edit */}
+      <GlobalModal
+        isOpen={showForm}
+        onClose={() => { setShowForm(false); setEditing(null); }}
+        title={editing ? "Edit Product Type" : "Add Product Type"}
+        size="md"
+      >
+        <ProductTypeForm
+          initial={editing ? {
+            id: editing.id,
+            name: editing.name,
+            description: editing.description || "",
+            prevId: editing.prevId ?? null,
+          } : undefined}
+          productTypes={productTypes}
+          onSuccess={handleFormSuccess}
+          onCancel={() => { setShowForm(false); setEditing(null); }}
+        />
+      </GlobalModal>
     </div>
   );
 }

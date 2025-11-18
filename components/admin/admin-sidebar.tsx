@@ -36,10 +36,6 @@ const navigation = [
     name: "Products",
     href: "/admin/products",
     icon: Package,
-    children: [
-      { name: "All Products", href: "/admin/products" },
-      { name: "Add Product", href: "/admin/products/new" },
-    ],
   },
   {
     name: "Product Types",
@@ -54,20 +50,11 @@ const navigation = [
     name: "Pre Tasks",
     href: "/admin/pre-tasks",
     icon: ShoppingCart,
-    children: [
-      { name: "All Pre Tasks", href: "/admin/pre-tasks" },
-      { name: "Pending Pre Tasks", href: "/admin/pre-tasks?status=pending" },
-      { name: "Completed Pre Tasks", href: "/admin/pre-tasks?status=completed" },
-    ],
   },
   {
     name: "Lands",
     href: "/admin/lands",
     icon: MapPin,
-    children: [
-      { name: "All Lands", href: "/admin/lands" },
-      { name: "Add Land", href: "/admin/lands/new" },
-    ],
   },
   {
     name: "States & Locations",
@@ -75,9 +62,7 @@ const navigation = [
     icon: Store,
     children: [
       { name: "All States", href: "/admin/states" },
-      { name: "Add State", href: "/admin/states/new" },
       { name: "All Locations", href: "/admin/locations" },
-      { name: "Add Location", href: "/admin/locations/new" },
     ],
   },
   {
@@ -136,7 +121,7 @@ export function AdminSidebar() {
   return (
     <div
       className={cn(
-        "bg-gradient-to-b from-green-600 to-green-700 border-r border-green-800 transition-all duration-300 shadow-lg",
+        "bg-gradient-to-b from-green-600 to-green-700 border-r border-green-800 transition-all duration-300 shadow-lg flex flex-col h-screen",
         collapsed ? "w-16" : "w-64"
       )}
     >
@@ -161,7 +146,7 @@ export function AdminSidebar() {
         </Button>
       </div>
 
-      <ScrollArea className="flex-1 px-3 py-4">
+      <ScrollArea className="flex-1 px-3 py-4 overflow-y-auto">
         <nav className="space-y-2">
           {navigation.map((item) => (
             <div key={item.name}>
