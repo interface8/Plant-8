@@ -189,7 +189,7 @@ docs/                                 # 👈 You are here
 ```env
 RESEND_API_KEY=re_your_key
 EMAIL_FROM=onboarding@resend.dev
-NEXTAUTH_URLL=http://localhost:3000
+NEXTAUTH_URL=http://localhost:3000
 ```
 
 ### Production Setup
@@ -200,7 +200,7 @@ SMTP_HOST=smtp.gmail.com
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
 EMAIL_FROM=noreply@yourdomain.com
-NEXTAUTH_URLL=https://yourdomain.com
+NEXTAUTH_URL=https://yourdomain.com
 EMAIL_STRATEGY=failover
 ```
 
@@ -211,7 +211,7 @@ import { EmailService } from "@/lib/services/email-service";
 
 // Check configured providers
 console.log(EmailService.getConfiguredProviders());
-// Output: ["Resend", "SendGrid", "Nodemailer"]
+// Output: ["Resend", "SendGrid"]
 
 // Send test email
 await EmailService.sendEmail({
