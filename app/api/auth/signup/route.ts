@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import prisma from "@/db/prisma";
 import { signUpSchema } from "@/lib/validators/auth-schema-validators";
 import { z } from "zod";
+import { EmailService } from "@/lib/services/email-service";
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,6 +60,14 @@ export async function POST(request: NextRequest) {
     });
 
     const roleNames = createdUser?.roles.map((ur) => ur.role.name);
+
+    // Send welcome email
+    try {
+      await EmailService.sendWelcomeEmail(user.email, user.name);
+    } catch (emailError) {
+      console.error("Failed to send welcome email:", emailError);
+      // Don't fail the signup if email fails
+    }
 
     return NextResponse.json(
       {

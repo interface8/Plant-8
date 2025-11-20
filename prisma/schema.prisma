@@ -88,6 +88,10 @@ model User {
   
   // Notification Relations
   notifications   Notification[] @relation("UserNotifications")
+  
+  // Email & Device Relations
+  emailLogs       EmailLog[]     @relation("UserEmailLogs")
+  devices         UserDevice[]   @relation("UserDevices")
 }
 
 model PaymentMethodDomain {
@@ -604,5 +608,61 @@ model Notification {
   
   @@index([userId, read])
   @@index([createdAt])
+}
+
+model EmailLog {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String?  @db.Uuid
+  recipientEmail  String
+  emailType       EmailType
+  subject         String
+  status          EmailStatus @default(PENDING)
+  sentAt          DateTime?
+  failureReason   String?
+  metadata        Json?    // Store additional context (investmentId, transactionId, etc.)
+  createdAt       DateTime @default(now()) @db.Timestamp(6)
+  
+  user User? @relation("UserEmailLogs", fields: [userId], references: [id], onDelete: SetNull)
+  
+  @@index([userId])
+  @@index([emailType])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model UserDevice {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String   @db.Uuid
+  ipAddress     String
+  userAgent     String?
+  deviceInfo    String?
+  isTrusted     Boolean  @default(false)
+  lastUsedAt    DateTime @default(now()) @db.Timestamp(6)
+  firstSeenAt   DateTime @default(now()) @db.Timestamp(6)
+  
+  user User @relation("UserDevices", fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, ipAddress])
+  @@index([userId])
+  @@index([lastUsedAt])
+}
+
+enum EmailType {
+  WELCOME
+  SIGN_IN_ALERT
+  FORGOT_PASSWORD
+  PASSWORD_RESET_CONFIRMATION
+  INVESTMENT_CREATED
+  INVESTMENT_APPROVED
+  INVESTMENT_REJECTED
+  INVESTMENT_COMPLETED
+  PAYMENT_RECEIPT
+  WEEKLY_REPORT
+}
+
+enum EmailStatus {
+  PENDING
+  SENT
+  FAILED
 }
 

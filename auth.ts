@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import "server-only";
 import NextAuth, { type NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
@@ -6,6 +5,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import prisma from "@/db/prisma";
+import { checkDeviceAndNotify } from "@/lib/utils/device-detection";
 
 declare module "next-auth" {
   interface User {
@@ -145,6 +145,16 @@ export const authOptions = {
       return session;
     },
     async signIn({ user, account }: any) {
+      // Check device and send alert for unfamiliar devices
+      if (user?.id && user?.email && user?.name) {
+        try {
+          await checkDeviceAndNotify(user.id, user.email, user.name);
+        } catch (error) {
+          console.error("Device detection error:", error);
+          // Don't block sign in if device detection fails
+        }
+      }
+      
       if (account?.provider === "google" && user.email) {
         try {
           const existingUser = await prisma.user.findUnique({

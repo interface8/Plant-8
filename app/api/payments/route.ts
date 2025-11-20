@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { EmailService } from "@/lib/services/email-service";
+import prisma from "@/db/prisma";
 
 export async function POST(request: Request) {
   const session = await auth();
@@ -30,6 +32,30 @@ export async function POST(request: Request) {
       amount,
       paymentMethod,
     };
+
+    // Send payment receipt email
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { email: true, name: true },
+      });
+
+      if (user?.email && user?.name) {
+        await EmailService.sendPaymentReceiptEmail(
+          user.email,
+          user.name,
+          {
+            amount,
+            transactionId: paymentResult.id,
+            productName: "Investment Payment", // You may want to pass this from the request
+            date: new Date(),
+          }
+        );
+      }
+    } catch (emailError) {
+      console.error("Failed to send payment receipt email:", emailError);
+      // Don't fail the payment if email fails
+    }
 
     return NextResponse.json(paymentResult, { status: 200 });
   } catch (error) {

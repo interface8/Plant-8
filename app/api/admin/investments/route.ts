@@ -4,6 +4,7 @@ import prisma from "@/db/prisma";
 import { Prisma } from "@prisma/client";
 
 import { investmentSchema } from "@/lib/validators/investment-schema-validation";
+import { EmailService } from "@/lib/services/email-service";
 const updateInvestmentSchema = investmentSchema.partial();
 
 export async function GET(request: Request) {
@@ -285,6 +286,49 @@ export async function PUT(request: Request) {
         },
       },
     });
+
+    // Send email if status changed
+    if (parsed.data.status && parsed.data.status !== existingInvestment.status) {
+      try {
+        if (parsed.data.status === "ACTIVE") {
+          // Investment approved and now active
+          await EmailService.sendInvestmentApprovalEmail(
+            existingInvestment.user.email,
+            existingInvestment.user.name,
+            {
+              productName: investment.product.name,
+              amount: investment.amount,
+              status: "APPROVED",
+            }
+          );
+        } else if (parsed.data.status === "FAILED") {
+          // Investment rejected/failed
+          await EmailService.sendInvestmentApprovalEmail(
+            existingInvestment.user.email,
+            existingInvestment.user.name,
+            {
+              productName: investment.product.name,
+              amount: investment.amount,
+              status: "REJECTED",
+            }
+          );
+        } else if (parsed.data.status === "COMPLETED") {
+          await EmailService.sendInvestmentCompletionEmail(
+            existingInvestment.user.email,
+            existingInvestment.user.name,
+            {
+              productName: investment.product.name,
+              initialAmount: investment.amount,
+              finalAmount: investment.amount + (investment.expectedReturn || 0),
+              roi: ((investment.expectedReturn || 0) / investment.amount) * 100,
+            }
+          );
+        }
+      } catch (emailError) {
+        console.error("Failed to send investment status email:", emailError);
+        // Don't fail the update if email fails
+      }
+    }
 
     return NextResponse.json({ 
       message: "Investment updated successfully", 

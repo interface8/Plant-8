@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import prisma from "@/db/prisma";
 import { investmentSchema } from "@/lib/validators/investment-schema-validators";
 import { calculateInvestmentROI } from "@/lib/utils/investmentCalculator";
+import { EmailService } from "@/lib/services/email-service";
 
 export async function GET() {
   const session = await auth();
@@ -322,6 +323,30 @@ export async function POST(request: Request) {
       maxWait: 10000, // 10 seconds max wait to start transaction
       timeout: 15000, // 15 seconds max transaction time
     });
+
+    // Send investment created email
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { email: true, name: true },
+      });
+
+      if (user?.email && user?.name) {
+        await EmailService.sendInvestmentCreatedEmail(
+          user.email,
+          user.name,
+          {
+            productName: investment.product.name,
+            amount: investment.amount,
+            duration: `${numberOfTerms} months`,
+            expectedReturn: product.roi || 0,
+          }
+        );
+      }
+    } catch (emailError) {
+      console.error("Failed to send investment email:", emailError);
+      // Don't fail the investment if email fails
+    }
 
     return NextResponse.json(
       {
