@@ -154,7 +154,6 @@ export default function PaymentForm({ onSuccess }: PaymentFormProps) {
     } catch {
       dispatch(setError("Payment failed. Please try again."));
     } finally {
-      // setIsSubmitting is handled in callbacks; ensure false in case of early exit
       setIsSubmitting(false);
     }
   };
