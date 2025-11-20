@@ -211,7 +211,7 @@ import { EmailService } from "@/lib/services/email-service";
 
 // Check configured providers
 console.log(EmailService.getConfiguredProviders());
-// Output: ["Resend", "SendGrid"]
+// Output: ["Resend", "SendGrid", "Nodemailer"]
 
 // Send test email
 await EmailService.sendEmail({
