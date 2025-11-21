@@ -17,6 +17,8 @@ export async function seedUsers(): Promise<User> {
     const customerRole = await prisma.role.findUnique({ where: { name: "CUSTOMER" } });
     const farmerRole = await prisma.role.findUnique({ where: { name: "FARMER" } });
     const investorRole = await prisma.role.findUnique({ where: { name: "INVESTOR" } });
+    const blogManagerRole = await prisma.role.findUnique({ where: { name: "BLOG_MANAGER" } });
+    const managerRole = await prisma.role.findUnique({ where: { name: "MANAGER" } });
 
     if (!adminRole || !userRole) throw new Error("Required roles not found");
 
@@ -116,6 +118,36 @@ export async function seedUsers(): Promise<User> {
           email: "ngozi.customer@mailinator.com",
           password: "Customer@123",
           roleIds: [customerRole.id, userRole.id],
+        }
+      );
+    }
+
+    // Add blog managers
+    if (blogManagerRole) {
+      users.push(
+        {
+          name: "Amara Okoro",
+          email: "amara.blog@mailinator.com",
+          password: "BlogManager@123",
+          roleIds: [blogManagerRole.id, userRole.id],
+        },
+        {
+          name: "Tunde Adewale",
+          email: "tunde.blog@mailinator.com",
+          password: "BlogManager@123",
+          roleIds: [blogManagerRole.id, userRole.id],
+        }
+      );
+    }
+
+    // Add managers
+    if (managerRole) {
+      users.push(
+        {
+          name: "Fatima Hassan",
+          email: "fatima.manager@mailinator.com",
+          password: "Manager@123",
+          roleIds: [managerRole.id, userRole.id],
         }
       );
     }

@@ -13,6 +13,13 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+
+  // Only hide header on dashboard and profile pages
+  const isDashboardPage = pathname?.startsWith("/dashboard") || pathname?.startsWith("/profile");
+  const isAuthPage = pathname?.startsWith("/sign-in") || pathname?.startsWith("/sign-up");
+  
+  // Show header on all pages except dashboard/profile when authenticated
+  const shouldShowNavigation = status !== "authenticated" || !isDashboardPage;
   
 
   useEffect(() => {
@@ -66,7 +73,7 @@ export default function Header() {
               </Link>
             </div>
 
-            {status !== "authenticated" && (
+            {shouldShowNavigation && (
               <nav className="hidden md:flex ml-8 space-x-8 items-center">
                 {navigationLinks.map((link) =>
                   link.label === "Investments" ? (
@@ -155,7 +162,7 @@ export default function Header() {
             </button>
           </div>
 
-          {status !== "authenticated" && (
+          {shouldShowNavigation && (
             <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
               {navigationLinks.map((link, index) =>
                 link.label === "Investments" ? (
@@ -186,7 +193,7 @@ export default function Header() {
             </nav>
           )}
 
-          {status !== "authenticated" && (
+          {shouldShowNavigation && status !== "authenticated" && (
             <div className="border-t border-green-200 p-4 bg-white/50">
               <div className="space-y-2">
                 <Link

@@ -92,6 +92,13 @@ export async function POST(request: Request) {
       );
     }
 
+    // Determine approval status based on user role
+    const isBlogManager = session.user.roles?.includes("BLOG_MANAGER");
+    const isAdmin = session.user.roles?.includes("ADMIN");
+    
+    // Blog managers need approval, admins auto-approve
+    const approvalStatus = isBlogManager && !isAdmin ? "PENDING" : "APPROVED";
+
     const blog = await BlogService.createBlog({
       title: data.title,
       slug,
@@ -101,10 +108,11 @@ export async function POST(request: Request) {
       category: data.category,
       tags: data.tags,
       status: data.status,
+      approvalStatus,
       readTime,
       publishedAt: data.publishedAt ? new Date(data.publishedAt) : data.status === "PUBLISHED" ? new Date() : null,
       createdByUser: { connect: { id: session.user.id } },
-      ...(data.authorId && { author: { connect: { id: data.authorId } } }),
+      author: { connect: { id: session.user.id } },
       ...(data.productId && { product: { connect: { id: data.productId } } }),
       ...(data.productTypeId && { productType: { connect: { id: data.productTypeId } } }),
     });

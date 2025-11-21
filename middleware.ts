@@ -15,7 +15,9 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/dashboard") ||
     request.nextUrl.pathname.startsWith("/profile") ||
     request.nextUrl.pathname.startsWith("/marketplace/my-listings") ||
-    request.nextUrl.pathname.startsWith("/marketplace/listing/new");
+    request.nextUrl.pathname.startsWith("/marketplace/listing/new") ||
+    request.nextUrl.pathname.startsWith("/blog-manager") ||
+    request.nextUrl.pathname.startsWith("/admin");
 
   if (isAuthPage && isLoggedIn) {
     return NextResponse.redirect(new URL("/dashboard", request.url));

@@ -13,6 +13,8 @@ export async function seedRoles(): Promise<RoleCount> {
         { name: "CUSTOMER" },
         { name: "FARMER" },
         { name: "INVESTOR" },
+        { name: "BLOG_MANAGER" },
+        { name: "MANAGER" },
       ],
       skipDuplicates: true,
     });

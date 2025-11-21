@@ -18,7 +18,7 @@ export function useAuth() {
 
   const signInWithCredentials = async (
     data: SignInData,
-    redirectTo = "/dashboard"
+    redirectTo?: string
   ) => {
     setIsLoading(true);
     setError("");
@@ -51,13 +51,14 @@ export function useAuth() {
       } else if (result?.ok) {
         toast.success("Welcome back!", {
           description: "You have been signed in successfully",
-          duration: 3000,
+          duration: 2000,
         });
 
-        setTimeout(() => {
-          router.push(redirectTo);
-          router.refresh();
-        }, 1000);
+        // Determine redirect based on user role or use provided redirectTo
+        // If no redirectTo provided, will default to /dashboard
+        const finalRedirect = redirectTo || "/dashboard";
+        router.push(finalRedirect);
+        router.refresh();
       }
     } catch (error) {
       console.error("Sign in error:", error);
@@ -159,12 +160,11 @@ export function useAuth() {
       } else if (signInResult?.ok) {
         toast.success("Account created and signed in!", {
           description: "Welcome to your new account!",
-          duration: 3000,
+          duration: 2000,
         });
-        setTimeout(() => {
-          router.push("/dashboard");
-          router.refresh();
-        }, 500);
+        // Navigate immediately after successful sign-in
+        router.push("/dashboard");
+        router.refresh();
         return true;
       }
     } catch (error) {

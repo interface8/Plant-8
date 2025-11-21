@@ -70,6 +70,17 @@ export async function PATCH(
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
     }
 
+    // Check permissions: blog managers can only edit their own blogs
+    const isBlogManager = session.user.roles?.includes("BLOG_MANAGER");
+    const isAdmin = session.user.roles?.includes("ADMIN");
+    
+    if (isBlogManager && !isAdmin && existingBlog.authorId !== session.user.id) {
+      return NextResponse.json(
+        { error: "You can only edit your own blogs" },
+        { status: 403 }
+      );
+    }
+
     // If slug is being updated, check uniqueness
     if (data.slug && data.slug !== existingBlog.slug) {
       const blogWithSlug = await BlogService.getBlogBySlug(data.slug);
@@ -134,6 +145,17 @@ export async function DELETE(
     const existingBlog = await BlogService.getBlogById(id);
     if (!existingBlog) {
       return NextResponse.json({ error: "Blog not found" }, { status: 404 });
+    }
+
+    // Check permissions: blog managers can only delete their own blogs
+    const isBlogManager = session.user.roles?.includes("BLOG_MANAGER");
+    const isAdmin = session.user.roles?.includes("ADMIN");
+    
+    if (isBlogManager && !isAdmin && existingBlog.authorId !== session.user.id) {
+      return NextResponse.json(
+        { error: "You can only delete your own blogs" },
+        { status: 403 }
+      );
     }
 
     await BlogService.deleteBlog(id);
