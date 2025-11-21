@@ -86,7 +86,7 @@ export default function AdminPreTaskForm({ products, onSuccess }: PreTaskFormPro
         if (typeof onSuccess === "function") {
           try {
             onSuccess(result.preTask);
-          } catch (err) {
+          } catch (_err) {
             // ignore errors from parent handler
           }
         }

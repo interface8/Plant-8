@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
+
 import type { Product } from "@/types/product";
-import { useRouter } from "next/navigation";
 import { ProductTable } from "@/components/admin/products/ProductTable";
 import { ProductStats } from "@/components/admin/products/ProductStats";
 import Link from "next/link";
@@ -9,7 +9,6 @@ import { Plus } from "lucide-react";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
-  const router = useRouter();
 
   useEffect(() => {
     async function fetchProducts() {

@@ -1,41 +1,43 @@
 import { auth } from "@/auth";
 import prisma from "@/db/prisma";
 import Link from "next/link";
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 import { BlogManagerBlogList } from "@/components/blog-manager/blog-manager-blog-list";
 
 interface PageProps {
-  searchParams: { 
-    status?: string; 
+  searchParams: Promise<{
+    status?: string;
     approval?: string;
     search?: string;
-  };
+  }>;
 }
 
 export default async function BlogManagerBlogsPage({ searchParams }: PageProps) {
   const session = await auth();
-  
+
   if (!session?.user?.id) {
     return null;
   }
+
+  const params = await searchParams;
 
   // Build filter conditions
   const where: any = {
     authorId: session.user.id,
   };
 
-  if (searchParams.status) {
-    where.status = searchParams.status;
+  if (params.status) {
+    where.status = params.status;
   }
 
-  if (searchParams.approval) {
-    where.approvalStatus = searchParams.approval;
+  if (params.approval) {
+    where.approvalStatus = params.approval;
   }
 
-  if (searchParams.search) {
+  if (params.search) {
     where.OR = [
-      { title: { contains: searchParams.search, mode: 'insensitive' } },
-      { excerpt: { contains: searchParams.search, mode: 'insensitive' } },
+      { title: { contains: params.search, mode: 'insensitive' } },
+      { excerpt: { contains: params.search, mode: 'insensitive' } },
     ];
   }
 
@@ -76,7 +78,7 @@ export default async function BlogManagerBlogsPage({ searchParams }: PageProps) 
           <Link
             href="/blog-manager/blogs"
             className={`px-4 py-2 rounded-lg transition-colors ${
-              !searchParams.status && !searchParams.approval
+              !params.status && !params.approval
                 ? 'bg-green-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
@@ -86,7 +88,7 @@ export default async function BlogManagerBlogsPage({ searchParams }: PageProps) 
           <Link
             href="/blog-manager/blogs?status=DRAFT"
             className={`px-4 py-2 rounded-lg transition-colors ${
-              searchParams.status === 'DRAFT'
+              params.status === 'DRAFT'
                 ? 'bg-gray-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
@@ -96,7 +98,7 @@ export default async function BlogManagerBlogsPage({ searchParams }: PageProps) 
           <Link
             href="/blog-manager/blogs?approval=PENDING"
             className={`px-4 py-2 rounded-lg transition-colors ${
-              searchParams.approval === 'PENDING'
+              params.approval === 'PENDING'
                 ? 'bg-yellow-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
@@ -106,7 +108,7 @@ export default async function BlogManagerBlogsPage({ searchParams }: PageProps) 
           <Link
             href="/blog-manager/blogs?approval=APPROVED"
             className={`px-4 py-2 rounded-lg transition-colors ${
-              searchParams.approval === 'APPROVED'
+              params.approval === 'APPROVED'
                 ? 'bg-green-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}
@@ -116,7 +118,7 @@ export default async function BlogManagerBlogsPage({ searchParams }: PageProps) 
           <Link
             href="/blog-manager/blogs?approval=REJECTED"
             className={`px-4 py-2 rounded-lg transition-colors ${
-              searchParams.approval === 'REJECTED'
+              params.approval === 'REJECTED'
                 ? 'bg-red-600 text-white'
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             }`}

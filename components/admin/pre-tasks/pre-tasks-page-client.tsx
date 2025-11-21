@@ -5,7 +5,7 @@ import AdminPreTaskForm from "./pre-task-form";
 import PreTaskTable from "./pre-task-table";
 import PreTaskStats from "./pre-task-stats";
 import { GlobalModal } from "@/components/admin/global-modal";
-import { Plus, CheckCircle, Clock, XCircle } from "lucide-react";
+import { Plus, CheckCircle, Clock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface PreTasksPageClientProps {

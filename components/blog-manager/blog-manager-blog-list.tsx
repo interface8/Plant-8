@@ -6,6 +6,7 @@ import { Edit, Trash2, Eye, Clock, CheckCircle, XCircle, FileText } from "lucide
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface Blog {
   id: string;
@@ -55,7 +56,7 @@ export function BlogManagerBlogList({ blogs }: BlogManagerBlogListProps) {
           description: error.error || "An error occurred",
         });
       }
-    } catch (error) {
+    } catch (_error) {
       toast.dismiss(loadingToast);
       toast.error("Failed to delete blog", {
         description: "Network error occurred",
@@ -139,9 +140,11 @@ export function BlogManagerBlogList({ blogs }: BlogManagerBlogListProps) {
             {/* Cover Image */}
             {blog.coverImage && (
               <div className="flex-shrink-0">
-                <img
+                <Image
                   src={blog.coverImage}
                   alt={blog.title}
+                  width={128}
+                  height={128}
                   className="w-32 h-32 object-cover rounded-lg"
                 />
               </div>

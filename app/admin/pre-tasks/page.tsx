@@ -1,6 +1,4 @@
 import { auth } from "@/auth";
-import PreTaskTable from "@/components/admin/pre-tasks/pre-task-table";
-import PreTaskStats from "@/components/admin/pre-tasks/pre-task-stats";
 import PreTasksPageClient from "@/components/admin/pre-tasks/pre-tasks-page-client";
 import { redirect } from "next/navigation";
 import prisma from "@/db/prisma";

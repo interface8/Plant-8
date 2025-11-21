@@ -38,7 +38,7 @@ interface RichTextEditorProps {
 export function RichTextEditor({
   content,
   onChange,
-  placeholder = "Write your content here...",
+  placeholder: _placeholder = "Write your content here...",
   className = "",
 }: RichTextEditorProps) {
   const editor = useEditor({

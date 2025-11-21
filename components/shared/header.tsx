@@ -16,7 +16,6 @@ export default function Header() {
 
   // Only hide header on dashboard and profile pages
   const isDashboardPage = pathname?.startsWith("/dashboard") || pathname?.startsWith("/profile");
-  const isAuthPage = pathname?.startsWith("/sign-in") || pathname?.startsWith("/sign-up");
   
   // Show header on all pages except dashboard/profile when authenticated
   const shouldShowNavigation = status !== "authenticated" || !isDashboardPage;
